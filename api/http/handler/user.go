@@ -1,82 +1,89 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
+	"strconv"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
-	"github.com/go-playground/validator/v10"
 
 	"auth_service/api/http/lib/validation"
 	"auth_service/api/http/schemas"
-	"auth_service/internal/entity"
-	"auth_service/utils/password"
+	"auth_service/package/utils/password"
 )
 
 type UserHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Get(w http.ResponseWriter, r *http.Request)
-	// GetAll(w http.ResponseWriter, r *http.Request)
+	GetAll(w http.ResponseWriter, r *http.Request)
 	// Update(w http.ResponseWriter, r *http.Request)
 	// Delete(w http.ResponseWriter, r *http.Request)
 }
 
-func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req schemas.UserCreateRequest
 
 	if err := render.DecodeJSON(r.Body, &req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, "Bad request")
+		h.sendError(w, r, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(&req); err != nil {
-		var validateErr validator.ValidationErrors
-		errors.As(err, &validateErr)
-
-		w.WriteHeader(http.StatusBadRequest)
-		render.JSON(w, r, schemas.ValidateErrorResponse{
-			Errors: validation.FormatValidationErrors(validateErr),
-		})
+	if errResp := validation.CheckErrors(&req); errResp != nil {
+		h.sendError(w, r, http.StatusBadRequest, errResp)
 		return
 	}
 
 	hashPassword, err := password.HashPassword(req.Password)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		render.JSON(w, r, "Error hashing password")
+		h.sendError(w, r, http.StatusBadRequest, "Error hashing password")
 		return
 	}
 
-	newUser := &entity.UserCreate{
-		Username:    req.Username,
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		Email:       req.Email,
-		Description: req.Description,
-		Password:    hashPassword,
-	}
-
+	newUser := h.UserCreateRequestToEntity(&req, hashPassword)
 	createdUser, err := h.UserService.Create(ctx, *newUser)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		render.JSON(w, r, err.Error())
+		h.sendError(w, r, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	render.JSON(w, r, schemas.UserResponse{
-		ID:          createdUser.ID,
-		Username:    createdUser.Username,
-		FirstName:   createdUser.FirstName,
-		LastName:    createdUser.LastName,
-		Email:       createdUser.Email,
-		Description: createdUser.Description,
-	})
+	userResponse := h.UserEntityToResponse(createdUser)
+	h.sendJSON(w, r, http.StatusCreated, userResponse)
+}
 
-	if password.VerifyPassword(req.Password, hashPassword) {
-		println("Password verification succeeded")
+func (h *Handler) Get(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	paramID := chi.URLParam(r, "id")
+	id, err := strconv.ParseInt(paramID, 10, 64)
+	if err != nil {
+		h.sendError(w, r, http.StatusBadRequest, "Invalid user ID")
+		return
 	}
+
+	user, err := h.UserService.Get(ctx, id)
+	if err != nil {
+		h.sendError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userResponse := h.UserEntityToResponse(user)
+	h.sendJSON(w, r, http.StatusOK, userResponse)
+}
+
+func (h *Handler) GetAll(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	users, err := h.UserService.GetAll(ctx)
+	if err != nil {
+		h.sendError(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	usersResp := make([]schemas.UserResponse, 0, len(users))
+	for _, user := range users {
+		userResponse := h.UserEntityToResponse(&user)
+		usersResp = append(usersResp, *userResponse)
+	}
+	h.sendJSON(w, r, http.StatusOK, usersResp)
 }

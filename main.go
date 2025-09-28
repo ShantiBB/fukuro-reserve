@@ -47,9 +47,10 @@ func main() {
 
 	userService := service.New(userRepo)
 	userHandler := handler.New(userService)
+	routerHandlers := router.NewHandlers(userHandler)
 
 	r := chi.NewRouter()
-	router.New(r, userHandler)
+	router.New(r, routerHandlers)
 
 	server := fmt.Sprintf("%s:%d", newConfig.Server.Host, newConfig.Server.Port)
 	fmt.Printf("Starting server on %s\n", server)

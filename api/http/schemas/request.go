@@ -9,7 +9,7 @@ type UserCreateRequest struct {
 	Password    string `json:"password" validate:"required,min=5"`
 }
 
-type UserUpdateRequest struct {
+type UserRequest struct {
 	Username    string `json:"username"`
 	FirstName   string `json:"first_name"`
 	LastName    string `json:"last_name"`

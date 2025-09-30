@@ -1,9 +1,7 @@
 package config
 
 import (
-	"os"
-
-	"gopkg.in/yaml.v3"
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type ServerConfig struct {
@@ -25,13 +23,8 @@ type Config struct {
 }
 
 func New(configPath string) (*Config, error) {
-	data, err := os.ReadFile(configPath)
-	if err != nil {
-		return nil, err
-	}
-
 	var config Config
-	err = yaml.Unmarshal(data, &config)
+	err := cleanenv.ReadConfig(configPath, &config)
 	if err != nil {
 		return nil, err
 	}

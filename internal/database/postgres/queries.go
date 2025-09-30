@@ -1,29 +1,41 @@
 package postgres
 
 var UserCreate = `
-	INSERT INTO users (username, first_name, last_name, email, description, password)
-	VALUES ($1, $2, $3, $4, $5, $6)
-	RETURNING id
+    INSERT INTO users (username, email, password)
+    VALUES ($1, $2, $3)
+    RETURNING id, role, is_active, created_at, updated_at
 `
 
-var UserGet = `
-	SELECT username, first_name, last_name, email, description
-	FROM users 
-	WHERE id = $1
+var UserGetByID = `
+    SELECT username, email, role, is_active, created_at, updated_at
+    FROM users 
+    WHERE id = $1
+`
+
+var UserGetByUsername = `
+    SELECT id, email, role, is_active, created_at, updated_at
+    FROM users 
+    WHERE username = $1
+`
+
+var UserGetByEmail = `
+    SELECT id, username, role, is_active, created_at, updated_at
+    FROM users 
+    WHERE email = $1
 `
 
 var UserGetAll = `
-	SELECT id, username, first_name, last_name, email, description
-	FROM users
+    SELECT id, username, email, role, is_active, created_at, updated_at
+    FROM users
 `
 
 var UserUpdate = `
-	UPDATE users
-	SET username = $1, first_name = $2, last_name = $3, email = $4, description = $5
-	WHERE id = $6
+    UPDATE users
+    SET username = $1, email = $2, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $3
 `
 
 var UserDelete = `
-	DELETE FROM users
-	WHERE id = $1
+    DELETE FROM users
+    WHERE id = $1
 `

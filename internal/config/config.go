@@ -15,6 +15,7 @@ type PostgresConfig struct {
 	User     string `yaml:"user"`
 	Password string `yaml:"password"`
 	DB       string `yaml:"db"`
+	SSLMode  string `yaml:"sslmode"`
 }
 
 type Config struct {

@@ -4,18 +4,18 @@ import (
 	"context"
 	"fmt"
 
-	"auth_service/internal/entity"
+	"auth_service/internal/domain/models"
 )
 
 type UserRepository interface {
-	Create(ctx context.Context, user entity.UserCreate) (*entity.User, error)
-	Get(ctx context.Context, id int64) (*entity.User, error)
-	GetAll(ctx context.Context) ([]entity.User, error)
-	Update(ctx context.Context, user entity.User) error
+	Create(ctx context.Context, user models.UserCreate) (*models.User, error)
+	Get(ctx context.Context, id int64) (*models.User, error)
+	GetAll(ctx context.Context) ([]models.User, error)
+	Update(ctx context.Context, user models.User) error
 	Delete(ctx context.Context, id int64) error
 }
 
-func (p *Repository) Create(ctx context.Context, user entity.UserCreate) (*entity.User, error) {
+func (p *Repository) Create(ctx context.Context, user models.UserCreate) (*models.User, error) {
 	newUser := user.ToUserRead()
 	rows, err := p.db.NamedQueryContext(ctx, UserCreate, user)
 	if err != nil {
@@ -32,8 +32,8 @@ func (p *Repository) Create(ctx context.Context, user entity.UserCreate) (*entit
 	return newUser, nil
 }
 
-func (p *Repository) Get(ctx context.Context, id int64) (*entity.User, error) {
-	var user entity.User
+func (p *Repository) Get(ctx context.Context, id int64) (*models.User, error) {
+	var user models.User
 
 	if err := p.db.GetContext(ctx, &user, UserGet, id); err != nil {
 		return nil, err
@@ -42,8 +42,8 @@ func (p *Repository) Get(ctx context.Context, id int64) (*entity.User, error) {
 	return &user, nil
 }
 
-func (p *Repository) GetAll(ctx context.Context) ([]entity.User, error) {
-	var users []entity.User
+func (p *Repository) GetAll(ctx context.Context) ([]models.User, error) {
+	var users []models.User
 
 	if err := p.db.SelectContext(ctx, &users, UserGetAll); err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (p *Repository) GetAll(ctx context.Context) ([]entity.User, error) {
 	return users, nil
 }
 
-func (p *Repository) Update(ctx context.Context, user entity.User) error {
+func (p *Repository) Update(ctx context.Context, user models.User) error {
 	rows, err := p.db.NamedExecContext(ctx, UserUpdate, &user)
 	if err != nil {
 		return err

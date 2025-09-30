@@ -3,18 +3,18 @@ package service
 import (
 	"context"
 
-	"auth_service/internal/entity"
+	"auth_service/internal/domain/models"
 )
 
 type UserService interface {
-	Create(ctx context.Context, user entity.UserCreate) (*entity.User, error)
-	Get(ctx context.Context, id int64) (*entity.User, error)
-	GetAll(ctx context.Context) ([]entity.User, error)
-	Update(ctx context.Context, user entity.User) (*entity.User, error)
+	Create(ctx context.Context, user models.UserCreate) (*models.User, error)
+	Get(ctx context.Context, id int64) (*models.User, error)
+	GetAll(ctx context.Context) ([]models.User, error)
+	Update(ctx context.Context, user models.User) (*models.User, error)
 	Delete(ctx context.Context, id int64) error
 }
 
-func (s *Service) Create(ctx context.Context, user entity.UserCreate) (*entity.User, error) {
+func (s *Service) Create(ctx context.Context, user models.UserCreate) (*models.User, error) {
 	newUser, err := s.UserRepo.Create(ctx, user)
 	if err != nil {
 		return nil, err
@@ -23,7 +23,7 @@ func (s *Service) Create(ctx context.Context, user entity.UserCreate) (*entity.U
 	return newUser, nil
 }
 
-func (s *Service) Get(ctx context.Context, id int64) (*entity.User, error) {
+func (s *Service) Get(ctx context.Context, id int64) (*models.User, error) {
 	user, err := s.UserRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func (s *Service) Get(ctx context.Context, id int64) (*entity.User, error) {
 	return user, nil
 }
 
-func (s *Service) GetAll(ctx context.Context) ([]entity.User, error) {
+func (s *Service) GetAll(ctx context.Context) ([]models.User, error) {
 	users, err := s.UserRepo.GetAll(ctx)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (s *Service) GetAll(ctx context.Context) ([]entity.User, error) {
 	return users, nil
 }
 
-func (s *Service) Update(ctx context.Context, user entity.User) (*entity.User, error) {
+func (s *Service) Update(ctx context.Context, user models.User) (*models.User, error) {
 	if err := s.UserRepo.Update(ctx, user); err != nil {
 		return nil, err
 	}

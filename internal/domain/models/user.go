@@ -1,4 +1,4 @@
-package entity
+package models
 
 type UserCreate struct {
 	Username    string `db:"username"`

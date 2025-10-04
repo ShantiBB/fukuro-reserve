@@ -3,7 +3,7 @@ services:
     image: "postgres:17.0"
     container_name: "postgres"
     volumes:
-      - "./volume/postgres:/data"
+      - pg_data:/data
     environment:
       PGDATA: "/data"
       POSTGRES_USER: "$POSTGRES_USER"
@@ -12,3 +12,7 @@ services:
     ports:
       - "5432:5432"
     restart: unless-stopped
+
+volumes:
+  pg_data:
+    driver: local

@@ -27,6 +27,27 @@ func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*mode
 	return &newUser, nil
 }
 
+func (r *Repository) UserList(ctx context.Context) ([]models.User, error) {
+	var users []models.User
+
+	rows, err := r.db.Query(ctx, UserGetAll)
+	if err != nil {
+		return nil, err
+	}
+
+	var u models.User
+	for rows.Next() {
+		err = rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.IsActive, &u.CreatedAt, &u.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, u)
+	}
+
+	return users, nil
+}
+
 func (r *Repository) UserGetByID(ctx context.Context, id int64) (*models.User, error) {
 	u := models.User{ID: id}
 	if err := r.db.QueryRow(ctx, UserGetByID, id).Scan(
@@ -54,27 +75,6 @@ func (r *Repository) UserGetCredentialsByEmail(ctx context.Context, email string
 	}
 
 	return &u, nil
-}
-
-func (r *Repository) UserList(ctx context.Context) ([]models.User, error) {
-	var users []models.User
-
-	rows, err := r.db.Query(ctx, UserGetAll)
-	if err != nil {
-		return nil, err
-	}
-
-	var u models.User
-	for rows.Next() {
-		err = rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.IsActive, &u.CreatedAt, &u.UpdatedAt)
-		if err != nil {
-			return nil, err
-		}
-
-		users = append(users, u)
-	}
-
-	return users, nil
 }
 
 func (r *Repository) UserUpdateByID(ctx context.Context, u *models.User) error {

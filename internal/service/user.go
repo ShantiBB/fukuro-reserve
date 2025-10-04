@@ -24,15 +24,6 @@ func (s *Service) UserCreate(ctx context.Context, user models.UserCreate) (*mode
 	return newUser, nil
 }
 
-func (s *Service) UserGetByID(ctx context.Context, id int64) (*models.User, error) {
-	user, err := s.repo.UserGetByID(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
-}
-
 func (s *Service) UserList(ctx context.Context) ([]models.User, error) {
 	users, err := s.repo.UserList(ctx)
 	if err != nil {
@@ -40,6 +31,15 @@ func (s *Service) UserList(ctx context.Context) ([]models.User, error) {
 	}
 
 	return users, nil
+}
+
+func (s *Service) UserGetByID(ctx context.Context, id int64) (*models.User, error) {
+	user, err := s.repo.UserGetByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (s *Service) UserUpdateByID(ctx context.Context, user *models.User) (*models.User, error) {

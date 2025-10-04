@@ -5,24 +5,21 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"auth_service/internal/http/handler"
+	"auth_service/package/utils/permission"
 )
 
-func New(r chi.Router, h *handler.Handler) {
+var (
+	isAdmin     = permission.IsAdmin
+	isModerator = permission.IsModerator
+	isOwner     = permission.IsOwner
+)
+
+func New(r chi.Router, h *handler.Handler, jwtSecret string) {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	r.Route("/users", func(r chi.Router) {
-		r.Post("/", h.UserCreate)
-		r.Get("/", h.UserList)
-		r.Get("/{id}", h.UserGetByID)
-		r.Put("/{id}", h.UserUpdateByID)
-		r.Delete("/{id}", h.UserDeleteByID)
-	})
-	r.Route("/auth", func(r chi.Router) {
-		r.Post("/register", h.RegisterByEmail)
-		r.Post("/refresh", h.RefreshToken)
-		r.Post("/login", h.LoginByEmail)
-	})
+	authRouter("/auth", r, h)
+	userRouter("/users", r, h, jwtSecret)
 }

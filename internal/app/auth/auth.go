@@ -27,7 +27,7 @@ func (app *App) MustLoad() {
 	userHandler := handler.New(userService, app.Config)
 
 	r := chi.NewRouter()
-	router.New(r, userHandler)
+	router.New(r, userHandler, app.Config.JWT.AccessSecret)
 
 	server := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
 	fmt.Printf("Starting server on %s\n", server)

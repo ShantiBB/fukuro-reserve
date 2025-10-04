@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"auth_service/internal/config"
-	"auth_service/internal/domain/entity"
 	"auth_service/internal/domain/models"
 	"auth_service/package/utils/errs"
 	"auth_service/package/utils/jwt"
@@ -16,7 +15,7 @@ func (s *Service) RegisterByEmail(
 	ctx context.Context,
 	email, password string,
 	cfg *config.Config,
-) (*entity.Token, error) {
+) (*jwt.Token, error) {
 	newUser := models.UserCreate{
 		Email:    email,
 		Password: password,
@@ -30,7 +29,7 @@ func (s *Service) RegisterByEmail(
 	return jwt.GenerateAllTokens(user.ID, user.Role, cfg)
 }
 
-func (s *Service) LoginByEmail(ctx context.Context, email, pass string, cfg *config.Config) (*entity.Token, error) {
+func (s *Service) LoginByEmail(ctx context.Context, email, pass string, cfg *config.Config) (*jwt.Token, error) {
 	user, err := s.repo.UserGetCredentialsByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -43,7 +42,7 @@ func (s *Service) LoginByEmail(ctx context.Context, email, pass string, cfg *con
 	return jwt.GenerateAllTokens(user.ID, user.Role, cfg)
 }
 
-func (s *Service) RefreshToken(token *entity.Token, cfg *config.Config) (*entity.Token, error) {
+func (s *Service) RefreshToken(token *jwt.Token, cfg *config.Config) (*jwt.Token, error) {
 	claims, err := jwt.GetClaimsRefreshToken(cfg.JWT.RefreshSecret, token.Refresh)
 	if err != nil {
 		if errors.Is(err, errs.InvalidToken) {

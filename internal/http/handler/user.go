@@ -13,6 +13,7 @@ import (
 	"auth_service/internal/http/lib/schemas/request"
 	"auth_service/internal/http/lib/schemas/response"
 	"auth_service/package/utils/errs"
+	"auth_service/package/utils/helper"
 	"auth_service/package/utils/password"
 )
 
@@ -28,14 +29,14 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreateRequest
 
-	if ok := h.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}
 
 	hashPassword, err := password.HashPassword(req.Password)
 	if err != nil {
 		errMsg := schemas.NewErrorResponse("Error hashing password")
-		h.sendError(w, r, http.StatusBadRequest, errMsg)
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
@@ -44,16 +45,16 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, errs.UniqueUserField) {
 			errMsg := schemas.NewErrorResponse("Email or username already exists")
-			h.sendError(w, r, http.StatusConflict, errMsg)
+			helper.SendError(w, r, http.StatusConflict, errMsg)
 			return
 		}
 		errMsg := schemas.NewErrorResponse("Error creating user")
-		h.sendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
 	userResponse := h.UserEntityToResponse(createdUser)
-	h.sendJSON(w, r, http.StatusCreated, userResponse)
+	helper.SendSuccess(w, r, http.StatusCreated, userResponse)
 }
 
 func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
@@ -63,7 +64,7 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		errMsg := schemas.NewErrorResponse("Invalid user ID")
-		h.sendError(w, r, http.StatusBadRequest, errMsg)
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
@@ -71,16 +72,16 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if errors.Is(err, errs.UserNotFound) {
 			errMsg := schemas.NewErrorResponse("User not found")
-			h.sendError(w, r, http.StatusNotFound, errMsg)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
 		errMsg := schemas.NewErrorResponse("Error retrieving user")
-		h.sendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
 	userResponse := h.UserEntityToResponse(user)
-	h.sendJSON(w, r, http.StatusOK, userResponse)
+	helper.SendSuccess(w, r, http.StatusOK, userResponse)
 }
 
 func (h *Handler) UserList(w http.ResponseWriter, r *http.Request) {
@@ -89,7 +90,7 @@ func (h *Handler) UserList(w http.ResponseWriter, r *http.Request) {
 	users, err := h.svc.UserList(ctx)
 	if err != nil {
 		errMsg := schemas.NewErrorResponse("Error retrieving users")
-		h.sendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
@@ -98,7 +99,7 @@ func (h *Handler) UserList(w http.ResponseWriter, r *http.Request) {
 		userResponse := h.UserEntityToResponse(&user)
 		usersResp = append(usersResp, *userResponse)
 	}
-	h.sendJSON(w, r, http.StatusOK, usersResp)
+	helper.SendSuccess(w, r, http.StatusOK, usersResp)
 }
 
 func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
@@ -108,12 +109,12 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		errMsg := schemas.NewErrorResponse("Invalid user ID")
-		h.sendError(w, r, http.StatusBadRequest, errMsg)
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	var req request.UserUpdateRequest
-	if ok := h.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}
 
@@ -123,21 +124,21 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, errs.UniqueUserField):
 			errMsg := schemas.NewErrorResponse("Email or username already exists")
-			h.sendError(w, r, http.StatusConflict, errMsg)
+			helper.SendError(w, r, http.StatusConflict, errMsg)
 			return
 		case errors.Is(err, errs.UserNotFound):
 			errMsg := schemas.NewErrorResponse("User not found")
-			h.sendError(w, r, http.StatusNotFound, errMsg)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
 		errMsg := schemas.NewErrorResponse("Error updating user")
-		h.sendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
 	userResponse := h.UserEntityToResponse(userToUpdate)
 
-	h.sendJSON(w, r, http.StatusOK, userResponse)
+	helper.SendSuccess(w, r, http.StatusOK, userResponse)
 }
 
 func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
@@ -147,18 +148,18 @@ func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
 		errMsg := schemas.NewErrorResponse("Invalid user ID")
-		h.sendError(w, r, http.StatusBadRequest, errMsg)
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	if err = h.svc.UserDeleteByID(ctx, id); err != nil {
 		if errors.Is(err, errs.UserNotFound) {
 			errMsg := schemas.NewErrorResponse("User not found")
-			h.sendError(w, r, http.StatusNotFound, errMsg)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
 		errMsg := schemas.NewErrorResponse("Error deleting user")
-		h.sendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 

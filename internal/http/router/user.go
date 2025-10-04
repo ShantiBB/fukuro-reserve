@@ -13,7 +13,7 @@ func userRouter(pattern string, r chi.Router, h *handler.Handler, jwtSecret stri
 
 		r.With(permission.RequireRoles(isAdmin)).Post("/", h.UserCreate)
 		r.With(permission.RequireRoles(isAdmin, isModerator)).Get("/", h.UserList)
-		r.With(permission.RequireRoles(isOwner)).Get("/{id}", h.UserGetByID)
+		r.With(permission.RequireRoles(isAdmin, isModerator, isOwner)).Get("/{id}", h.UserGetByID)
 
 		r.Group(func(r chi.Router) {
 			r.Use(permission.RequireRoles(isOwner, isAdmin))

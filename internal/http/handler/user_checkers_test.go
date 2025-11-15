@@ -20,7 +20,9 @@ var checkSuccessResponse = func(t *testing.T, w *httptest.ResponseRecorder) {
 }
 
 var checkInvalidJSONResponse = func(t *testing.T, w *httptest.ResponseRecorder) {
-	assert.NotEmpty(t, w.Body.String())
+	var response map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &response)
+	assert.Contains(t, response["message"], errs.InvalidJSON.Error())
 }
 
 var checkConflictResponse = func(t *testing.T, w *httptest.ResponseRecorder) {

@@ -36,7 +36,7 @@ type TokenService interface {
 // @Router       /auth/register [post]
 func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req request.Register
+	var req request.UserCreate
 	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}
@@ -81,7 +81,7 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 // @Router       /auth/login [post]
 func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req request.LoginByEmail
+	var req request.UserCreate
 	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}

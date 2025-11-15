@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"auth_service/internal/config"
+	"auth_service/internal/http/lib/schemas/request"
 	"auth_service/internal/mocks"
 )
 
@@ -37,31 +38,31 @@ func TestRegisterByEmail(t *testing.T) {
 		},
 		{
 			name:           "Email and Password required",
-			requestBody:    loginEmptyReq,
+			requestBody:    request.UserCreate{},
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkRegisterEmailAndPasswordRequired,
+			checkResponse:  checkEmailAndPasswordRequired,
 		},
 		{
 			name:           "Invalid Email and Password",
 			requestBody:    loginBadEmailAndPasswordReq,
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkRegisterInvalidEmailAndPassword,
+			checkResponse:  checkInvalidEmailAndPassword,
 		},
 		{
 			name:           "Email already exists",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterConflict,
 			expectedStatus: http.StatusConflict,
-			checkResponse:  checkRegisterConflictResponse,
+			checkResponse:  checkConflictResponse,
 		},
 		{
 			name:           "Internal server error during registration",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkRegisterServerErrorResponse,
+			checkResponse:  checkServerErrorResponse,
 		},
 	}
 
@@ -110,11 +111,25 @@ func TestLoginByEmail(t *testing.T) {
 			checkResponse:  checkTokenResponse,
 		},
 		{
-			name:           "Invalid JSON in request body",
-			requestBody:    "invalid json",
+			name:           "Invalid JSON",
+			requestBody:    "",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
 			checkResponse:  checkInvalidJSONResponse,
+		},
+		{
+			name:           "Email and Password required",
+			requestBody:    request.UserCreate{},
+			mockSetup:      mockNoSetup,
+			expectedStatus: http.StatusBadRequest,
+			checkResponse:  checkEmailAndPasswordRequired,
+		},
+		{
+			name:           "Invalid Email",
+			requestBody:    loginBadEmailAndPasswordReq,
+			mockSetup:      mockNoSetup,
+			expectedStatus: http.StatusBadRequest,
+			checkResponse:  checkLoginInvalidEmail,
 		},
 		{
 			name:           "Invalid credentials",
@@ -131,11 +146,11 @@ func TestLoginByEmail(t *testing.T) {
 			checkResponse:  checkUnauthorizedResponse,
 		},
 		{
-			name:           "Internal server error during login",
+			name:           "Internal server error",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkLoginServerErrorResponse,
+			checkResponse:  checkServerErrorResponse,
 		},
 	}
 
@@ -184,11 +199,18 @@ func TestRefreshToken(t *testing.T) {
 			checkResponse:  checkTokenResponse,
 		},
 		{
-			name:           "Invalid JSON in request body",
-			requestBody:    "invalid json",
+			name:           "Invalid JSON",
+			requestBody:    "",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
 			checkResponse:  checkInvalidJSONResponse,
+		},
+		{
+			name:           "Refresh token required",
+			requestBody:    request.RefreshToken{},
+			mockSetup:      mockNoSetup,
+			expectedStatus: http.StatusBadRequest,
+			checkResponse:  checkRefreshTokenRequired,
 		},
 		{
 			name:           "Invalid refresh token",
@@ -202,7 +224,7 @@ func TestRefreshToken(t *testing.T) {
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkRefreshServerErrorResponse,
+			checkResponse:  checkServerErrorResponse,
 		},
 	}
 

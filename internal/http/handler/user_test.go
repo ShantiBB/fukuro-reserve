@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"auth_service/internal/http/lib/schemas/request"
 	"auth_service/internal/mocks"
 )
 
@@ -28,11 +29,25 @@ func TestUserCreate(t *testing.T) {
 			checkResponse:  checkSuccessResponse,
 		},
 		{
-			name:           "Invalid JSON in request body",
+			name:           "Invalid JSON",
 			requestBody:    "invalid json",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
 			checkResponse:  checkInvalidJSONResponse,
+		},
+		{
+			name:           "Email and Password required",
+			requestBody:    request.UserCreate{},
+			mockSetup:      mockNoSetup,
+			expectedStatus: http.StatusBadRequest,
+			checkResponse:  checkEmailAndPasswordRequired,
+		},
+		{
+			name:           "Invalid Email and Password",
+			requestBody:    loginBadEmailAndPasswordReq,
+			mockSetup:      mockNoSetup,
+			expectedStatus: http.StatusBadRequest,
+			checkResponse:  checkInvalidEmailAndPassword,
 		},
 		{
 			name:           "Email or username already exists",
@@ -42,7 +57,7 @@ func TestUserCreate(t *testing.T) {
 			checkResponse:  checkConflictResponse,
 		},
 		{
-			name:           "Internal server error during user creation",
+			name:           "Internal server error",
 			requestBody:    userReq,
 			mockSetup:      mockUserCreateServerError,
 			expectedStatus: http.StatusInternalServerError,

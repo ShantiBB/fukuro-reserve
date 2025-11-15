@@ -26,7 +26,6 @@ func New(svc Service, cfg *config.Config) *Handler {
 
 func (h *Handler) UserCreateRequestToEntity(req *request.UserCreate, hash string) *models.UserCreate {
 	return &models.UserCreate{
-		Username: req.Username,
 		Email:    req.Email,
 		Password: hash,
 	}

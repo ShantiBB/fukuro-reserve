@@ -86,7 +86,7 @@ func (h *Handler) UserList(w http.ResponseWriter, r *http.Request) {
 
 	users, err := h.svc.UserList(ctx)
 	if err != nil {
-		errMsg := errs.ErrorResp(errs.UserRetrieving)
+		errMsg := errs.ErrorResp(errs.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -131,7 +131,7 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
-		errMsg := errs.ErrorResp(errs.UserRetrieving)
+		errMsg := errs.ErrorResp(errs.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}

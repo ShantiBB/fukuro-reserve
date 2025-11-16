@@ -45,8 +45,8 @@ func (s *Service) LoginByEmail(ctx context.Context, email, pass string, cfg *con
 func (s *Service) RefreshToken(token *jwt.Token, cfg *config.Config) (*jwt.Token, error) {
 	claims, err := jwt.GetClaimsRefreshToken(cfg.JWT.RefreshSecret, token.Refresh)
 	if err != nil {
-		if errors.Is(err, errs.InvalidToken) {
-			return nil, errs.InvalidToken
+		if errors.Is(err, errs.InvalidRefreshToken) {
+			return nil, errs.InvalidRefreshToken
 		}
 		return nil, err
 	}

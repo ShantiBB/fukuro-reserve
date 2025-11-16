@@ -12,6 +12,7 @@ import (
 	"auth_service/internal/config"
 	"auth_service/internal/http/lib/schemas/request"
 	"auth_service/internal/mocks"
+	"auth_service/package/utils/errs"
 )
 
 func TestRegisterByEmail(t *testing.T) {
@@ -20,49 +21,52 @@ func TestRegisterByEmail(t *testing.T) {
 		requestBody    interface{}
 		mockSetup      func(*mocks.Service)
 		expectedStatus int
-		checkResponse  func(*testing.T, *httptest.ResponseRecorder)
+		respCheckers   ResponseChecker
 	}{
 		{
 			name:           "Successful registration",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterSuccess,
 			expectedStatus: http.StatusCreated,
-			checkResponse:  checkTokenResponse,
+			respCheckers:   checkSuccessTokenResponse(),
 		},
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkInvalidJSONResponse,
+			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
 			requestBody:    request.UserCreate{},
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkEmailAndPasswordRequired,
+			respCheckers:   checkFieldsRequired("Email", "Password"),
 		},
 		{
 			name:           "Invalid Email and Password",
 			requestBody:    loginBadEmailAndPasswordReq,
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkInvalidEmailAndPassword,
+			respCheckers: checkFieldsInvalid(map[string]error{
+				"Email":    errs.InvalidEmail,
+				"Password": errs.InvalidPassword,
+			}),
 		},
 		{
 			name:           "Email already exists",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterConflict,
 			expectedStatus: http.StatusConflict,
-			checkResponse:  checkConflictResponse,
+			respCheckers:   checkMessageError(errs.UniqueUserField),
 		},
 		{
 			name:           "Internal server error during registration",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkServerErrorResponse,
+			respCheckers:   checkMessageError(errs.InternalServer),
 		},
 	}
 
@@ -88,7 +92,7 @@ func TestRegisterByEmail(t *testing.T) {
 			handler.RegisterByEmail(w, req)
 
 			assert.Equal(t, c.expectedStatus, w.Code)
-			c.checkResponse(t, w)
+			c.respCheckers(t, w)
 
 			mockSvc.AssertExpectations(t)
 		})
@@ -101,56 +105,56 @@ func TestLoginByEmail(t *testing.T) {
 		requestBody    interface{}
 		mockSetup      func(*mocks.Service)
 		expectedStatus int
-		checkResponse  func(*testing.T, *httptest.ResponseRecorder)
+		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
 		{
 			name:           "Successful login",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginSuccess,
 			expectedStatus: http.StatusOK,
-			checkResponse:  checkTokenResponse,
+			respCheckers:   checkSuccessTokenResponse(),
 		},
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkInvalidJSONResponse,
+			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
 			requestBody:    request.UserCreate{},
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkEmailAndPasswordRequired,
+			respCheckers:   checkFieldsRequired("Email", "Password"),
 		},
 		{
 			name:           "Invalid Email",
 			requestBody:    loginBadEmailAndPasswordReq,
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkLoginInvalidEmail,
+			respCheckers:   checkFieldsInvalid(map[string]error{"Email": errs.InvalidEmail}),
 		},
 		{
 			name:           "Invalid credentials",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginInvalidCredentials,
 			expectedStatus: http.StatusUnauthorized,
-			checkResponse:  checkUnauthorizedResponse,
+			respCheckers:   checkMessageError(errs.InvalidCredentials),
 		},
 		{
 			name:           "User not found",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginUserNotFound,
 			expectedStatus: http.StatusUnauthorized,
-			checkResponse:  checkUnauthorizedResponse,
+			respCheckers:   checkMessageError(errs.InvalidCredentials),
 		},
 		{
 			name:           "Internal server error",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkServerErrorResponse,
+			respCheckers:   checkMessageError(errs.InternalServer),
 		},
 	}
 
@@ -176,7 +180,7 @@ func TestLoginByEmail(t *testing.T) {
 			handler.LoginByEmail(w, req)
 
 			assert.Equal(t, c.expectedStatus, w.Code)
-			c.checkResponse(t, w)
+			c.respCheckers(t, w)
 
 			mockSvc.AssertExpectations(t)
 		})
@@ -189,42 +193,42 @@ func TestRefreshToken(t *testing.T) {
 		requestBody    interface{}
 		mockSetup      func(*mocks.Service)
 		expectedStatus int
-		checkResponse  func(*testing.T, *httptest.ResponseRecorder)
+		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
 		{
 			name:           "Successful token refresh",
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshSuccess,
 			expectedStatus: http.StatusOK,
-			checkResponse:  checkTokenResponse,
+			respCheckers:   checkSuccessTokenResponse(),
 		},
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkInvalidJSONResponse,
+			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Refresh token required",
 			requestBody:    request.RefreshToken{},
 			mockSetup:      mockNoSetup,
 			expectedStatus: http.StatusBadRequest,
-			checkResponse:  checkRefreshTokenRequired,
+			respCheckers:   checkFieldsRequired("RefreshToken"),
 		},
 		{
 			name:           "Invalid refresh token",
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshInvalidToken,
 			expectedStatus: http.StatusUnauthorized,
-			checkResponse:  checkUnauthorizedResponse,
+			respCheckers:   checkMessageError(errs.InvalidRefreshToken),
 		},
 		{
 			name:           "Internal server error during token refresh",
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshServerError,
 			expectedStatus: http.StatusInternalServerError,
-			checkResponse:  checkServerErrorResponse,
+			respCheckers:   checkMessageError(errs.InternalServer),
 		},
 	}
 
@@ -250,7 +254,7 @@ func TestRefreshToken(t *testing.T) {
 			handler.RefreshToken(w, req)
 
 			assert.Equal(t, c.expectedStatus, w.Code)
-			c.checkResponse(t, w)
+			c.respCheckers(t, w)
 
 			mockSvc.AssertExpectations(t)
 		})

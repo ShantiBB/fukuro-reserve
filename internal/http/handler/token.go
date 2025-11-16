@@ -125,8 +125,8 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	token := &jwt.Token{Refresh: req.RefreshToken}
 	tokens, err := h.svc.RefreshToken(token, h.cfg)
 	if err != nil {
-		if errors.Is(err, errs.InvalidToken) {
-			errMsg := errs.ErrorResp(errs.InvalidToken)
+		if errors.Is(err, errs.InvalidRefreshToken) {
+			errMsg := errs.ErrorResp(errs.InvalidRefreshToken)
 			helper.SendError(w, r, http.StatusUnauthorized, errMsg)
 			return
 		}

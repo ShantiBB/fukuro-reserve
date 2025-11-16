@@ -12,7 +12,7 @@ func parseToken(tokenStr string, secret []byte) (*Claims, error) {
 	}
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, tokenFunc)
 	if err != nil {
-		return nil, errs.InvalidToken
+		return nil, errs.InvalidRefreshToken
 	}
 
 	claims, ok := token.Claims.(*Claims)

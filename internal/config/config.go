@@ -40,7 +40,7 @@ func New(configPath string) (*Config, error) {
 	}
 
 	if err := cleanenv.ReadEnv(&config); err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &config, nil

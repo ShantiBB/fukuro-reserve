@@ -3,14 +3,14 @@ package models
 import "time"
 
 type UserCreate struct {
-	Username string
+	Username *string
 	Email    string
 	Password string
 }
 
 type User struct {
 	ID        int64
-	Username  string
+	Username  *string
 	Email     string
 	Role      string
 	IsActive  bool

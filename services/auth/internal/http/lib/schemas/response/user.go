@@ -4,7 +4,7 @@ import "time"
 
 type User struct {
 	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
+	Username  *string   `json:"username"`
 	Email     string    `json:"email"`
 	Role      string    `json:"role"`
 	IsActive  bool      `json:"is_active"`
@@ -13,7 +13,7 @@ type User struct {
 }
 
 type UserShort struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
+	ID       int64   `json:"id"`
+	Username *string `json:"username"`
+	Email    string  `json:"email"`
 }

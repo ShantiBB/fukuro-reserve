@@ -9,16 +9,18 @@ import (
 )
 
 var (
-	userReq = request.UserCreate{
-		Username: "test",
+	usernameReq = "test"
+	userReq     = request.UserCreate{
+		Username: &usernameReq,
 		Email:    "test@example.com",
 		Password: "password123",
 	}
 
-	userMock = models.User{
+	usernameMock = "test-user"
+	userMock     = models.User{
 		ID:        1,
 		Email:     "test@example.com",
-		Username:  "test-user",
+		Username:  &usernameMock,
 		Role:      "user",
 		IsActive:  true,
 		CreatedAt: time.Now(),

@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"auth/internal/http/lib/helper"
-	request2 "auth/internal/http/lib/schemas/request"
+	"auth/internal/http/lib/schemas/request"
 	"auth/internal/http/lib/schemas/response"
 	"fukuro-reserve/pkg/utils/errs"
 	"fukuro-reserve/pkg/utils/jwt"
@@ -35,7 +35,7 @@ type TokenService interface {
 // @Router       /auth/register [post]
 func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req request2.UserCreate
+	var req request.UserCreate
 	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}
@@ -80,7 +80,7 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 // @Router       /auth/login [post]
 func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	var req request2.UserCreate
+	var req request.UserCreate
 	if ok := helper.ParseJSON(w, r, &req); !ok {
 		return
 	}

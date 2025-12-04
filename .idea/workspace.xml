@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7f710494-d437-4f91-bfeb-819ae52610ae" name="Changes" comment="Delete panic">
+      <change afterPath="$PROJECT_DIR$/docker/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/utils/jwt/claims.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pkg/utils/jwt/generate.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/auth/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/permission/roles.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/auth/migrations/0000.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/auth/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/cmd/auth/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/local.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/config/local.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/docs.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/docs/docs.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/docs/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/docs/swagger.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/auth/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/app/auth/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/config/config.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/config/config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/database/postgres/postgres.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/database/postgres/postgres.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/database/postgres/queries.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/database/postgres/queries.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/database/postgres/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/database/postgres/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/domain/models/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/domain/models/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/checkers_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/checkers_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/fixtures_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/fixtures_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/handler.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/token_mocks_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/token_mocks_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/token_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/token_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/user_mocks_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/user_mocks_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/handler/user_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/handler/user_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/lib/schemas/request/token.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/lib/schemas/request/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/request/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/lib/schemas/response/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/response/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/lib/schemas/response/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/response/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/lib/validation/fields.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/validation/fields.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/router/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/router/auth.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/router/chi.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/router/chi.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/http/router/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/router/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/mocks/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/mocks/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/mocks/service.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/service/service.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/token.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/service/token.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/service/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/service/user.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/errs/errors.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/utils/errs/consts.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/errs/response.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/response/error.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/helper/parser.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/helper/parser.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/helper/sender.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/helper/sender.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/jwt/claims.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/jwt/generate.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/jwt/parse.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/utils/jwt/parse.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/password/hash_password.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/utils/password/hash_password.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/permission/claims.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/permission/jwt.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package/utils/permission/middleware.go" beforeDir="false" afterPath="$PROJECT_DIR$/services/auth/internal/http/lib/permission/middleware.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/postgres-compose.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docker/postgres-compose.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="repository" />
+    </option>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" url="file:///opt/homebrew/opt/go/libexec" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="33HxERnjgumWcrRgqVgXTpT0r5n" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "DefaultGoTemplateProperty": "Go File",
+    "Docker.docker/postgres-compose.yaml.postgres: Compose Deployment.executor": "Run",
+    "Go Build.go build auth/cmd/auth.executor": "Debug",
+    "Go Build.go build auth_service.executor": "Debug",
+    "Go Build.go build auth_service/cmd/auth.executor": "Run",
+    "Go Test.TestHandler_UserCreate in auth_service/internal/http/handler.executor": "Debug",
+    "Go Test.TestHandler_UserCreate_Success in auth_service/internal/http/handler.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.GoLinterPluginOnboarding": "true",
+    "RunOnceActivity.GoLinterPluginStorageMigration": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "/Users/sergey",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "/Users/sergey/Dev/goProjects/auth_service/main.go",
+    "run.configurations.included.in.services": "true",
+    "settings.editor.selected.configurable": "database.query.execution",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="GoMoveDeclarationDialog.RECENT_KEY">
+      <recent name="$PROJECT_DIR$/internal/service" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/internal/http/handler" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/pkg/utils" />
+      <recent name="$PROJECT_DIR$/services/auth/internal/http/lib/jwt" />
+      <recent name="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/request" />
+      <recent name="$PROJECT_DIR$/services/auth/internal/http/lib/schemas/response" />
+      <recent name="$PROJECT_DIR$/services/auth/internal/http/lib" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="GoApplicationRunConfiguration" />
+      </set>
+    </option>
+  </component>
+  <component name="RunManager" selected="Go Build.go build auth/cmd/auth">
+    <configuration name="go build auth/cmd/auth" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="auth_service" />
+      <working_directory value="$PROJECT_DIR$/services/auth" />
+      <kind value="PACKAGE" />
+      <package value="auth/cmd/auth" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/services/auth/cmd/auth/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestHandler_UserCreate in auth_service/internal/http/handler" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="auth_service" />
+      <working_directory value="$PROJECT_DIR$/internal/http/handler" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="auth_service/internal/http/handler" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestHandler_UserCreate\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration name="TestHandler_UserCreate_Success in auth_service/internal/http/handler" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="auth_service" />
+      <working_directory value="$PROJECT_DIR$/internal/http/handler" />
+      <root_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="auth_service/internal/http/handler" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
+      <pattern value="^\QTestHandler_UserCreate_Success\E$" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Go Build.go build auth/cmd/auth" />
+      <item itemvalue="Go Test.TestHandler_UserCreate in auth_service/internal/http/handler" />
+      <item itemvalue="Go Test.TestHandler_UserCreate_Success in auth_service/internal/http/handler" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build auth/cmd/auth" />
+        <item itemvalue="Go Test.TestHandler_UserCreate_Success in auth_service/internal/http/handler" />
+        <item itemvalue="Go Test.TestHandler_UserCreate in auth_service/internal/http/handler" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-gosdk-3b128438d3f6-07d2d2d66b1e-org.jetbrains.plugins.go.sharedIndexes.bundled-GO-251.29188.14" />
+        <option value="bundled-js-predefined-d6986cc7102b-09060db00ec0-JavaScript-GO-251.29188.14" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7f710494-d437-4f91-bfeb-819ae52610ae" name="Changes" comment="" />
+      <created>1758987687007</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1758987687007</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Any updates" />
+    <MESSAGE value="Hide swagger docs" />
+    <MESSAGE value="Delete swagger docs in gitignore" />
+    <MESSAGE value="Add swagger statis" />
+    <MESSAGE value="External error message" />
+    <MESSAGE value="Add mockery and testify" />
+    <MESSAGE value="Add user service mocks" />
+    <MESSAGE value="Add user handler test" />
+    <MESSAGE value="Add internal server err" />
+    <MESSAGE value="Add user and token handlers unit tests" />
+    <MESSAGE value="Delete literals in code and add errors vars" />
+    <MESSAGE value="Update docs" />
+    <MESSAGE value="Add new errors messages and add it in validate cycle" />
+    <MESSAGE value="Add min len for password" />
+    <MESSAGE value="Add validate json tests" />
+    <MESSAGE value="Add validate json check" />
+    <MESSAGE value="Combine fixtures and checkers" />
+    <MESSAGE value="Change user create struct" />
+    <MESSAGE value="Delete internal error structs" />
+    <MESSAGE value="Add unit test for user list handler" />
+    <MESSAGE value="Optimize error checkers" />
+    <MESSAGE value="Add internal server err for all handlers" />
+    <MESSAGE value="Add user list internal error test" />
+    <MESSAGE value="Add user get by id test" />
+    <MESSAGE value="Delete panic" />
+    <option name="LAST_COMMIT_MESSAGE" value="Delete panic" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/services/auth/internal/http/handler/user.go</url>
+          <line>41</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <watches-manager>
+      <configuration name="GoApplicationRunConfiguration">
+        <watch expression="*(*&quot;github.com/go-playground/validator/v10.Validate&quot;)(1374390403072)" />
+        <watch expression="*(*&quot;string&quot;)(1374391754864)" />
+        <watch expression="*(*&quot;string&quot;)(1374391754864)" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="github-copilot-workspace">
+    <instructionFileLocations>
+      <option value=".github/instructions" />
+    </instructionFileLocations>
+    <promptFileLocations>
+      <option value=".github/prompts" />
+    </promptFileLocations>
+  </component>
+</project>

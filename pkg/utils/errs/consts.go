@@ -5,7 +5,7 @@ import "errors"
 var (
 	InternalServer      = errors.New("internal server error")
 	UserNotFound        = errors.New("user not found")
-	UniqueUserField     = errors.New("username or email already exists")
+	UniqueEmailField    = errors.New("email already exists")
 	Unauthorized        = errors.New("unauthorized")
 	Forbidden           = errors.New("forbidden")
 	FieldRequired       = errors.New("field is required")

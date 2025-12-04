@@ -14,7 +14,7 @@ var (
 	}
 
 	mockUserCreateConflict = func(m *mocks.Service) {
-		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, errs.UniqueUserField)
+		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, errs.UniqueEmailField)
 	}
 
 	mockUserCreateServerError = func(m *mocks.Service) {

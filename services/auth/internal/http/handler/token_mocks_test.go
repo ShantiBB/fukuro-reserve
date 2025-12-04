@@ -16,7 +16,7 @@ var (
 
 	mockRegisterConflict = func(m *mocks.Service) {
 		m.On("RegisterByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.UniqueUserField)
+			Return(nil, errs.UniqueEmailField)
 	}
 
 	mockRegisterServerError = func(m *mocks.Service) {

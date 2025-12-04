@@ -59,7 +59,7 @@ func TestRegisterByEmail(t *testing.T) {
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterConflict,
 			expectedStatus: http.StatusConflict,
-			respCheckers:   checkMessageError(errs.UniqueUserField),
+			respCheckers:   checkMessageError(errs.UniqueEmailField),
 		},
 		{
 			name:           "Internal server error during registration",

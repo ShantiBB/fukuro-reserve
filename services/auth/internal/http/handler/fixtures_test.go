@@ -10,6 +10,7 @@ import (
 
 var (
 	userReq = request.UserCreate{
+		Username: "test",
 		Email:    "test@example.com",
 		Password: "password123",
 	}

@@ -21,6 +21,8 @@ const UserGetCredentialsByEmail = `
 const UserGetAll = `
     SELECT id, username, email, role, is_active, created_at, updated_at
     FROM users
+    ORDER BY id
+    LIMIT $1 OFFSET $2;
 `
 
 const UserUpdate = `

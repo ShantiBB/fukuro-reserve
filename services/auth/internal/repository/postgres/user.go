@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"auth/internal/repository/models"
+	"auth/internal/repository/postgres/models"
 	"fukuro-reserve/pkg/utils/errs"
 )
 
@@ -27,10 +27,10 @@ func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*mode
 	return &newUser, nil
 }
 
-func (r *Repository) UserList(ctx context.Context) ([]models.User, error) {
+func (r *Repository) UserGetAll(ctx context.Context, limit, offset uint64) ([]models.User, error) {
 	var users []models.User
 
-	rows, err := r.db.Query(ctx, UserGetAll)
+	rows, err := r.db.Query(ctx, UserGetAll, limit, offset)
 	if err != nil {
 		return nil, err
 	}

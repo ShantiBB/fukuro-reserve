@@ -19,7 +19,7 @@ func TestRegisterByEmail(t *testing.T) {
 	cases := []struct {
 		name           string
 		requestBody    interface{}
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   ResponseChecker
 	}{
@@ -33,21 +33,21 @@ func TestRegisterByEmail(t *testing.T) {
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
 			requestBody:    request2.UserCreate{},
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkFieldsRequired("Email", "Password"),
 		},
 		{
 			name:           "Invalid Email and Password",
 			requestBody:    loginBadEmailAndPasswordReq,
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers: checkFieldsInvalid(map[string]error{
 				"Email":    errs.InvalidEmail,
@@ -72,7 +72,7 @@ func TestRegisterByEmail(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			var body []byte
@@ -100,7 +100,7 @@ func TestLoginByEmail(t *testing.T) {
 	cases := []struct {
 		name           string
 		requestBody    interface{}
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
@@ -114,21 +114,21 @@ func TestLoginByEmail(t *testing.T) {
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
 			requestBody:    request2.UserCreate{},
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkFieldsRequired("Email", "Password"),
 		},
 		{
 			name:           "Invalid Email",
 			requestBody:    loginBadEmailAndPasswordReq,
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkFieldsInvalid(map[string]error{"Email": errs.InvalidEmail}),
 		},
@@ -157,7 +157,7 @@ func TestLoginByEmail(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			var body []byte
@@ -185,7 +185,7 @@ func TestRefreshToken(t *testing.T) {
 	cases := []struct {
 		name           string
 		requestBody    interface{}
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
@@ -199,14 +199,14 @@ func TestRefreshToken(t *testing.T) {
 		{
 			name:           "Invalid JSON",
 			requestBody:    "",
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Refresh tokenCreds required",
 			requestBody:    jwt.RefreshToken{},
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkFieldsRequired("RefreshToken"),
 		},
@@ -228,7 +228,7 @@ func TestRefreshToken(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			var body []byte

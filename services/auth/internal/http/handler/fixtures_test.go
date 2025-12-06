@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"auth/internal/http/dto/request"
-	"auth/internal/repository/models"
+	"auth/internal/repository/postgres/models"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 

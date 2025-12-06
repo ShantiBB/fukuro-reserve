@@ -27,11 +27,11 @@ type TokenService interface {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request     body      request.Register      true  "User data"
+// @Param        request     body      request.UserCreate      true  "User data"
 // @Success      201         {object}  response.Token
-// @Failure      400         {object}  response.Error
-// @Failure      409         {object}  response.Error
-// @Failure      500         {object}  response.Error
+// @Failure      400         {object}  response.ErrorSchema
+// @Failure      409         {object}  response.ErrorSchema
+// @Failure      500         {object}  response.ErrorSchema
 // @Router       /auth/register [post]
 func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -73,10 +73,10 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request     body      request.LoginByEmail  true  "User data"
+// @Param        request     body      request.UserCreate  true  "User data"
 // @Success      200         {object}  response.Token
-// @Failure      401         {object}  response.Error
-// @Failure      500         {object}  response.Error
+// @Failure      401         {object}  response.ErrorSchema
+// @Failure      500         {object}  response.ErrorSchema
 // @Router       /auth/login [post]
 func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -110,10 +110,10 @@ func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 // @Tags         auth
 // @Accept       json
 // @Produce      json
-// @Param        request     body      request.RefreshToken  true  "User data"
+// @Param        request     body      object{refresh_token=string}  true  "User data"
 // @Success      200         {object}  response.Token
-// @Failure      401         {object}  response.Error
-// @Failure      500         {object}  response.Error
+// @Failure      401         {object}  response.ErrorSchema
+// @Failure      500         {object}  response.ErrorSchema
 // @Router       /auth/refresh [post]
 func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req jwt.RefreshToken

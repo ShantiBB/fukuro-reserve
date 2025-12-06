@@ -3,7 +3,7 @@ package handler
 import (
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
-	"auth/internal/repository/models"
+	"auth/internal/repository/postgres/models"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 

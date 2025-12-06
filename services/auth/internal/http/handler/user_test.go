@@ -21,7 +21,7 @@ func TestUserCreate(t *testing.T) {
 	cases := []struct {
 		name           string
 		requestBody    interface{}
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
@@ -35,21 +35,21 @@ func TestUserCreate(t *testing.T) {
 		{
 			name:           "Invalid JSON",
 			requestBody:    "invalid json",
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(*mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkMessageError(errs.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
 			requestBody:    request.UserCreate{},
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkFieldsRequired("Email", "Password"),
 		},
 		{
 			name:           "Invalid Email and Password",
 			requestBody:    loginBadEmailAndPasswordReq,
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers: checkFieldsInvalid(map[string]error{
 				"Email":    errs.InvalidEmail,
@@ -74,7 +74,7 @@ func TestUserCreate(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			var body []byte
@@ -97,22 +97,22 @@ func TestUserCreate(t *testing.T) {
 	}
 }
 
-func TestUserList(t *testing.T) {
+func TestUserGetAll(t *testing.T) {
 	cases := []struct {
 		name           string
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
 		{
 			name:           "Successful retrieving users",
-			mockSetup:      mockUserListSuccess,
+			mockSetup:      mockUserGetAllSuccess,
 			expectedStatus: http.StatusOK,
-			respCheckers:   checkSuccessUserListResponse(),
+			respCheckers:   checkSuccessUserGetAllResponse(),
 		},
 		{
 			name:           "Internal server error",
-			mockSetup:      mockUserListServerError,
+			mockSetup:      mockUserGetAllServerError,
 			expectedStatus: http.StatusInternalServerError,
 			respCheckers:   checkMessageError(errs.InternalServer),
 		},
@@ -120,7 +120,7 @@ func TestUserList(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			var body []byte
@@ -128,7 +128,7 @@ func TestUserList(t *testing.T) {
 			w := httptest.NewRecorder()
 
 			handler := &Handler{svc: mockSvc}
-			handler.UserList(w, req)
+			handler.UserGetAll(w, req)
 
 			mockSvc.AssertExpectations(t)
 			assert.Equal(t, c.expectedStatus, w.Code)
@@ -140,7 +140,7 @@ func TestUserList(t *testing.T) {
 func TestUserGetByID(t *testing.T) {
 	cases := []struct {
 		name           string
-		mockSetup      func(*mocks.Service)
+		mockSetup      func(*mocks.MockService)
 		userID         string
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
@@ -161,7 +161,7 @@ func TestUserGetByID(t *testing.T) {
 		},
 		{
 			name:           "Invalid user ID",
-			mockSetup:      func(m *mocks.Service) {},
+			mockSetup:      func(m *mocks.MockService) {},
 			userID:         "abc",
 			expectedStatus: http.StatusBadRequest,
 			respCheckers:   checkMessageError(errs.InvalidID),
@@ -177,7 +177,7 @@ func TestUserGetByID(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			mockSvc := mocks.NewService(t)
+			mockSvc := mocks.NewMockService(t)
 			c.mockSetup(mockSvc)
 
 			handler := &Handler{svc: mockSvc}

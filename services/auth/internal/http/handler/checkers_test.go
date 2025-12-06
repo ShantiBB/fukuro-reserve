@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	response2 "auth/internal/http/dto/response"
+	"auth/internal/http/dto/response"
 	"fukuro-reserve/pkg/utils/errs"
 )
 
@@ -16,7 +16,7 @@ type ResponseChecker func(*testing.T, *httptest.ResponseRecorder)
 var (
 	checkSuccessUserResponse = func() ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp response2.User
+			var resp response.User
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 			assert.Equal(t, resp.ID, userMock.ID)
@@ -29,9 +29,9 @@ var (
 		}
 	}
 
-	checkSuccessUserListResponse = func() ResponseChecker {
+	checkSuccessUserGetAllResponse = func() ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp []response2.User
+			var resp []response.User
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 			assert.Equal(t, resp[0].ID, userMock.ID)
@@ -46,7 +46,7 @@ var (
 
 	checkSuccessTokenResponse = func() ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp response2.Token
+			var resp response.Token
 			assert.NoError(t, json.Unmarshal(w.Body.Bytes(), &resp))
 			assert.Equal(t, tokensMock.Access, resp.Access)
 			assert.Equal(t, tokensMock.Refresh, resp.Refresh)
@@ -55,7 +55,7 @@ var (
 
 	checkMessageError = func(expectedErr error) ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp response2.ErrorSchema
+			var resp response.ErrorSchema
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 
@@ -65,7 +65,7 @@ var (
 
 	checkFieldsRequired = func(fields ...string) ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp response2.ValidateError
+			var resp response.ValidateError
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 
@@ -77,7 +77,7 @@ var (
 
 	checkFieldsInvalid = func(fields map[string]error) ResponseChecker {
 		return func(t *testing.T, w *httptest.ResponseRecorder) {
-			var resp response2.ValidateError
+			var resp response.ValidateError
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 

@@ -1,3 +1,13 @@
+docs-auth:
+	swag init -g services/auth/cmd/app/main.go --output services/auth/docs
+
+mock-gen-auth:
+	rm -rf services/auth/internal/mocks
+	cd services/auth && mockery
+
+swag-gen-auth:
+	swag init -g services/auth/cmd/app/main.go --output services/auth/docs
+
 run-auth:
 	CONFIG_PATH=$(shell pwd)/services/auth/config/local.yaml go run ./services/auth/cmd/app/main.go
 run-hotel:

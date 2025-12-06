@@ -1,0 +1,20 @@
+with-expecter: true
+resolve-type-alias: false
+disable-version-string: true
+issue-845-fix: true
+
+packages:
+  auth/internal/http/handler:
+    config:
+      dir: "internal/mocks"
+      filename: "service.go"
+      outpkg: "mocks"
+    interfaces:
+      Service:
+  auth/internal/service:
+    config:
+      dir: "internal/mocks"
+      filename: "repository.go"
+      outpkg: "mocks"
+    interfaces:
+      Repository:

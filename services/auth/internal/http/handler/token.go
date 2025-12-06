@@ -8,7 +8,7 @@ import (
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/helper"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/jwt"
 	"fukuro-reserve/pkg/utils/password"
 )
@@ -42,19 +42,19 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 
 	hashPassword, err := password.HashPassword(req.Password)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.PasswordHashing)
+		errMsg := response.ErrorResp(consts.PasswordHashing)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	tokens, err := h.svc.RegisterByEmail(ctx, req.Email, hashPassword)
 	if err != nil {
-		if errors.Is(err, errs.UniqueEmailField) {
-			errMsg := response.ErrorResp(errs.UniqueEmailField)
+		if errors.Is(err, consts.UniqueEmailField) {
+			errMsg := response.ErrorResp(consts.UniqueEmailField)
 			helper.SendError(w, r, http.StatusConflict, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -87,12 +87,12 @@ func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 
 	tokens, err := h.svc.LoginByEmail(ctx, req.Email, req.Password)
 	if err != nil {
-		if errors.Is(err, errs.InvalidCredentials) || errors.Is(err, errs.UserNotFound) {
-			errMsg := response.ErrorResp(errs.InvalidCredentials)
+		if errors.Is(err, consts.InvalidCredentials) || errors.Is(err, consts.UserNotFound) {
+			errMsg := response.ErrorResp(consts.InvalidCredentials)
 			helper.SendError(w, r, http.StatusUnauthorized, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -124,12 +124,12 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	token := &jwt.Token{Refresh: req.RefreshToken}
 	tokens, err := h.svc.RefreshToken(token)
 	if err != nil {
-		if errors.Is(err, errs.InvalidRefreshToken) {
-			errMsg := response.ErrorResp(errs.InvalidRefreshToken)
+		if errors.Is(err, consts.InvalidRefreshToken) {
+			errMsg := response.ErrorResp(consts.InvalidRefreshToken)
 			helper.SendError(w, r, http.StatusUnauthorized, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}

@@ -11,7 +11,7 @@ import (
 
 	request2 "auth/internal/http/dto/request"
 	"auth/internal/mocks"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 
@@ -35,7 +35,7 @@ func TestRegisterByEmail(t *testing.T) {
 			requestBody:    "",
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   checkMessageError(errs.InvalidJSON),
+			respCheckers:   checkMessageError(consts.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
@@ -50,8 +50,8 @@ func TestRegisterByEmail(t *testing.T) {
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers: checkFieldsInvalid(map[string]error{
-				"Email":    errs.InvalidEmail,
-				"Password": errs.InvalidPassword,
+				"Email":    consts.InvalidEmail,
+				"Password": consts.InvalidPassword,
 			}),
 		},
 		{
@@ -59,14 +59,14 @@ func TestRegisterByEmail(t *testing.T) {
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterConflict,
 			expectedStatus: http.StatusConflict,
-			respCheckers:   checkMessageError(errs.UniqueEmailField),
+			respCheckers:   checkMessageError(consts.UniqueEmailField),
 		},
 		{
 			name:           "Internal server error during registration",
 			requestBody:    registerReq,
 			mockSetup:      mockRegisterServerError,
 			expectedStatus: http.StatusInternalServerError,
-			respCheckers:   checkMessageError(errs.InternalServer),
+			respCheckers:   checkMessageError(consts.InternalServer),
 		},
 	}
 
@@ -116,7 +116,7 @@ func TestLoginByEmail(t *testing.T) {
 			requestBody:    "",
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   checkMessageError(errs.InvalidJSON),
+			respCheckers:   checkMessageError(consts.InvalidJSON),
 		},
 		{
 			name:           "Email and Password required",
@@ -130,28 +130,28 @@ func TestLoginByEmail(t *testing.T) {
 			requestBody:    loginBadEmailAndPasswordReq,
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   checkFieldsInvalid(map[string]error{"Email": errs.InvalidEmail}),
+			respCheckers:   checkFieldsInvalid(map[string]error{"Email": consts.InvalidEmail}),
 		},
 		{
 			name:           "Invalid credentials",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginInvalidCredentials,
 			expectedStatus: http.StatusUnauthorized,
-			respCheckers:   checkMessageError(errs.InvalidCredentials),
+			respCheckers:   checkMessageError(consts.InvalidCredentials),
 		},
 		{
 			name:           "User not found",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginUserNotFound,
 			expectedStatus: http.StatusUnauthorized,
-			respCheckers:   checkMessageError(errs.InvalidCredentials),
+			respCheckers:   checkMessageError(consts.InvalidCredentials),
 		},
 		{
 			name:           "Internal server error",
 			requestBody:    loginReq,
 			mockSetup:      mockLoginServerError,
 			expectedStatus: http.StatusInternalServerError,
-			respCheckers:   checkMessageError(errs.InternalServer),
+			respCheckers:   checkMessageError(consts.InternalServer),
 		},
 	}
 
@@ -201,7 +201,7 @@ func TestRefreshToken(t *testing.T) {
 			requestBody:    "",
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   checkMessageError(errs.InvalidJSON),
+			respCheckers:   checkMessageError(consts.InvalidJSON),
 		},
 		{
 			name:           "Refresh tokenCreds required",
@@ -215,14 +215,14 @@ func TestRefreshToken(t *testing.T) {
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshInvalidToken,
 			expectedStatus: http.StatusUnauthorized,
-			respCheckers:   checkMessageError(errs.InvalidRefreshToken),
+			respCheckers:   checkMessageError(consts.InvalidRefreshToken),
 		},
 		{
 			name:           "Internal server error during tokenCreds refresh",
 			requestBody:    refreshReq,
 			mockSetup:      mockRefreshServerError,
 			expectedStatus: http.StatusInternalServerError,
-			respCheckers:   checkMessageError(errs.InternalServer),
+			respCheckers:   checkMessageError(consts.InternalServer),
 		},
 	}
 

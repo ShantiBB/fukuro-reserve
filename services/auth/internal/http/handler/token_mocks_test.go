@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"auth/internal/mocks"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 // RegisterByEmail mocks
@@ -16,12 +16,12 @@ var (
 
 	mockRegisterConflict = func(m *mocks.MockService) {
 		m.On("RegisterByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.UniqueEmailField)
+			Return(nil, consts.UniqueEmailField)
 	}
 
 	mockRegisterServerError = func(m *mocks.MockService) {
 		m.On("RegisterByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.InternalServer)
+			Return(nil, consts.InternalServer)
 	}
 )
 
@@ -34,17 +34,17 @@ var (
 
 	mockLoginInvalidCredentials = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.InvalidCredentials)
+			Return(nil, consts.InvalidCredentials)
 	}
 
 	mockLoginUserNotFound = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.UserNotFound)
+			Return(nil, consts.UserNotFound)
 	}
 
 	mockLoginServerError = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.InternalServer)
+			Return(nil, consts.InternalServer)
 	}
 )
 
@@ -57,11 +57,11 @@ var (
 
 	mockRefreshInvalidToken = func(m *mocks.MockService) {
 		m.On("RefreshToken", mock.Anything, mock.Anything).
-			Return(nil, errs.InvalidRefreshToken)
+			Return(nil, consts.InvalidRefreshToken)
 	}
 
 	mockRefreshServerError = func(m *mocks.MockService) {
 		m.On("RefreshToken", mock.Anything, mock.Anything).
-			Return(nil, errs.InternalServer)
+			Return(nil, consts.InternalServer)
 	}
 )

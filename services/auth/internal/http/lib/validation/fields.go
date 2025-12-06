@@ -6,19 +6,19 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"auth/internal/http/dto/response"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 func getErrorMessage(err validator.FieldError) string {
 	switch err.Tag() {
 	case "required":
-		return errs.FieldRequired.Error()
+		return consts.FieldRequired.Error()
 	case "email":
-		return errs.InvalidEmail.Error()
+		return consts.InvalidEmail.Error()
 	case "min":
-		return errs.InvalidPassword.Error()
+		return consts.InvalidPassword.Error()
 	default:
-		return errs.InternalServer.Error()
+		return consts.InternalServer.Error()
 	}
 }
 

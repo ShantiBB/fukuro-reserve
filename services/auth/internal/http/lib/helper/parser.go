@@ -10,14 +10,14 @@ import (
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/validation"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 const MaxLimit = 100
 
 func ParseJSON(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 	if err := render.DecodeJSON(r.Body, v); err != nil {
-		errMsg := response.ErrorResp(errs.InvalidJSON)
+		errMsg := response.ErrorResp(consts.InvalidJSON)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return false
 	}

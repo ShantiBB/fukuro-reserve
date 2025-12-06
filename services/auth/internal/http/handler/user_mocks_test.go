@@ -5,7 +5,7 @@ import (
 
 	"auth/internal/mocks"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 var (
@@ -14,11 +14,11 @@ var (
 	}
 
 	mockUserCreateConflict = func(m *mocks.MockService) {
-		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, errs.UniqueEmailField)
+		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, consts.UniqueEmailField)
 	}
 
 	mockUserCreateServerError = func(m *mocks.MockService) {
-		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, errs.InternalServer)
+		m.On("UserCreate", mock.Anything, mock.Anything).Return(nil, consts.InternalServer)
 	}
 )
 
@@ -30,7 +30,7 @@ var (
 
 	mockUserGetAllServerError = func(m *mocks.MockService) {
 		m.On("UserGetAll", mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, errs.InternalServer)
+			Return(nil, consts.InternalServer)
 	}
 )
 
@@ -40,10 +40,10 @@ var (
 	}
 
 	mockUserGetByIDNotFound = func(m *mocks.MockService) {
-		m.On("UserGetByID", mock.Anything, mock.Anything).Return(nil, errs.UserNotFound)
+		m.On("UserGetByID", mock.Anything, mock.Anything).Return(nil, consts.UserNotFound)
 	}
 
 	mockUserGetByIDServerError = func(m *mocks.MockService) {
-		m.On("UserGetByID", mock.Anything, mock.Anything).Return(nil, errs.InternalServer)
+		m.On("UserGetByID", mock.Anything, mock.Anything).Return(nil, consts.InternalServer)
 	}
 )

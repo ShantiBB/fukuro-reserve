@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/jwt"
 	"fukuro-reserve/pkg/utils/password"
 )
@@ -31,7 +31,7 @@ func (s *Service) LoginByEmail(ctx context.Context, email, pass string) (*jwt.To
 	}
 
 	if !password.VerifyPassword(pass, user.Password) {
-		return nil, errs.InvalidCredentials
+		return nil, consts.InvalidCredentials
 	}
 
 	return jwt.GenerateAllTokens(user.ID, user.Role, s.tokenCreds)
@@ -40,8 +40,8 @@ func (s *Service) LoginByEmail(ctx context.Context, email, pass string) (*jwt.To
 func (s *Service) RefreshToken(token *jwt.Token) (*jwt.Token, error) {
 	claims, err := jwt.GetClaimsRefreshToken(s.tokenCreds.RefreshSecret, token.Refresh)
 	if err != nil {
-		if errors.Is(err, errs.InvalidRefreshToken) {
-			return nil, errs.InvalidRefreshToken
+		if errors.Is(err, consts.InvalidRefreshToken) {
+			return nil, consts.InvalidRefreshToken
 		}
 		return nil, err
 	}

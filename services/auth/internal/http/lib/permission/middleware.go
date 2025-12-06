@@ -10,7 +10,7 @@ import (
 
 	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/helper"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 
@@ -25,13 +25,13 @@ func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 			bearerToken := r.Header.Get("Authorization")
 			token, ok := strings.CutPrefix(bearerToken, "Bearer ")
 			if !ok {
-				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(errs.Unauthorized))
+				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.Unauthorized))
 				return
 			}
 
 			claims, err := jwt.ParseToken(token, []byte(jwtSecret))
 			if err != nil {
-				helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(errs.Forbidden))
+				helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.Forbidden))
 				return
 			}
 
@@ -54,7 +54,7 @@ func RequireRoles(checks ...Check) func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims := GetClaims(r.Context())
 			if claims == nil {
-				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(errs.Unauthorized))
+				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.Unauthorized))
 				return
 			}
 
@@ -65,7 +65,7 @@ func RequireRoles(checks ...Check) func(next http.Handler) http.Handler {
 				}
 			}
 
-			helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(errs.Forbidden))
+			helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.Forbidden))
 		})
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"auth/internal/http/dto/response"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 type ResponseChecker func(*testing.T, *httptest.ResponseRecorder)
@@ -70,7 +70,7 @@ var (
 			assert.NoError(t, err)
 
 			for _, field := range fields {
-				assert.Equal(t, errs.FieldRequired.Error(), resp.Errors[field])
+				assert.Equal(t, consts.FieldRequired.Error(), resp.Errors[field])
 			}
 		}
 	}

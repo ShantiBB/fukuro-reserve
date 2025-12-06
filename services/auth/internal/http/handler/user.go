@@ -12,7 +12,7 @@ import (
 	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/helper"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/password"
 )
 
@@ -48,7 +48,7 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 
 	hashPassword, err := password.HashPassword(req.Password)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.PasswordHashing)
+		errMsg := response.ErrorResp(consts.PasswordHashing)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
@@ -56,12 +56,12 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	newUser := h.UserCreateRequestToEntity(&req, hashPassword)
 	createdUser, err := h.svc.UserCreate(ctx, *newUser)
 	if err != nil {
-		if errors.Is(err, errs.UniqueEmailField) {
-			errMsg := response.ErrorResp(errs.UniqueEmailField)
+		if errors.Is(err, consts.UniqueEmailField) {
+			errMsg := response.ErrorResp(consts.UniqueEmailField)
 			helper.SendError(w, r, http.StatusConflict, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -88,14 +88,14 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 
 	pagination, err := helper.ParsePaginationQuery(r)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.InvalidQueryParam)
+		errMsg := response.ErrorResp(consts.InvalidQueryParam)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
 	users, err := h.svc.UserGetAll(ctx, pagination.Limit, pagination.Offset)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -128,19 +128,19 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 	paramID := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.InvalidID)
+		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	user, err := h.svc.UserGetByID(ctx, id)
 	if err != nil {
-		if errors.Is(err, errs.UserNotFound) {
-			errMsg := response.ErrorResp(errs.UserNotFound)
+		if errors.Is(err, consts.UserNotFound) {
+			errMsg := response.ErrorResp(consts.UserNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -171,7 +171,7 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	paramID := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.InvalidID)
+		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
@@ -185,16 +185,16 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	userToUpdate, err := h.svc.UserUpdateByID(ctx, user)
 	if err != nil {
 		switch {
-		case errors.Is(err, errs.UniqueEmailField):
-			errMsg := response.ErrorResp(errs.UniqueEmailField)
+		case errors.Is(err, consts.UniqueEmailField):
+			errMsg := response.ErrorResp(consts.UniqueEmailField)
 			helper.SendError(w, r, http.StatusConflict, errMsg)
 			return
-		case errors.Is(err, errs.UserNotFound):
-			errMsg := response.ErrorResp(errs.UserNotFound)
+		case errors.Is(err, consts.UserNotFound):
+			errMsg := response.ErrorResp(consts.UserNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
@@ -224,18 +224,18 @@ func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
 	paramID := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		errMsg := response.ErrorResp(errs.InvalidID)
+		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	if err = h.svc.UserDeleteByID(ctx, id); err != nil {
-		if errors.Is(err, errs.UserNotFound) {
-			errMsg := response.ErrorResp(errs.UserNotFound)
+		if errors.Is(err, consts.UserNotFound) {
+			errMsg := response.ErrorResp(consts.UserNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(errs.InternalServer)
+		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}

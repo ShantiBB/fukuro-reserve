@@ -56,6 +56,25 @@ definitions:
       username:
         type: string
     type: object
+  response.UserList:
+    properties:
+      current_page:
+        type: integer
+      has_next_page:
+        type: boolean
+      has_prev_page:
+        type: boolean
+      limit:
+        type: integer
+      total_page_count:
+        type: integer
+      total_users_count:
+        type: integer
+      users:
+        items:
+          $ref: '#/definitions/response.User'
+        type: array
+    type: object
 host: localhost:8081
 info:
   contact: {}
@@ -166,18 +185,17 @@ paths:
       - application/json
       description: Get users from admin or moderator provider
       parameters:
-      - default: 20
+      - default: 1
+        description: Page
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 100
         description: Limit
         in: query
-        maximum: 100
-        minimum: 1
-        name: limit
-        type: integer
-      - default: 0
-        description: Offset
-        in: query
         minimum: 0
-        name: offset
+        name: limit
         type: integer
       produces:
       - application/json
@@ -185,7 +203,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.User'
+            $ref: '#/definitions/response.UserList'
         "401":
           description: Unauthorized
           schema:

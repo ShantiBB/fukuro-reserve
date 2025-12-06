@@ -19,7 +19,7 @@ import (
 type UserService interface {
 	UserCreate(ctx context.Context, user models.UserCreate) (*models.User, error)
 	UserGetByID(ctx context.Context, id int64) (*models.User, error)
-	UserGetAll(ctx context.Context, limit, offset uint64) (*models.UserList, error)
+	UserGetAll(ctx context.Context, page, limit uint64) (*models.UserList, error)
 	UserUpdateByID(ctx context.Context, user *models.User) (*models.User, error)
 	UserDeleteByID(ctx context.Context, id int64) error
 }
@@ -76,9 +76,9 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        limit   query     uint  false  "Limit"   default(20)  minimum(1)  maximum(100)
-// @Param        offset  query     uint  false  "Offset"  default(0)   minimum(0)
-// @Success      200     {object}  response.User
+// @Param        page    query     uint  false  "Page"   default(1)     minimum(1)
+// @Param        limit   query     uint  false  "Limit"  default(100)   minimum(0)
+// @Success      200     {object}  response.UserList
 // @Failure      401     {object}  response.ErrorSchema
 // @Failure      500     {object}  response.ErrorSchema
 // @Security     Bearer
@@ -93,17 +93,28 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userList, err := h.svc.UserGetAll(ctx, pagination.Limit, pagination.Offset)
+	userList, err := h.svc.UserGetAll(ctx, pagination.Page, pagination.Limit)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	usersResp := make([]response.User, 0, len(userList.Users))
+	users := make([]response.User, 0, len(userList.Users))
 	for _, user := range userList.Users {
 		userResponse := h.UserEntityToResponse(&user)
-		usersResp = append(usersResp, *userResponse)
+		users = append(users, *userResponse)
+	}
+
+	totalPageCount := (userList.TotalCount + pagination.Limit - 1) / pagination.Limit
+	usersResp := response.UserList{
+		Users:           users,
+		CurrentPage:     pagination.Page,
+		Limit:           pagination.Limit,
+		HasPrevPage:     pagination.Page > 1,
+		HasNextPage:     pagination.Page < totalPageCount,
+		TotalPageCount:  totalPageCount,
+		TotalUsersCount: userList.TotalCount,
 	}
 
 	helper.SendSuccess(w, r, http.StatusOK, usersResp)

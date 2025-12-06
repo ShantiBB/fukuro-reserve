@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -31,31 +30,28 @@ func ParseJSON(w http.ResponseWriter, r *http.Request, v interface{}) bool {
 }
 
 func ParsePaginationQuery(r *http.Request) (*request.PaginationQuery, error) {
+	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
-	offset := r.URL.Query().Get("offset")
 
-	if limit == "" {
-		limit = "100"
+	if limit == "" || limit == "0" {
+		return nil, consts.InvalidQueryParam
 	}
-	if offset == "" {
-		offset = "0"
+	if page == "" || page == "0" {
+		return nil, consts.InvalidQueryParam
+	}
+
+	pageUInt, err := strconv.ParseUint(page, 10, 32)
+	if err != nil {
+		return nil, consts.InvalidQueryParam
 	}
 
 	limitUInt, err := strconv.ParseUint(limit, 10, 32)
 	if err != nil {
-		return nil, fmt.Errorf("invalid limit: %w", err)
-	}
-	if limitUInt > MaxLimit {
-		limitUInt = MaxLimit
-	}
-
-	offsetInt, err := strconv.ParseUint(offset, 10, 32)
-	if err != nil {
-		return nil, err
+		return nil, consts.InvalidQueryParam
 	}
 
 	return &request.PaginationQuery{
-		Limit:  limitUInt,
-		Offset: offsetInt,
+		Page:  pageUInt,
+		Limit: limitUInt,
 	}, nil
 }

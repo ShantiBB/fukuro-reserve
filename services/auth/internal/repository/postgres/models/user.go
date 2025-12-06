@@ -20,7 +20,7 @@ type User struct {
 
 type UserList struct {
 	Users      []User
-	TotalCount int
+	TotalCount uint64
 }
 
 type UserUpdatePassword struct {

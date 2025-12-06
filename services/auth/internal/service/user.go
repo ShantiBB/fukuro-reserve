@@ -24,7 +24,8 @@ func (s *Service) UserCreate(ctx context.Context, user models.UserCreate) (*mode
 	return newUser, nil
 }
 
-func (s *Service) UserGetAll(ctx context.Context, limit, offset uint64) (*models.UserList, error) {
+func (s *Service) UserGetAll(ctx context.Context, page, limit uint64) (*models.UserList, error) {
+	offset := (page - 1) * limit
 	userList, err := s.repo.UserGetAll(ctx, limit, offset)
 	if err != nil {
 		return nil, err

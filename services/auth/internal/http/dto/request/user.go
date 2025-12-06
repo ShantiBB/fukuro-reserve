@@ -19,6 +19,6 @@ type UserUpdateStatus struct {
 }
 
 type PaginationQuery struct {
-	Limit  uint64 `form:"limit" binding:"omitempty,min=1,max=100"`
-	Offset uint64 `form:"offset" binding:"omitempty,min=0"`
+	Page  uint64
+	Limit uint64
 }

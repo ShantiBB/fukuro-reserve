@@ -13,12 +13,13 @@ type User struct {
 }
 
 type UserList struct {
-	Users       []User `json:"users"`
-	Limit       int    `json:"limit"`
-	CurrentPage int    `json:"current_page"`
-	HasNextPage bool   `json:"has_next_page"`
-	HasPrevPage bool   `json:"has_prev_page"`
-	TotalCount  int    `json:"total_count"`
+	Users           []User `json:"users"`
+	CurrentPage     uint64 `json:"current_page"`
+	Limit           uint64 `json:"limit"`
+	HasPrevPage     bool   `json:"has_prev_page"`
+	HasNextPage     bool   `json:"has_next_page"`
+	TotalPageCount  uint64 `json:"total_page_count"`
+	TotalUsersCount uint64 `json:"total_users_count"`
 }
 
 type UserShort struct {

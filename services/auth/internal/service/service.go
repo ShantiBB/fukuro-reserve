@@ -5,6 +5,10 @@ import (
 	"fukuro-reserve/pkg/utils/jwt"
 )
 
+type Repository interface {
+	UserRepository
+}
+
 type Service struct {
 	repo       *postgres.Repository
 	tokenCreds *jwt.TokenCredentials

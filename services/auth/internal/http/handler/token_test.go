@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	request2 "auth/internal/http/lib/schemas/request"
+	request2 "auth/internal/http/dto/request"
 	"auth/internal/mocks"
 	"fukuro-reserve/pkg/utils/errs"
 	"fukuro-reserve/pkg/utils/jwt"

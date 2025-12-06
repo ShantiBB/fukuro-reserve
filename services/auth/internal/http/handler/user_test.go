@@ -12,7 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
 
-	"auth/internal/http/lib/schemas/request"
+	"auth/internal/http/dto/request"
 	"auth/internal/mocks"
 	"fukuro-reserve/pkg/utils/errs"
 )

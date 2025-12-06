@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"auth/internal/http/lib/schemas/response"
+	"auth/internal/http/dto/response"
 	"fukuro-reserve/pkg/utils/errs"
 )
 

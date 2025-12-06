@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	response2 "auth/internal/http/lib/schemas/response"
+	response2 "auth/internal/http/dto/response"
 	"fukuro-reserve/pkg/utils/errs"
 )
 

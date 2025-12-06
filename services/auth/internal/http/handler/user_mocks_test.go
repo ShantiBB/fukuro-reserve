@@ -3,8 +3,8 @@ package handler
 import (
 	"github.com/stretchr/testify/mock"
 
-	"auth/internal/domain/models"
 	"auth/internal/mocks"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/errs"
 )
 

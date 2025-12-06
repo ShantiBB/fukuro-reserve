@@ -3,8 +3,8 @@ package handler
 import (
 	"time"
 
-	"auth/internal/domain/models"
-	"auth/internal/http/lib/schemas/request"
+	"auth/internal/http/dto/request"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 

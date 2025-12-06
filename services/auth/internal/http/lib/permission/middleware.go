@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/helper"
-	"auth/internal/http/lib/schemas/response"
 	"fukuro-reserve/pkg/utils/errs"
 	"fukuro-reserve/pkg/utils/jwt"
 )

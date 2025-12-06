@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"hotel/internal/config"
-	"hotel/internal/domain/models"
+	"hotel/internal/repository/models"
 	"hotel/internal/repository/postgres"
 )
 

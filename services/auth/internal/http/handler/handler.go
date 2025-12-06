@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"auth/internal/domain/models"
-	"auth/internal/http/lib/schemas/request"
-	"auth/internal/http/lib/schemas/response"
+	"auth/internal/http/dto/request"
+	"auth/internal/http/dto/response"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/jwt"
 )
 

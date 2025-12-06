@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/render"
 
-	"auth/internal/http/lib/schemas/response"
+	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/validation"
 	"fukuro-reserve/pkg/utils/errs"
 )

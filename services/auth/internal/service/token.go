@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"auth/internal/domain/models"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/errs"
 	"fukuro-reserve/pkg/utils/jwt"
 	"fukuro-reserve/pkg/utils/password"

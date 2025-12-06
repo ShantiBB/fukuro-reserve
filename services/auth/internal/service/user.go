@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"auth/internal/domain/models"
+	"auth/internal/repository/models"
 )
 
 type UserRepository interface {

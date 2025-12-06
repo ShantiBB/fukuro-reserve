@@ -8,10 +8,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"auth/internal/domain/models"
+	"auth/internal/http/dto/request"
+	"auth/internal/http/dto/response"
 	"auth/internal/http/lib/helper"
-	"auth/internal/http/lib/schemas/request"
-	"auth/internal/http/lib/schemas/response"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/errs"
 	"fukuro-reserve/pkg/utils/password"
 )

@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"auth/internal/domain/models"
+	"auth/internal/repository/models"
 	"fukuro-reserve/pkg/utils/errs"
 )
 

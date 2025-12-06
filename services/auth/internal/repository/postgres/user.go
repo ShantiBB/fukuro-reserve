@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/errs"
+	"fukuro-reserve/pkg/utils/consts"
 )
 
 func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*models.User, error) {
@@ -19,7 +19,7 @@ func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*mode
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return nil, errs.UniqueEmailField
+			return nil, consts.UniqueEmailField
 		}
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (r *Repository) UserGetByID(ctx context.Context, id int64) (*models.User, e
 		&u.Username, &u.Email, &u.Role, &u.IsActive, &u.CreatedAt, &u.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errs.UserNotFound
+			return nil, consts.UserNotFound
 		}
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (r *Repository) UserGetCredentialsByEmail(ctx context.Context, email string
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errs.UserNotFound
+			return nil, consts.UserNotFound
 		}
 		return nil, err
 	}
@@ -84,14 +84,14 @@ func (r *Repository) UserUpdateByID(ctx context.Context, u *models.User) error {
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return errs.UniqueEmailField
+			return consts.UniqueEmailField
 		}
 		return err
 	}
 
 	rowsAffected := rows.RowsAffected()
 	if rowsAffected == 0 {
-		return errs.UserNotFound
+		return consts.UserNotFound
 	}
 
 	return nil
@@ -105,8 +105,17 @@ func (r *Repository) UserDeleteByID(ctx context.Context, id int64) error {
 
 	rowsAffected := rows.RowsAffected()
 	if rowsAffected == 0 {
-		return errs.UserNotFound
+		return consts.UserNotFound
 	}
 
 	return nil
+}
+
+func (r *Repository) UserGetCountRows(ctx context.Context) (int, error) {
+	var count int
+	if err := r.db.QueryRow(ctx, UserGetCountRows).Scan(&count); err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }

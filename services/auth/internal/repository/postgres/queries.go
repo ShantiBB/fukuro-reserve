@@ -1,37 +1,35 @@
 package postgres
 
-const UserCreate = `
+const (
+	UserCreate = `
     INSERT INTO users (username, email, password)
     VALUES ($1, $2, $3)
-    RETURNING id, role, is_active, created_at, updated_at
-`
+    RETURNING id, role, is_active, created_at, updated_at`
 
-const UserGetByID = `
+	UserGetByID = `
     SELECT username, email, role, is_active, created_at, updated_at
     FROM users 
-    WHERE id = $1
-`
+    WHERE id = $1`
 
-const UserGetCredentialsByEmail = `
+	UserGetCredentialsByEmail = `
     SELECT id, role, password
     FROM users 
-    WHERE email = $1
-`
+    WHERE email = $1`
 
-const UserGetAll = `
+	UserGetAll = `
     SELECT id, username, email, role, is_active, created_at, updated_at
     FROM users
     ORDER BY id
-    LIMIT $1 OFFSET $2;
-`
+    LIMIT $1 OFFSET $2;`
 
-const UserUpdate = `
+	UserUpdate = `
     UPDATE users
     SET username = $1, email = $2, updated_at = CURRENT_TIMESTAMP
-    WHERE id = $3
-`
+    WHERE id = $3`
 
-const UserDelete = `
+	UserDelete = `
     DELETE FROM users
-    WHERE id = $1
-`
+    WHERE id = $1`
+
+	UserGetCountRows = `SELECT COUNT(*) FROM users;`
+)

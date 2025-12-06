@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 
@@ -21,8 +22,9 @@ const ClaimsKey contextKey = "claims"
 func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			token := r.Header.Get("Authorization")
-			if token == "" {
+			bearerToken := r.Header.Get("Authorization")
+			token, ok := strings.CutPrefix(bearerToken, "Bearer ")
+			if !ok {
 				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(errs.Unauthorized))
 				return
 			}

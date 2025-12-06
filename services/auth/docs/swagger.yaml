@@ -3,11 +3,11 @@ definitions:
   request.UserCreate:
     properties:
       email:
+        example: user@example.com
         type: string
       password:
+        example: strongpass123!#
         minLength: 8
-        type: string
-      username:
         type: string
     required:
     - email
@@ -16,8 +16,10 @@ definitions:
   request.UserUpdate:
     properties:
       email:
+        example: user@example.com
         type: string
       username:
+        example: username
         type: string
     type: object
   response.ErrorSchema:

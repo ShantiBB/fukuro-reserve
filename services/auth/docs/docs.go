@@ -485,14 +485,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "user@example.com"
                 },
                 "password": {
                     "type": "string",
-                    "minLength": 8
-                },
-                "username": {
-                    "type": "string"
+                    "minLength": 8,
+                    "example": "strongpass123!#"
                 }
             }
         },
@@ -500,10 +499,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "user@example.com"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "username"
                 }
             }
         },

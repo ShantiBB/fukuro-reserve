@@ -9,7 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"hotel/internal/repository/models"
+	"hotel/internal/repository/postgres/models"
 )
 
 func (r *Repository) HotelCreate(ctx context.Context, h *models.HotelCreate) (*models.Hotel, error) {

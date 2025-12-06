@@ -6,8 +6,8 @@ import (
 	"log/slog"
 
 	"hotel/internal/config"
-	"hotel/internal/repository/models"
 	"hotel/internal/repository/postgres"
+	"hotel/internal/repository/postgres/models"
 )
 
 type App struct {

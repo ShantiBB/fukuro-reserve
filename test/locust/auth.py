@@ -11,23 +11,23 @@ class UserAPITest(HttpUser):
             "Content-Type": "application/json"
         }
 
-    # @task(3)
-    # def get_users(self):
-    #     self.client.get(
-    #         "/api/v1/users/",
-    #         headers=self.headers,
-    #         name="GET /api/v1/users/"
-    #     )
+    @task(3)
+    def get_users(self):
+        self.client.get(
+            "/api/v1/users/",
+            headers=self.headers,
+            name="GET /api/v1/users/"
+        )
 
-    # @task(1)
-    # def get_user_by_id(self):
-    #     user_id = 1
-    #     self.client.get(
-    #         f"/api/v1/users/{user_id}",
-    #         headers=self.headers,
-    #         name="GET /api/v1/users/:id"
-    #     )
-    #
+    @task(1)
+    def get_user_by_id(self):
+        user_id = 1
+        self.client.get(
+            f"/api/v1/users/{user_id}",
+            headers=self.headers,
+            name="GET /api/v1/users/:id"
+        )
+
     @task(2)
     def create_user(self):
         timestamp = int(time.time() * 1000000)

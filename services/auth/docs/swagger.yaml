@@ -1,5 +1,12 @@
 basePath: /api/v1
 definitions:
+  request.UserActiveStatus:
+    properties:
+      is_active:
+        type: boolean
+    required:
+    - is_active
+    type: object
   request.UserCreate:
     properties:
       email:
@@ -12,6 +19,14 @@ definitions:
     required:
     - email
     - password
+    type: object
+  request.UserRoleStatus:
+    properties:
+      role:
+        example: user
+        type: string
+    required:
+    - role
     type: object
   request.UserUpdate:
     properties:
@@ -56,6 +71,13 @@ definitions:
       username:
         type: string
     type: object
+  response.UserActiveStatus:
+    properties:
+      is_active:
+        type: boolean
+      message:
+        type: string
+    type: object
   response.UserList:
     properties:
       current_page:
@@ -70,7 +92,7 @@ definitions:
         type: integer
       users:
         items:
-          $ref: '#/definitions/response.User'
+          $ref: '#/definitions/response.UserShort'
         type: array
     type: object
   response.UserListLinks:
@@ -82,6 +104,26 @@ definitions:
       next:
         type: string
       prev:
+        type: string
+    type: object
+  response.UserRoleStatus:
+    properties:
+      message:
+        type: string
+      role:
+        type: string
+    type: object
+  response.UserShort:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      is_active:
+        type: boolean
+      role:
+        type: string
+      username:
         type: string
     type: object
 host: localhost:8081
@@ -375,6 +417,96 @@ paths:
             $ref: '#/definitions/response.ErrorSchema'
         "409":
           description: Conflict
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Update user by ID
+      tags:
+      - users
+  /users/{id}/role:
+    put:
+      consumes:
+      - application/json
+      description: Update user by ID from admin or owner provider
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserRoleStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserRoleStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Update user by ID
+      tags:
+      - users
+  /users/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update user by ID from admin or owner provider
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/request.UserActiveStatus'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserActiveStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.ErrorSchema'
+        "404":
+          description: Not Found
           schema:
             $ref: '#/definitions/response.ErrorSchema'
         "500":

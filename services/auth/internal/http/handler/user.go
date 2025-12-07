@@ -208,6 +208,21 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	helper.SendSuccess(w, r, http.StatusOK, userResponse)
 }
 
+// UserUpdateRoleStatus    godoc
+// @Summary      Update user by ID
+// @Description  Update user by ID from admin or owner provider
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id          path      int true  "User ID"
+// @Param        request     body      request.UserRoleStatus  true  "User data"
+// @Success      200         {object}  response.UserRoleStatus
+// @Failure      400         {object}  response.ErrorSchema
+// @Failure      401         {object}  response.ErrorSchema
+// @Failure      404         {object}  response.ErrorSchema
+// @Failure      500         {object}  response.ErrorSchema
+// @Security     Bearer
+// @Router       /users/{id}/role [put]
 func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -222,18 +237,43 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.svc.UserUpdateRoleStatus(ctx, id, req.Role); err != nil {
+		switch {
+		case errors.Is(err, consts.UserNotFound):
+			errMsg := response.ErrorResp(consts.UserNotFound)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
+			return
+		case errors.Is(err, consts.ErrInvalidRole):
+			errMsg := response.ErrorResp(consts.ErrInvalidRole)
+			helper.SendError(w, r, http.StatusBadRequest, errMsg)
+			return
+		}
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	var resp response.UserStatus
-	resp.Message = "Success update status"
-	resp.Role = req.Role
-
+	resp := response.UserRoleStatus{
+		Message: consts.UserRoleUpdateSuccess,
+		Role:    req.Role,
+	}
 	helper.SendSuccess(w, r, http.StatusOK, resp)
 }
 
+// UserUpdateActiveStatus    godoc
+// @Summary      Update user by ID
+// @Description  Update user by ID from admin or owner provider
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id          path      int true  "User ID"
+// @Param        request     body      request.UserActiveStatus  true  "User data"
+// @Success      200         {object}  response.UserActiveStatus
+// @Failure      400         {object}  response.ErrorSchema
+// @Failure      401         {object}  response.ErrorSchema
+// @Failure      404         {object}  response.ErrorSchema
+// @Failure      500         {object}  response.ErrorSchema
+// @Security     Bearer
+// @Router       /users/{id}/status [put]
 func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -247,16 +287,22 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := h.svc.UserUpdateActiveStatus(ctx, id, req.IsActive); err != nil {
+	if err := h.svc.UserUpdateActiveStatus(ctx, id, *req.IsActive); err != nil {
+		switch {
+		case errors.Is(err, consts.UserNotFound):
+			errMsg := response.ErrorResp(consts.UserNotFound)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
+			return
+		}
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	var resp response.UserStatus
-	resp.Message = "Success update status"
-	resp.IsActive = req.IsActive
-
+	resp := response.UserActiveStatus{
+		Message:  consts.UserActiveUpdateSuccess,
+		IsActive: *req.IsActive,
+	}
 	helper.SendSuccess(w, r, http.StatusOK, resp)
 }
 

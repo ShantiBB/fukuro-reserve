@@ -15,7 +15,7 @@ type UserRoleStatus struct {
 }
 
 type UserActiveStatus struct {
-	IsActive bool `json:"is_active" validate:"required"`
+	IsActive *bool `json:"is_active" validate:"required"`
 }
 
 type PaginationQuery struct {

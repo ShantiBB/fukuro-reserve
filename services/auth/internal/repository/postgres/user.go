@@ -100,14 +100,45 @@ func (r *Repository) UserUpdateByID(ctx context.Context, u *models.User) error {
 	return nil
 }
 
-func (r *Repository) UserDeleteByID(ctx context.Context, id int64) error {
-	rows, err := r.db.Exec(ctx, UserDelete, id)
+func (r *Repository) UserUpdateRoleStatus(ctx context.Context, id int64, role string) error {
+	row, err := r.db.Exec(ctx, UserUpdateRoleStatus, role, id)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == "22P02" {
+				return consts.ErrInvalidRole
+			}
+		}
+		return err
+	}
+
+	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+		return consts.UserNotFound
+	}
+
+	return nil
+}
+
+func (r *Repository) UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error {
+	row, err := r.db.Exec(ctx, UserUpdateActiveStatus, status, id)
 	if err != nil {
 		return err
 	}
 
-	rowsAffected := rows.RowsAffected()
-	if rowsAffected == 0 {
+	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+		return consts.UserNotFound
+	}
+
+	return nil
+}
+
+func (r *Repository) UserDeleteByID(ctx context.Context, id int64) error {
+	row, err := r.db.Exec(ctx, UserDelete, id)
+	if err != nil {
+		return err
+	}
+
+	if rowAffected := row.RowsAffected(); rowAffected == 0 {
 		return consts.UserNotFound
 	}
 

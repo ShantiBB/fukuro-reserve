@@ -6,6 +6,7 @@ var (
 	InvalidQueryParam   = errors.New("invalid query parameter")
 	InternalServer      = errors.New("internal server error")
 	UserNotFound        = errors.New("user not found")
+	ErrInvalidRole      = errors.New("invalid role status")
 	UniqueEmailField    = errors.New("username or email already exists")
 	Unauthorized        = errors.New("unauthorized")
 	Forbidden           = errors.New("forbidden")

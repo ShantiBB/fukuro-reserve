@@ -12,6 +12,8 @@ type UserRepository interface {
 	UserGetCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error)
 	UserGetAll(ctx context.Context, limit, offset uint64) (*models.UserList, error)
 	UserUpdateByID(ctx context.Context, user *models.User) error
+	UserUpdateRoleStatus(ctx context.Context, id int64, role string) error
+	UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error
 	UserDeleteByID(ctx context.Context, id int64) error
 }
 
@@ -54,6 +56,22 @@ func (s *Service) UserUpdateByID(ctx context.Context, user *models.User) (*model
 	}
 
 	return updatedUser, nil
+}
+
+func (s *Service) UserUpdateRoleStatus(ctx context.Context, id int64, role string) error {
+	if err := s.repo.UserUpdateRoleStatus(ctx, id, role); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error {
+	if err := s.repo.UserUpdateActiveStatus(ctx, id, status); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) UserDeleteByID(ctx context.Context, id int64) error {

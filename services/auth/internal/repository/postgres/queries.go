@@ -27,6 +27,16 @@ const (
     SET username = $1, email = $2, updated_at = CURRENT_TIMESTAMP
     WHERE id = $3`
 
+	UserUpdateRoleStatus = `
+    UPDATE users
+    SET role = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2`
+
+	UserUpdateActiveStatus = `
+    UPDATE users
+    SET is_active = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2`
+
 	UserDelete = `
     DELETE FROM users
     WHERE id = $1`

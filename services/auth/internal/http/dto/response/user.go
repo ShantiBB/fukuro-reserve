@@ -36,8 +36,12 @@ type UserListLinks struct {
 	Last  string  `json:"last"`
 }
 
-type UserStatus struct {
+type UserRoleStatus struct {
+	Message string `json:"message"`
+	Role    string `json:"role"`
+}
+
+type UserActiveStatus struct {
 	Message  string `json:"message"`
-	Role     string `json:"role,omitempty"`
-	IsActive bool   `json:"is_active,omitempty"`
+	IsActive bool   `json:"is_active"`
 }

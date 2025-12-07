@@ -27,16 +27,16 @@ func (app *App) MustLoad() {
 		RefreshTTL:    app.Config.JWT.RefreshTTL,
 	}
 
-	userRepo, err := postgres.NewRepository(app.Config)
+	repo, err := postgres.NewRepository(app.Config)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	userService := service.New(userRepo, &tokenCredentials)
-	userHandler := handler.New(userService)
+	svc := service.New(repo, &tokenCredentials)
+	h := handler.New(svc)
 
 	r := chi.NewRouter()
-	router.New(r, userHandler, app.Config.JWT.AccessSecret)
+	router.New(r, h, app.Config.JWT.AccessSecret)
 
 	server := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
 	slog.Info("Starting server", "address", server)

@@ -1,0 +1,114 @@
+basePath: /api/v1
+definitions:
+  hotel_internal_http_dto_request.HotelCreate:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      location:
+        $ref: '#/definitions/hotel_internal_http_dto_request.Location'
+      name:
+        type: string
+      owner_id:
+        type: integer
+    required:
+    - name
+    - owner_id
+    type: object
+  hotel_internal_http_dto_request.Location:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  hotel_internal_http_dto_response.ErrorSchema:
+    properties:
+      message:
+        type: string
+      type:
+        type: string
+    type: object
+  hotel_internal_http_dto_response.Hotel:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/hotel_internal_http_dto_response.Location'
+      name:
+        type: string
+      owner_id:
+        type: integer
+      rating:
+        type: number
+      updated_at:
+        type: string
+    type: object
+  hotel_internal_http_dto_response.Location:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: Hotel service for microservices.
+  title: Swagger Hotel API
+  version: "1.0"
+paths:
+  /hotels/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new hotel from admin provider
+      parameters:
+      - description: Hotel data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/hotel_internal_http_dto_request.HotelCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.Hotel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Create hotel
+      tags:
+      - hotels
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

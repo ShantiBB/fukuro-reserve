@@ -22,17 +22,18 @@ type TokenService interface {
 }
 
 // RegisterByEmail    godoc
-// @Summary      Register user
-// @Description  Register user by email and return access and refresh tokens
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request     body      request.UserCreate      true  "User data"
-// @Success      201         {object}  response.Token
-// @Failure      400         {object}  response.ErrorSchema
-// @Failure      409         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Router       /auth/register [post]
+//
+//	@Summary		Register user
+//	@Description	Register user by email and return access and refresh tokens
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Success		201		{object}	response.Token
+//	@Failure		400		{object}	response.ErrorSchema
+//	@Failure		409		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Router			/auth/register [post]
 func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
@@ -68,16 +69,17 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 // LoginByEmail    godoc
-// @Summary      Login user
-// @Description  Login user by email and return access and refresh tokens
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request     body      request.UserCreate  true  "User data"
-// @Success      200         {object}  response.Token
-// @Failure      401         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Router       /auth/login [post]
+//
+//	@Summary		Login user
+//	@Description	Login user by email and return access and refresh tokens
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Success		200		{object}	response.Token
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Router			/auth/login [post]
 func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
@@ -105,16 +107,17 @@ func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 }
 
 // RefreshToken    godoc
-// @Summary      Refresh access user tokenCreds
-// @Description  Refresh access tokenCreds and return new tokenCreds data
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        request     body      object{refresh_token=string}  true  "User data"
-// @Success      200         {object}  response.Token
-// @Failure      401         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Router       /auth/refresh [post]
+//
+//	@Summary		Refresh access user tokenCreds
+//	@Description	Refresh access tokenCreds and return new tokenCreds data
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		object{refresh_token=string}	true	"User data"
+//	@Success		200		{object}	response.Token
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Router			/auth/refresh [post]
 func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req jwt.RefreshToken
 	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {

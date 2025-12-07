@@ -6,6 +6,11 @@ import (
 	"github.com/google/uuid"
 )
 
+type Location struct {
+	Latitude  float64
+	Longitude float64
+}
+
 type HotelCreate struct {
 	Name        string
 	OwnerID     int64
@@ -21,6 +26,15 @@ type HotelUpdate struct {
 	Location    Location
 }
 
+type HotelShort struct {
+	ID       uuid.UUID
+	Name     string
+	OwnerID  int64
+	Address  string
+	Rating   *float32
+	Location Location
+}
+
 type Hotel struct {
 	ID          uuid.UUID
 	Name        string
@@ -31,20 +45,6 @@ type Hotel struct {
 	Location    Location
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-}
-
-type HotelShort struct {
-	ID       uuid.UUID
-	Name     string
-	OwnerID  int64
-	Address  string
-	Rating   *float32
-	Location Location
-}
-
-type Location struct {
-	Latitude  float64
-	Longitude float64
 }
 
 func (h *HotelCreate) ToRead() Hotel {

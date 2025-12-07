@@ -1,0 +1,175 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Hotel service for microservices.",
+        "title": "Swagger Hotel API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8082",
+    "basePath": "/api/v1",
+    "paths": {
+        "/hotels/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new hotel from admin provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Create hotel",
+                "parameters": [
+                    {
+                        "description": "Hotel data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_request.HotelCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.Hotel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "hotel_internal_http_dto_request.HotelCreate": {
+            "type": "object",
+            "required": [
+                "name",
+                "owner_id"
+            ],
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "hotel_internal_http_dto_request.Location": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.ErrorSchema": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.Hotel": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.Location": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

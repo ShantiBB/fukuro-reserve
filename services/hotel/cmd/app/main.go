@@ -10,6 +10,17 @@ import (
 	"hotel/internal/config"
 )
 
+//	@title			Swagger Hotel API
+//	@version		1.0
+//	@description	Hotel service for microservices.
+
+//	@host		localhost:8082
+//	@BasePath	/api/v1
+
+// @securityDefinitions.apikey	Bearer
+// @in							header
+// @name						Authorization
+// @description				Type "Bearer" followed by a space and JWT token.
 func main() {
 	if err := godotenv.Load(); err != nil {
 		slog.Warn("failed load env", "error", err)

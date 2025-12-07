@@ -24,19 +24,20 @@ type UserService interface {
 }
 
 // UserCreate    godoc
-// @Summary      Create user
-// @Description  Create a new user account from admin provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        request  body      request.UserCreate  true  "User data"
-// @Success      201      {object}  response.User
-// @Failure      400      {object}  response.ErrorSchema
-// @Failure      401      {object}  response.ErrorSchema
-// @Failure      409      {object}  response.ErrorSchema
-// @Failure      500      {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/  [post]
+//
+//	@Summary		Create user
+//	@Description	Create a new user account from admin provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Success		201		{object}	response.User
+//	@Failure		400		{object}	response.ErrorSchema
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		409		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/  [post]
 func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
@@ -70,18 +71,19 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserGetAll    godoc
-// @Summary      Get users
-// @Description  Get users from admin or moderator provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        page    query     uint  false  "Page"   default(1)
-// @Param        limit   query     uint  false  "Limit"  default(100)
-// @Success      200     {object}  response.UserList
-// @Failure      401     {object}  response.ErrorSchema
-// @Failure      500     {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/ [get]
+//
+//	@Summary		Get users
+//	@Description	Get users from admin or moderator provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			page	query		uint	false	"Page"	default(1)
+//	@Param			limit	query		uint	false	"Limit"	default(100)
+//	@Success		200		{object}	response.UserList
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/ [get]
 func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -120,19 +122,20 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserGetByID    godoc
-// @Summary      Get user by ID
-// @Description  Get user by ID from admin, moderator or owner provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id   path      int true  "User ID"
-// @Success      200  {object}  response.User
-// @Failure      400  {object}  response.ErrorSchema
-// @Failure      401  {object}  response.ErrorSchema
-// @Failure      404  {object}  response.ErrorSchema
-// @Failure      500  {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/{id} [get]
+//
+//	@Summary		Get user by ID
+//	@Description	Get user by ID from admin, moderator or owner provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"
+//	@Success		200	{object}	response.User
+//	@Failure		400	{object}	response.ErrorSchema
+//	@Failure		401	{object}	response.ErrorSchema
+//	@Failure		404	{object}	response.ErrorSchema
+//	@Failure		500	{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/{id} [get]
 func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -158,21 +161,22 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserUpdateByID    godoc
-// @Summary      Update user by ID
-// @Description  Update user by ID from admin or owner provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id          path      int true  "User ID"
-// @Param        request     body      request.UserUpdate  true  "User data"
-// @Success      200         {object}  response.User
-// @Failure      400         {object}  response.ErrorSchema
-// @Failure      401         {object}  response.ErrorSchema
-// @Failure      404         {object}  response.ErrorSchema
-// @Failure      409         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/{id} [put]
+//
+//	@Summary		Update user by ID
+//	@Description	Update user by ID from admin or owner provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int					true	"User ID"
+//	@Param			request	body		request.UserUpdate	true	"User data"
+//	@Success		200		{object}	response.User
+//	@Failure		400		{object}	response.ErrorSchema
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		404		{object}	response.ErrorSchema
+//	@Failure		409		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/{id} [put]
 func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -209,20 +213,21 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserUpdateRoleStatus    godoc
-// @Summary      Update user by ID
-// @Description  Update user by ID from admin or owner provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id          path      int true  "User ID"
-// @Param        request     body      request.UserRoleStatus  true  "User data"
-// @Success      200         {object}  response.UserRoleStatus
-// @Failure      400         {object}  response.ErrorSchema
-// @Failure      401         {object}  response.ErrorSchema
-// @Failure      404         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/{id}/role [put]
+//
+//	@Summary		Update user by ID
+//	@Description	Update user by ID from admin or owner provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int						true	"User ID"
+//	@Param			request	body		request.UserRoleStatus	true	"User data"
+//	@Success		200		{object}	response.UserRoleStatus
+//	@Failure		400		{object}	response.ErrorSchema
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		404		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/{id}/role [put]
 func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -260,20 +265,21 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 }
 
 // UserUpdateActiveStatus    godoc
-// @Summary      Update user by ID
-// @Description  Update user by ID from admin or owner provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id          path      int true  "User ID"
-// @Param        request     body      request.UserActiveStatus  true  "User data"
-// @Success      200         {object}  response.UserActiveStatus
-// @Failure      400         {object}  response.ErrorSchema
-// @Failure      401         {object}  response.ErrorSchema
-// @Failure      404         {object}  response.ErrorSchema
-// @Failure      500         {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/{id}/status [put]
+//
+//	@Summary		Update user by ID
+//	@Description	Update user by ID from admin or owner provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		int							true	"User ID"
+//	@Param			request	body		request.UserActiveStatus	true	"User data"
+//	@Success		200		{object}	response.UserActiveStatus
+//	@Failure		400		{object}	response.ErrorSchema
+//	@Failure		401		{object}	response.ErrorSchema
+//	@Failure		404		{object}	response.ErrorSchema
+//	@Failure		500		{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/{id}/status [put]
 func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -307,19 +313,20 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 }
 
 // UserDeleteByID    godoc
-// @Summary      Delete user by ID
-// @Description  Delete user by ID from admin or owner provider
-// @Tags         users
-// @Accept       json
-// @Produce      json
-// @Param        id   path      int true  "User ID"
-// @Success      204  {object}  nil
-// @Failure      400  {object}  response.ErrorSchema
-// @Failure      401  {object}  response.ErrorSchema
-// @Failure      404  {object}  response.ErrorSchema
-// @Failure      500  {object}  response.ErrorSchema
-// @Security     Bearer
-// @Router       /users/{id} [delete]
+//
+//	@Summary		Delete user by ID
+//	@Description	Delete user by ID from admin or owner provider
+//	@Tags			users
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"User ID"
+//	@Success		204	{object}	nil
+//	@Failure		400	{object}	response.ErrorSchema
+//	@Failure		401	{object}	response.ErrorSchema
+//	@Failure		404	{object}	response.ErrorSchema
+//	@Failure		500	{object}	response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/users/{id} [delete]
 func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 

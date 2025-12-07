@@ -2,13 +2,30 @@ version: '3'
 
 tasks:
   run:
-    desc: "Run specific service (usage: task run service=auth)"
+    desc: "Run specific service (usage: task run service=auth mode=bin|direct)"
     cmds:
-      - go run ./services/{{.service}}/cmd/app/main.go
-    env:
-      CONFIG_PATH: "{{.TASKFILE_DIR}}/services/{{.service}}/config/local.yaml"
+      - task: run-{{.mode}}
+        vars:
+          service: "{{.service}}"
     requires:
-      vars: [service]
+      vars: [service, mode]
+
+  run-direct:
+    internal: true
+    cmds:
+      - "go run services/{{.service}}/cmd/app/main.go"
+    env:
+      CONFIG_PATH: "{{.ROOT_DIR}}/services/{{.service}}/config/local.yaml"
+
+  run-bin:
+    internal: true
+    cmds:
+      - task: build
+        vars:
+          service: "{{.service}}"
+      - "build/{{.service}}-service"
+    env:
+      CONFIG_PATH: "{{.ROOT_DIR}}/services/{{.service}}/config/local.yaml"
 
   build:
     desc: "Build specific service (usage: task build service=auth)"

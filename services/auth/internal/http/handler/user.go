@@ -252,11 +252,11 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp := response.UserRoleStatus{
+	roleStatus := response.UserRoleStatus{
 		Message: consts.UserRoleUpdateSuccess,
 		Role:    req.Role,
 	}
-	helper.SendSuccess(w, r, http.StatusOK, resp)
+	helper.SendSuccess(w, r, http.StatusOK, roleStatus)
 }
 
 // UserUpdateActiveStatus    godoc
@@ -299,11 +299,11 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp := response.UserActiveStatus{
+	activeStatus := response.UserActiveStatus{
 		Message:  consts.UserActiveUpdateSuccess,
 		IsActive: *req.IsActive,
 	}
-	helper.SendSuccess(w, r, http.StatusOK, resp)
+	helper.SendSuccess(w, r, http.StatusOK, activeStatus)
 }
 
 // UserDeleteByID    godoc

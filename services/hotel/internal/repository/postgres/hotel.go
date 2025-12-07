@@ -9,10 +9,11 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
+	"fukuro-reserve/pkg/utils/consts"
 	"hotel/internal/repository/postgres/models"
 )
 
-func (r *Repository) HotelCreate(ctx context.Context, h *models.HotelCreate) (*models.Hotel, error) {
+func (r *Repository) HotelCreate(ctx context.Context, h models.HotelCreate) (models.Hotel, error) {
 	newHotel := h.ToRead()
 	insertArgs := []any{
 		h.Name,
@@ -31,15 +32,15 @@ func (r *Repository) HotelCreate(ctx context.Context, h *models.HotelCreate) (*m
 	if err := r.db.QueryRow(ctx, hotelCreateQuery, insertArgs...).Scan(scanArgs...); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return nil, errors.New("username or email already exists")
+			return models.Hotel{}, errors.New("username or email already exists")
 		}
-		return nil, err
+		return models.Hotel{}, err
 	}
 
-	return &newHotel, nil
+	return newHotel, nil
 }
 
-func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (*models.Hotel, error) {
+func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (models.Hotel, error) {
 	var hotel models.Hotel
 	scanArgs := []any{
 		&hotel.ID,
@@ -61,24 +62,23 @@ func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (*models
 	case string:
 		query = hotelGetByName
 	default:
-		return nil, fmt.Errorf("unsupported type %T", v)
+		return models.Hotel{}, fmt.Errorf("unsupported type %T", v)
 	}
 
 	if err := r.db.QueryRow(ctx, query, field).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, errors.New("hotel not found")
+			return models.Hotel{}, errors.New("hotel not found")
 		}
-		return nil, err
+		return models.Hotel{}, err
 	}
 
-	return &hotel, nil
+	return hotel, nil
 }
 
-func (r *Repository) HotelGetAll(ctx context.Context, page, pageSize int) ([]models.HotelShort, error) {
+func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) ([]models.HotelShort, error) {
 	var hotels []models.HotelShort
 
-	offset := (page - 1) * pageSize
-	rows, err := r.db.Query(ctx, hotelGetAll, pageSize, offset)
+	rows, err := r.db.Query(ctx, hotelGetAll, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -96,4 +96,40 @@ func (r *Repository) HotelGetAll(ctx context.Context, page, pageSize int) ([]mod
 	}
 
 	return hotels, nil
+}
+
+func (r *Repository) HotelUpdateByID(ctx context.Context, id int64, h models.HotelUpdate) error {
+	row, err := r.db.Exec(
+		ctx, hotelUpdateByID,
+		h.Name,
+		h.Description,
+		h.Address,
+		h.Location.Longitude,
+		h.Location.Latitude,
+		id,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return consts.UniqueHotelField
+		}
+		return err
+	}
+	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+		return consts.HotelNotFound
+	}
+
+	return nil
+}
+
+func (r *Repository) HotelDeleteByID(ctx context.Context, id int64) error {
+	row, err := r.db.Exec(ctx, hotelDeleteByID, id)
+	if err != nil {
+		return err
+	}
+	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+		return consts.HotelNotFound
+	}
+
+	return nil
 }

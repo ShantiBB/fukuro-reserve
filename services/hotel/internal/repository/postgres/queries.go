@@ -41,4 +41,14 @@ const (
 	FROM hotel
 	ORDER BY name
 	LIMIT $1 OFFSET $2;`
+
+	hotelUpdateByID = `
+	UPDATE hotel 
+	SET name = $1, description = $2, address = $3, 
+	    location = ST_SetSRID(ST_MakePoint($4, $5), 4326)
+	WHERE id = $6;`
+
+	hotelDeleteByID = `
+	DELETE FROM hotel 
+	WHERE id = $1;`
 )

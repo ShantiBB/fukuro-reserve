@@ -14,6 +14,13 @@ type HotelCreate struct {
 	Location    Location
 }
 
+type HotelUpdate struct {
+	Name        string
+	Description *string
+	Address     string
+	Location    Location
+}
+
 type Hotel struct {
 	ID          uuid.UUID
 	Name        string

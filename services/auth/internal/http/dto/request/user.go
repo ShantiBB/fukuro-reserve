@@ -10,11 +10,11 @@ type UserUpdate struct {
 	Email    string  `json:"email" validate:"email" example:"user@example.com"`
 }
 
-type UserUpdateRole struct {
+type UserRoleStatus struct {
 	Role string `json:"role" validate:"required" example:"user"`
 }
 
-type UserUpdateStatus struct {
+type UserActiveStatus struct {
 	IsActive bool `json:"is_active" validate:"required"`
 }
 

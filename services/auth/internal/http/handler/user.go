@@ -18,6 +18,8 @@ type UserService interface {
 	UserGetByID(ctx context.Context, id int64) (*models.User, error)
 	UserGetAll(ctx context.Context, page, limit uint64) (*models.UserList, error)
 	UserUpdateByID(ctx context.Context, user *models.User) (*models.User, error)
+	UserUpdateRoleStatus(ctx context.Context, id int64, role string) error
+	UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error
 	UserDeleteByID(ctx context.Context, id int64) error
 }
 
@@ -203,8 +205,59 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userResponse := h.UserEntityToResponse(userToUpdate)
-
 	helper.SendSuccess(w, r, http.StatusOK, userResponse)
+}
+
+func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := helper.ParseID(w, r)
+	if id == 0 {
+		return
+	}
+
+	var req request.UserRoleStatus
+	if ok := helper.ParseJSON(w, r, &req); !ok {
+		return
+	}
+
+	if err := h.svc.UserUpdateRoleStatus(ctx, id, req.Role); err != nil {
+		errMsg := response.ErrorResp(consts.InternalServer)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+		return
+	}
+
+	var resp response.UserStatus
+	resp.Message = "Success update status"
+	resp.Role = req.Role
+
+	helper.SendSuccess(w, r, http.StatusOK, resp)
+}
+
+func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id := helper.ParseID(w, r)
+	if id == 0 {
+		return
+	}
+
+	var req request.UserActiveStatus
+	if ok := helper.ParseJSON(w, r, &req); !ok {
+		return
+	}
+
+	if err := h.svc.UserUpdateActiveStatus(ctx, id, req.IsActive); err != nil {
+		errMsg := response.ErrorResp(consts.InternalServer)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+		return
+	}
+
+	var resp response.UserStatus
+	resp.Message = "Success update status"
+	resp.IsActive = req.IsActive
+
+	helper.SendSuccess(w, r, http.StatusOK, resp)
 }
 
 // UserDeleteByID    godoc

@@ -34,13 +34,11 @@ var (
 			var resp response.UserList
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
-			assert.Equal(t, resp.Users[0].ID, UserMock.ID)
-			assert.Equal(t, resp.Users[0].Email, UserMock.Email)
-			assert.Equal(t, resp.Users[0].Username, UserMock.Username)
-			assert.Equal(t, resp.Users[0].Role, UserMock.Role)
-			assert.Equal(t, resp.Users[0].IsActive, UserMock.IsActive)
-			assert.NotEmpty(t, resp.Users[0].CreatedAt)
-			assert.NotEmpty(t, resp.Users[0].UpdatedAt)
+			assert.Equal(t, resp.Users[0].ID, UserShortMock.ID)
+			assert.Equal(t, resp.Users[0].Email, UserShortMock.Email)
+			assert.Equal(t, resp.Users[0].Username, UserShortMock.Username)
+			assert.Equal(t, resp.Users[0].Role, UserShortMock.Role)
+			assert.Equal(t, resp.Users[0].IsActive, UserShortMock.IsActive)
 		}
 	}
 

@@ -25,6 +25,15 @@ var (
 		UpdatedAt: time.Now(),
 	}
 
+	usernameShortMock = "test-user-short"
+	UserShortMock     = models.UserShort{
+		ID:       2,
+		Email:    "testshort@example.com",
+		Username: &usernameShortMock,
+		Role:     "userShort",
+		IsActive: true,
+	}
+
 	RegisterReq = request.UserCreate{
 		Email:    "test@example.com",
 		Password: "password123",

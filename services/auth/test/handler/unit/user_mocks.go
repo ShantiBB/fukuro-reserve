@@ -25,11 +25,11 @@ var (
 var (
 	MockUserGetAllSuccess = func(m *mocks.MockService) {
 		m.On("UserGetAll",
-			mock.Anything, // context
-			mock.Anything, // page
-			mock.Anything, // limit
+			mock.Anything,
+			mock.Anything,
+			mock.Anything,
 		).Return(&models.UserList{
-			Users:      []models.User{UserMock},
+			Users:      []models.UserShort{UserShortMock},
 			TotalCount: 1,
 		}, nil)
 	}

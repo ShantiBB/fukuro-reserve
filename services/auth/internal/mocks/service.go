@@ -428,6 +428,54 @@ func (_c *MockService_UserGetByID_Call) RunAndReturn(run func(context.Context, i
 	return _c
 }
 
+// UserUpdateActiveStatus provides a mock function with given fields: ctx, id, status
+func (_m *MockService) UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error {
+	ret := _m.Called(ctx, id, status)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UserUpdateActiveStatus")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, bool) error); ok {
+		r0 = rf(ctx, id, status)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockService_UserUpdateActiveStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserUpdateActiveStatus'
+type MockService_UserUpdateActiveStatus_Call struct {
+	*mock.Call
+}
+
+// UserUpdateActiveStatus is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int64
+//   - status bool
+func (_e *MockService_Expecter) UserUpdateActiveStatus(ctx interface{}, id interface{}, status interface{}) *MockService_UserUpdateActiveStatus_Call {
+	return &MockService_UserUpdateActiveStatus_Call{Call: _e.mock.On("UserUpdateActiveStatus", ctx, id, status)}
+}
+
+func (_c *MockService_UserUpdateActiveStatus_Call) Run(run func(ctx context.Context, id int64, status bool)) *MockService_UserUpdateActiveStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(bool))
+	})
+	return _c
+}
+
+func (_c *MockService_UserUpdateActiveStatus_Call) Return(_a0 error) *MockService_UserUpdateActiveStatus_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockService_UserUpdateActiveStatus_Call) RunAndReturn(run func(context.Context, int64, bool) error) *MockService_UserUpdateActiveStatus_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // UserUpdateByID provides a mock function with given fields: ctx, user
 func (_m *MockService) UserUpdateByID(ctx context.Context, user *models.User) (*models.User, error) {
 	ret := _m.Called(ctx, user)
@@ -483,6 +531,54 @@ func (_c *MockService_UserUpdateByID_Call) Return(_a0 *models.User, _a1 error) *
 }
 
 func (_c *MockService_UserUpdateByID_Call) RunAndReturn(run func(context.Context, *models.User) (*models.User, error)) *MockService_UserUpdateByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// UserUpdateRoleStatus provides a mock function with given fields: ctx, id, role
+func (_m *MockService) UserUpdateRoleStatus(ctx context.Context, id int64, role string) error {
+	ret := _m.Called(ctx, id, role)
+
+	if len(ret) == 0 {
+		panic("no return value specified for UserUpdateRoleStatus")
+	}
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, int64, string) error); ok {
+		r0 = rf(ctx, id, role)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// MockService_UserUpdateRoleStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserUpdateRoleStatus'
+type MockService_UserUpdateRoleStatus_Call struct {
+	*mock.Call
+}
+
+// UserUpdateRoleStatus is a helper method to define mock.On call
+//   - ctx context.Context
+//   - id int64
+//   - role string
+func (_e *MockService_Expecter) UserUpdateRoleStatus(ctx interface{}, id interface{}, role interface{}) *MockService_UserUpdateRoleStatus_Call {
+	return &MockService_UserUpdateRoleStatus_Call{Call: _e.mock.On("UserUpdateRoleStatus", ctx, id, role)}
+}
+
+func (_c *MockService_UserUpdateRoleStatus_Call) Run(run func(ctx context.Context, id int64, role string)) *MockService_UserUpdateRoleStatus_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run(args[0].(context.Context), args[1].(int64), args[2].(string))
+	})
+	return _c
+}
+
+func (_c *MockService_UserUpdateRoleStatus_Call) Return(_a0 error) *MockService_UserUpdateRoleStatus_Call {
+	_c.Call.Return(_a0)
+	return _c
+}
+
+func (_c *MockService_UserUpdateRoleStatus_Call) RunAndReturn(run func(context.Context, int64, string) error) *MockService_UserUpdateRoleStatus_Call {
 	_c.Call.Return(run)
 	return _c
 }

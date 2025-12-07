@@ -9,9 +9,9 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"auth/internal/http/dto/response"
-	"auth/internal/http/lib/helper"
+	"auth/internal/http/lib/jwt"
 	"fukuro-reserve/pkg/utils/consts"
-	"fukuro-reserve/pkg/utils/jwt"
+	"fukuro-reserve/pkg/utils/helper"
 )
 
 type contextKey string

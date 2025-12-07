@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	jwt "fukuro-reserve/pkg/utils/jwt"
+	jwt "auth/internal/http/lib/jwt"
 
 	mock "github.com/stretchr/testify/mock"
 

@@ -6,22 +6,24 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/go-playground/validator/v10"
 
-	"auth/internal/http/dto/response"
-	"auth/internal/http/lib/validation"
 	"fukuro-reserve/pkg/utils/consts"
+	"fukuro-reserve/pkg/utils/validation"
 )
 
-const MaxLimit = 100
-
-func ParseJSON(w http.ResponseWriter, r *http.Request, v interface{}) bool {
+func ParseJSON(
+	w http.ResponseWriter, r *http.Request,
+	v any,
+	customErr func(validator.FieldError) string,
+) bool {
 	if err := render.DecodeJSON(r.Body, v); err != nil {
-		errMsg := response.ErrorResp(consts.InvalidJSON)
+		errMsg := validation.ErrorResp(consts.InvalidJSON)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return false
 	}
 
-	if errMsg := validation.CheckErrors(v); errMsg != nil {
+	if errMsg := validation.CheckErrors(v, customErr); errMsg != nil {
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return false
 	}
@@ -33,7 +35,7 @@ func ParseID(w http.ResponseWriter, r *http.Request) int64 {
 	paramID := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
+		errMsg := validation.ErrorResp(consts.InvalidID)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return 0
 	}

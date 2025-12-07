@@ -17,8 +17,3 @@ type UserRoleStatus struct {
 type UserActiveStatus struct {
 	IsActive *bool `json:"is_active" validate:"required"`
 }
-
-type PaginationQuery struct {
-	Page  uint64
-	Limit uint64
-}

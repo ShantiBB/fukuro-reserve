@@ -7,7 +7,7 @@ import (
 )
 
 func ParseToken(tokenStr string, secret []byte) (*Claims, error) {
-	tokenFunc := func(t *jwt.Token) (interface{}, error) {
+	tokenFunc := func(t *jwt.Token) (any, error) {
 		return secret, nil
 	}
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, tokenFunc)

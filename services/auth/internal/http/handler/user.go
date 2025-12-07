@@ -7,10 +7,10 @@ import (
 
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
-	"auth/internal/http/lib/helper"
+	"auth/internal/http/lib/password"
 	"auth/internal/repository/postgres/models"
 	"fukuro-reserve/pkg/utils/consts"
-	"fukuro-reserve/pkg/utils/password"
+	"fukuro-reserve/pkg/utils/helper"
 )
 
 type UserService interface {
@@ -41,7 +41,7 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
 
-	if ok := helper.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
 		return
 	}
 
@@ -182,7 +182,7 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserUpdate
-	if ok := helper.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
 		return
 	}
 
@@ -232,7 +232,7 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserRoleStatus
-	if ok := helper.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
 		return
 	}
 
@@ -283,7 +283,7 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 	}
 
 	var req request.UserActiveStatus
-	if ok := helper.ParseJSON(w, r, &req); !ok {
+	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
 		return
 	}
 

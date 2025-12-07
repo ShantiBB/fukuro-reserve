@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"auth/internal/http/dto/request"
+	"auth/internal/http/lib/jwt"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/jwt"
 )
 
 var (

@@ -10,16 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"auth/internal/http/dto/request"
+	"auth/internal/http/lib/jwt"
 	"auth/internal/mocks"
 	"auth/test/handler/unit"
 	"fukuro-reserve/pkg/utils/consts"
-	"fukuro-reserve/pkg/utils/jwt"
 )
 
 func TestRegisterByEmail(t *testing.T) {
 	cases := []struct {
 		name           string
-		requestBody    interface{}
+		requestBody    any
 		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   unit.ResponseChecker
@@ -100,7 +100,7 @@ func TestRegisterByEmail(t *testing.T) {
 func TestLoginByEmail(t *testing.T) {
 	cases := []struct {
 		name           string
-		requestBody    interface{}
+		requestBody    any
 		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
@@ -185,7 +185,7 @@ func TestLoginByEmail(t *testing.T) {
 func TestRefreshToken(t *testing.T) {
 	cases := []struct {
 		name           string
-		requestBody    interface{}
+		requestBody    any
 		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)

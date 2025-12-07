@@ -21,7 +21,7 @@ import (
 func TestUserCreate(t *testing.T) {
 	cases := []struct {
 		name           string
-		requestBody    interface{}
+		requestBody    any
 		mockSetup      func(*mocks.MockService)
 		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)

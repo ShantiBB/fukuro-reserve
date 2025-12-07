@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"strconv"
-
-	"github.com/go-chi/chi/v5"
 
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
@@ -137,11 +134,8 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramID := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	id := helper.ParseID(w, r)
+	if id == 0 {
 		return
 	}
 
@@ -180,11 +174,8 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramID := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	id := helper.ParseID(w, r)
+	if id == 0 {
 		return
 	}
 
@@ -233,15 +224,12 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramID := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	id := helper.ParseID(w, r)
+	if id == 0 {
 		return
 	}
 
-	if err = h.svc.UserDeleteByID(ctx, id); err != nil {
+	if err := h.svc.UserDeleteByID(ctx, id); err != nil {
 		if errors.Is(err, consts.UserNotFound) {
 			errMsg := response.ErrorResp(consts.UserNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)

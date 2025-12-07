@@ -1,0 +1,59 @@
+version: '3'
+
+tasks:
+  run:
+    desc: "Run specific service (usage: task run service=auth)"
+    cmds:
+      - go run ./services/{{.service}}/cmd/app/main.go
+    env:
+      CONFIG_PATH: "{{.TASKFILE_DIR}}/services/{{.service}}/config/local.yaml"
+    requires:
+      vars: [service]
+
+  build:
+    desc: "Build specific service (usage: task build service=auth)"
+    cmds:
+      - go build -o build/{{.service}}-service services/{{.service}}/cmd/app/main.go
+    requires:
+      vars: [service]
+
+  migrate-gen:
+    desc: "Create migration for specific service (usage: task migrate-gen service=auth name=users)"
+    cmds:
+      - migrate create -ext sql -dir ./services/{{.service}}/migrations -seq {{.name}}
+    requires:
+      vars: [service, name]
+
+  mock-gen:
+    desc: "Generate mocks for specific service (usage: task mock-gen service=auth)"
+    dir: services/{{.service}}
+    cmds:
+      - rm -rf internal/mocks
+      - mockery
+    requires:
+      vars: [service]
+
+  swag-gen:
+    desc: "Generate Swagger docs for specific service (usage: task swag-gen service=auth)"
+    dir: services/{{.service}}
+    cmds:
+      - swag init --parseDependency -g cmd/app/main.go --output docs
+    requires:
+      vars: [service]
+
+  test-unit-handler:
+    desc: "Run unit tests for specific handler (usage: task test-unit-handler service=auth)"
+    cmds:
+      - go test ./services/{{.service}}/internal/http/handler/ -v
+    requires:
+      vars: [service]
+
+  postgres-up:
+    desc: "Start PostgreSQL container"
+    cmds:
+      - docker compose --env-file docker/.env -f docker/postgres.yaml up -d
+
+  postgres-stop:
+    desc: "Stop PostgreSQL container"
+    cmds:
+      - docker compose --env-file docker/.env -f docker/postgres.yaml down

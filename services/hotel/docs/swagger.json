@@ -10,6 +10,62 @@
     "basePath": "/api/v1",
     "paths": {
         "/hotels/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get hotels from admin or moderator provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotels",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 100,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.HotelList"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -71,9 +127,87 @@
                     }
                 }
             }
+        },
+        "/hotels/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get hotel by ID from admin, moderator or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.Hotel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "helper.PaginationLinks": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "string"
+                },
+                "last": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "prev": {
+                    "type": "string"
+                }
+            }
+        },
         "hotel_internal_http_dto_request.HotelCreate": {
             "type": "object",
             "required": [
@@ -149,6 +283,55 @@
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.HotelList": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "hotels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/hotel_internal_http_dto_response.HotelShort"
+                    }
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "links": {
+                    "$ref": "#/definitions/helper.PaginationLinks"
+                },
+                "total_page_count": {
+                    "type": "integer"
+                },
+                "total_users_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.HotelShort": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },

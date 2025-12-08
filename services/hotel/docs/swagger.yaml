@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  helper.PaginationLinks:
+    properties:
+      first:
+        type: string
+      last:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
+    type: object
   hotel_internal_http_dto_request.HotelCreate:
     properties:
       address:
@@ -51,6 +62,38 @@ definitions:
       updated_at:
         type: string
     type: object
+  hotel_internal_http_dto_response.HotelList:
+    properties:
+      current_page:
+        type: integer
+      hotels:
+        items:
+          $ref: '#/definitions/hotel_internal_http_dto_response.HotelShort'
+        type: array
+      limit:
+        type: integer
+      links:
+        $ref: '#/definitions/helper.PaginationLinks'
+      total_page_count:
+        type: integer
+      total_users_count:
+        type: integer
+    type: object
+  hotel_internal_http_dto_response.HotelShort:
+    properties:
+      address:
+        type: string
+      id:
+        type: string
+      location:
+        $ref: '#/definitions/hotel_internal_http_dto_response.Location'
+      name:
+        type: string
+      owner_id:
+        type: integer
+      rating:
+        type: number
+    type: object
   hotel_internal_http_dto_response.Location:
     properties:
       latitude:
@@ -66,6 +109,43 @@ info:
   version: "1.0"
 paths:
   /hotels/:
+    get:
+      consumes:
+      - application/json
+      description: Get hotels from admin or moderator provider
+      parameters:
+      - default: 1
+        description: Page
+        format: int64
+        in: query
+        name: page
+        type: integer
+      - default: 100
+        description: Limit
+        format: int64
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.HotelList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Get hotels
+      tags:
+      - hotels
     post:
       consumes:
       - application/json
@@ -103,6 +183,45 @@ paths:
       security:
       - Bearer: []
       summary: Create hotel
+      tags:
+      - hotels
+  /hotels/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get hotel by ID from admin, moderator or owner provider
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.Hotel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Get hotel by ID
       tags:
       - hotels
 securityDefinitions:

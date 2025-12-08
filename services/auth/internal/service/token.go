@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"log/slog"
 
 	"auth/internal/http/lib/jwt"
 	"auth/internal/http/lib/password"
@@ -18,6 +19,7 @@ func (s *Service) RegisterByEmail(ctx context.Context, email, password string) (
 
 	user, err := s.repo.UserCreate(ctx, newUser)
 	if err != nil {
+		slog.Error("failed create user", "err:", err.Error())
 		return nil, err
 	}
 
@@ -27,6 +29,7 @@ func (s *Service) RegisterByEmail(ctx context.Context, email, password string) (
 func (s *Service) LoginByEmail(ctx context.Context, email, pass string) (*jwt.Token, error) {
 	user, err := s.repo.UserGetCredentialsByEmail(ctx, email)
 	if err != nil {
+		slog.Error("failed login user", "err:", err.Error())
 		return nil, err
 	}
 

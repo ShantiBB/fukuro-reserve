@@ -28,7 +28,7 @@ func main() {
 
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		panic("CONFIG_FILENAME is not set")
+		panic("CONFIG_PATH is not set")
 	}
 
 	cfg, err := config.New(configPath)

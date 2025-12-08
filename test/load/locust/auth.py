@@ -1,17 +1,18 @@
 import time
+import random
 
 from locust import HttpUser, task, between
 
 class UserAPITest(HttpUser):
     wait_time = between(1, 2)
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTdWIiOjEsIlJvbGUiOiJhZG1pbiIsImV4cCI6MTc2NTExNTAxMSwiaWF0IjoxNzY1MDI4NjExfQ.QYl59RcMyqE6mLnMPx3DFKP0Tl6hvYQgnWQPXEfit8g"
+    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJTdWIiOjE2NTkxLCJSb2xlIjoiYWRtaW4iLCJleHAiOjE3NjUzMTEyMTcsImlhdCI6MTc2NTIyNDgxN30.KGK7t8HkFR_o2g8ifGP9srhLgohNTQOWOpsrDPuJh8g"
     def on_start(self):
         self.headers = {
-            "Authorization": f"{self.token}",
+            "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
 
-    @task(3)
+    @task(1)
     def get_users(self):
         self.client.get(
             "/api/v1/users/",
@@ -19,9 +20,9 @@ class UserAPITest(HttpUser):
             name="GET /api/v1/users/"
         )
 
-    @task(1)
+    @task(3)
     def get_user_by_id(self):
-        user_id = 1
+        user_id = random.randint(16593, 17224)
         self.client.get(
             f"/api/v1/users/{user_id}",
             headers=self.headers,

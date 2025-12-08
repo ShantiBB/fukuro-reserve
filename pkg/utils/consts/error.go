@@ -20,7 +20,7 @@ var (
 	UniqueHotelField = errors.New("hotel name already exists")
 )
 var (
-	InvalidID         = errors.New("invalid user ID")
+	InvalidID         = errors.New("invalid ID")
 	InvalidQueryParam = errors.New("invalid query parameter")
 	FieldRequired     = errors.New("field is required")
 	InternalServer    = errors.New("internal server error")

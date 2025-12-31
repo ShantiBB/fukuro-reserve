@@ -16,19 +16,19 @@ func ParseJSON(
 	w http.ResponseWriter, r *http.Request,
 	v any,
 	customErr func(validator.FieldError) string,
-) bool {
+) error {
 	if err := render.DecodeJSON(r.Body, v); err != nil {
 		errMsg := validation.ErrorResp(consts.InvalidJSON)
 		SendError(w, r, http.StatusBadRequest, errMsg)
-		return false
+		return err
 	}
 
 	if errMsg := validation.CheckErrors(v, customErr); errMsg != nil {
 		SendError(w, r, http.StatusBadRequest, errMsg)
-		return false
+		return consts.InvalidJSON
 	}
 
-	return true
+	return nil
 }
 
 func ParseID(w http.ResponseWriter, r *http.Request) int64 {

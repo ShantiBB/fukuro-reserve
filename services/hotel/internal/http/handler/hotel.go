@@ -41,7 +41,7 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.HotelCreate
 
-	if ok := helper.ParseJSON(w, r, &req, nil); !ok {
+	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
 		return
 	}
 

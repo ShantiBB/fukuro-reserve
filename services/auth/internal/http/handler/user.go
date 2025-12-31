@@ -42,7 +42,7 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
 
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -186,7 +186,7 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserUpdate
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -237,7 +237,7 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserRoleStatus
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -289,7 +289,7 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 	}
 
 	var req request.UserActiveStatus
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 

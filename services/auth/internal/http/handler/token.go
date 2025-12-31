@@ -37,7 +37,7 @@ type TokenService interface {
 func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -83,7 +83,7 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -120,7 +120,7 @@ func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 //	@Router			/auth/refresh [post]
 func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req jwt.RefreshToken
-	if ok := helper.ParseJSON(w, r, &req, h.customValidationError); !ok {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 

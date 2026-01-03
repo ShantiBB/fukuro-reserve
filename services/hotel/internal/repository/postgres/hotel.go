@@ -30,7 +30,7 @@ func (r *Repository) HotelCreate(ctx context.Context, h models.HotelCreate) (mod
 		&newHotel.UpdatedAt,
 	}
 
-	if err := r.db.QueryRow(ctx, query.hotelCreateQuery, insertArgs...).Scan(scanArgs...); err != nil {
+	if err := r.db.QueryRow(ctx, query.HotelCreateQuery, insertArgs...).Scan(scanArgs...); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
 			return models.Hotel{}, errors.New("username or email already exists")
@@ -56,17 +56,17 @@ func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (models.
 		&hotel.UpdatedAt,
 	}
 
-	var query string
+	var q string
 	switch v := field.(type) {
 	case uuid.UUID:
-		query = query.hotelGetByID
+		q = query.HotelGetByID
 	case string:
-		query = query.hotelGetByName
+		q = query.HotelGetByName
 	default:
 		return models.Hotel{}, fmt.Errorf("unsupported type %T", v)
 	}
 
-	if err := r.db.QueryRow(ctx, query, field).Scan(scanArgs...); err != nil {
+	if err := r.db.QueryRow(ctx, q, field).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Hotel{}, errors.New("hotel not found")
 		}
@@ -79,7 +79,7 @@ func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (models.
 func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) (models.HotelList, error) {
 	var hotelList models.HotelList
 
-	rows, err := r.db.Query(ctx, query.hotelGetAll, limit, offset)
+	rows, err := r.db.Query(ctx, query.HotelGetAll, limit, offset)
 	if err != nil {
 		return models.HotelList{}, err
 	}
@@ -105,7 +105,7 @@ func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) (mod
 
 func (r *Repository) HotelUpdateByID(ctx context.Context, id uuid.UUID, h models.HotelUpdate) error {
 	row, err := r.db.Exec(
-		ctx, query.hotelUpdateByID,
+		ctx, query.HotelUpdateByID,
 		h.Name,
 		h.Description,
 		h.Address,
@@ -128,7 +128,7 @@ func (r *Repository) HotelUpdateByID(ctx context.Context, id uuid.UUID, h models
 }
 
 func (r *Repository) HotelDeleteByID(ctx context.Context, id uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.hotelDeleteByID, id)
+	row, err := r.db.Exec(ctx, query.HotelDeleteByID, id)
 	if err != nil {
 		return err
 	}

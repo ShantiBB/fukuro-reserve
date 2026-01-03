@@ -1,12 +1,12 @@
-package postgres
+package query
 
 const (
-	hotelCreateQuery = `
+	HotelCreateQuery = `
 	INSERT INTO hotel (name, owner_id, description, address, location)
 	VALUES ($1, $2, $3, $4, ST_SetSRID(ST_MakePoint($5, $6), 4326))
 	RETURNING id, created_at, updated_at`
 
-	hotelGetByID = `
+	HotelGetByID = `
 	SELECT id,
 	       name, 
 	       owner_id, 
@@ -20,7 +20,7 @@ const (
 	FROM hotel 
 	WHERE id = $1`
 
-	hotelGetByName = `
+	HotelGetByName = `
 	SELECT id,
 	       name,
 	       owner_id, 
@@ -34,7 +34,7 @@ const (
 	FROM hotel 
 	WHERE name = $1`
 
-	hotelGetAll = `
+	HotelGetAll = `
 	SELECT id, name, owner_id, address, rating,
 	       st_x(location::geometry) AS longitude,
 	       st_y(location::geometry) AS latitude
@@ -42,13 +42,13 @@ const (
 	ORDER BY name
 	LIMIT $1 OFFSET $2;`
 
-	hotelUpdateByID = `
+	HotelUpdateByID = `
 	UPDATE hotel 
 	SET name = $1, description = $2, address = $3, 
 	    location = ST_SetSRID(ST_MakePoint($4, $5), 4326)
 	WHERE id = $6;`
 
-	hotelDeleteByID = `
+	HotelDeleteByID = `
 	DELETE FROM hotel 
 	WHERE id = $1;`
 

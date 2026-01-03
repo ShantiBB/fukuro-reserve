@@ -3,13 +3,13 @@ package query
 const (
 	RoomCreateQuery = `
 	INSERT INTO room (hotel_id,
+	                  description,
 	                  room_number,
 	                  type,
 	                  price,
 	                  capacity,
 	                  area_sqm,
 	                  floor,
-	                  description,
 	                  amenities,
 	                  images)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
@@ -18,6 +18,7 @@ const (
 	RoomGetByID = `
 	SELECT id,
 	       hotel_id,
+		   description,
 		   room_number,
 		   type,
 		   status,
@@ -25,7 +26,6 @@ const (
 		   capacity,
 		   area_sqm,
 		   floor,
-		   description,
 		   amenities,
 		   images,
 		   created_at,
@@ -36,6 +36,7 @@ const (
 	RoomGetAll = `
 	SELECT id,
 	       hotel_id,
+	       description,
 		   room_number,
 		   type,
 		   price,
@@ -50,11 +51,11 @@ const (
 
 	RoomUpdateByID = `
 	UPDATE room 
-	SET price = $1,
+	SET description = $5,
+	    price = $1,
 		capacity = $2,
 		area_sqm = $3,
 		floor = $4,
-		description = $5,
 		amenities = $6,
 		images = $7
 	WHERE id = $6;`

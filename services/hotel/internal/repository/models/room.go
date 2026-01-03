@@ -9,25 +9,25 @@ import (
 
 type RoomCreate struct {
 	HotelID     uuid.UUID
+	Description string
 	RoomNumber  string
 	Type        RoomType
 	Price       decimal.Decimal
 	Capacity    int
-	AreaSqm     *float64
-	Floor       *int
-	Description *string
+	AreaSqm     float64
+	Floor       int
 	Amenities   []string
 	Images      []string
 }
 
 type RoomUpdate struct {
+	Description string
 	RoomNumber  string
 	Type        RoomType
 	Price       decimal.Decimal
 	Capacity    int
-	AreaSqm     *float64
-	Floor       *int
-	Description *string
+	AreaSqm     float64
+	Floor       int
 	Amenities   []string
 	Images      []string
 }
@@ -35,14 +35,14 @@ type RoomUpdate struct {
 type Room struct {
 	ID          uuid.UUID
 	HotelID     uuid.UUID
+	Description string
 	RoomNumber  string
 	Type        RoomType
 	Status      RoomStatus
 	Price       decimal.Decimal
 	Capacity    int
-	AreaSqm     *float64
-	Floor       *int
-	Description *string
+	AreaSqm     float64
+	Floor       int
 	Amenities   []string
 	Images      []string
 	CreatedAt   time.Time
@@ -52,13 +52,13 @@ type Room struct {
 type RoomShort struct {
 	ID          uuid.UUID
 	HotelID     uuid.UUID
+	Description string
 	RoomNumber  string
 	Type        RoomType
 	Status      RoomStatus
 	Price       decimal.Decimal
 	Capacity    int
-	AreaSqm     *float64
-	Description *string
+	AreaSqm     float64
 	Amenities   []string
 	Images      []string
 }
@@ -70,13 +70,13 @@ type RoomList struct {
 func (r *RoomCreate) ToRead() Room {
 	return Room{
 		HotelID:     r.HotelID,
+		Description: r.Description,
 		RoomNumber:  r.RoomNumber,
 		Type:        r.Type,
 		Price:       r.Price,
 		Capacity:    r.Capacity,
 		AreaSqm:     r.AreaSqm,
 		Floor:       r.Floor,
-		Description: r.Description,
 		Amenities:   r.Amenities,
 		Images:      r.Images,
 	}

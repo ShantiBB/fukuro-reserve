@@ -17,13 +17,13 @@ func (r *Repository) RoomCreate(ctx context.Context, room models.RoomCreate) (mo
 	newRoom := room.ToRead()
 	insertArgs := []any{
 		room.HotelID,
+		room.Description,
 		room.RoomNumber,
 		room.Type,
 		room.Price,
 		room.Capacity,
 		room.AreaSqm,
 		room.Floor,
-		room.Description,
 		room.Amenities,
 		room.Images,
 	}
@@ -49,6 +49,7 @@ func (r *Repository) RoomGetByID(ctx context.Context, id uuid.UUID) (models.Room
 	scanArgs := []any{
 		&room.ID,
 		&room.HotelID,
+		&room.Description,
 		&room.RoomNumber,
 		&room.Type,
 		&room.Status,
@@ -56,7 +57,6 @@ func (r *Repository) RoomGetByID(ctx context.Context, id uuid.UUID) (models.Room
 		&room.Capacity,
 		&room.AreaSqm,
 		&room.Floor,
-		&room.Description,
 		&room.Amenities,
 		&room.Images,
 		&room.CreatedAt,
@@ -87,13 +87,13 @@ func (r *Repository) RoomGetAll(ctx context.Context, limit, offset uint64) (mode
 		err = rows.Scan(
 			&room.ID,
 			&room.HotelID,
+			&room.Description,
 			&room.RoomNumber,
 			&room.Type,
 			&room.Status,
 			&room.Price,
 			&room.Capacity,
 			&room.AreaSqm,
-			&room.Description,
 			&room.Amenities,
 			&room.Images)
 		if err != nil {
@@ -117,13 +117,13 @@ func (r *Repository) RoomGetAll(ctx context.Context, limit, offset uint64) (mode
 func (r *Repository) RoomUpdateByID(ctx context.Context, id uuid.UUID, room models.RoomUpdate) error {
 	row, err := r.db.Exec(
 		ctx, query.RoomUpdateByID,
+		room.Description,
 		room.RoomNumber,
 		room.Type,
 		room.Price,
 		room.Capacity,
 		room.AreaSqm,
 		room.Floor,
-		room.Description,
 		room.Amenities,
 		room.Images,
 		id,

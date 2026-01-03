@@ -4,6 +4,7 @@ CREATE TYPE room_status AS ENUM ('available', 'occupied', 'maintenance', 'cleani
 CREATE TABLE room (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     hotel_id UUID NOT NULL REFERENCES hotel(id) ON DELETE CASCADE,
+    description TEXT NOT NULL,
     room_number VARCHAR(10) NOT NULL,
     type room_type NOT NULL,
     status room_status NOT NULL DEFAULT 'available',
@@ -11,7 +12,6 @@ CREATE TABLE room (
     capacity INT NOT NULL CHECK (capacity > 0 AND capacity <= 10),
     area_sqm NUMERIC(6,2),
     floor INT CHECK (floor >= 0),
-    description TEXT,
     amenities TEXT[],
     images TEXT[],
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,

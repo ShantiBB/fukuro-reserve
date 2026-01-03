@@ -20,13 +20,16 @@ const (
 	       hotel_id,
 		   room_number,
 		   type,
+		   status,
 		   price,
 		   capacity,
 		   area_sqm,
 		   floor,
 		   description,
 		   amenities,
-		   images
+		   images,
+		   created_at,
+		   updated_at
 	FROM room 
 	WHERE id = $1`
 

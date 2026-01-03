@@ -47,6 +47,72 @@ definitions:
       longitude:
         type: number
     type: object
+  hotel_internal_http_dto_request.RoomCreate:
+    properties:
+      amenities:
+        items:
+          type: string
+        type: array
+      area_sqm:
+        type: number
+      capacity:
+        type: integer
+      description:
+        type: string
+      floor:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: number
+      room_number:
+        type: string
+      type:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+    required:
+    - capacity
+    - description
+    - price
+    - room_number
+    - type
+    type: object
+  hotel_internal_http_dto_request.RoomUpdate:
+    properties:
+      amenities:
+        items:
+          type: string
+        type: array
+      area_sqm:
+        type: number
+      capacity:
+        type: integer
+      description:
+        type: string
+      floor:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: number
+      room_number:
+        type: string
+      type:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+    required:
+    - amenities
+    - area_sqm
+    - capacity
+    - description
+    - floor
+    - images
+    - price
+    - room_number
+    - type
+    type: object
   hotel_internal_http_dto_response.ErrorSchema:
     properties:
       message:
@@ -89,7 +155,7 @@ definitions:
         $ref: '#/definitions/helper.PaginationLinks'
       total_page_count:
         type: integer
-      total_users_count:
+      total_rooms_count:
         type: integer
     type: object
   hotel_internal_http_dto_response.HotelShort:
@@ -127,6 +193,136 @@ definitions:
       longitude:
         type: number
     type: object
+  hotel_internal_http_dto_response.Room:
+    properties:
+      amenities:
+        items:
+          type: string
+        type: array
+      area_sqm:
+        type: number
+      capacity:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      floor:
+        type: integer
+      id:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: number
+      room_number:
+        type: string
+      status:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomStatus'
+      type:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+      updated_at:
+        type: string
+    type: object
+  hotel_internal_http_dto_response.RoomList:
+    properties:
+      current_page:
+        type: integer
+      limit:
+        type: integer
+      links:
+        $ref: '#/definitions/helper.PaginationLinks'
+      rooms:
+        items:
+          $ref: '#/definitions/hotel_internal_http_dto_response.RoomShort'
+        type: array
+      total_page_count:
+        type: integer
+      total_rooms_count:
+        type: integer
+    type: object
+  hotel_internal_http_dto_response.RoomShort:
+    properties:
+      amenities:
+        items:
+          type: string
+        type: array
+      area_sqm:
+        type: number
+      capacity:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: number
+      room_number:
+        type: string
+      status:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomStatus'
+      type:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+    type: object
+  hotel_internal_http_dto_response.RoomUpdate:
+    properties:
+      amenities:
+        items:
+          type: string
+        type: array
+      area_sqm:
+        type: number
+      capacity:
+        type: integer
+      description:
+        type: string
+      floor:
+        type: integer
+      images:
+        items:
+          type: string
+        type: array
+      price:
+        type: number
+      room_number:
+        type: string
+      type:
+        $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+    type: object
+  hotel_internal_repository_models.RoomStatus:
+    enum:
+    - available
+    - occupied
+    - maintenance
+    - cleaning
+    type: string
+    x-enum-varnames:
+    - RoomStatusAvailable
+    - RoomStatusOccupied
+    - RoomStatusMaintenance
+    - RoomStatusCleaning
+  hotel_internal_repository_models.RoomType:
+    enum:
+    - single
+    - double
+    - suite
+    - deluxe
+    - family
+    - presidential
+    type: string
+    x-enum-varnames:
+    - RoomTypeSingle
+    - RoomTypeDouble
+    - RoomTypeSuite
+    - RoomTypeDeluxe
+    - RoomTypeFamily
+    - RoomTypePresidential
 host: localhost:8082
 info:
   contact: {}
@@ -146,7 +342,7 @@ paths:
         in: query
         name: page
         type: integer
-      - default: 100
+      - default: 20
         description: Limit
         format: int64
         in: query
@@ -211,6 +407,227 @@ paths:
       summary: Create hotel
       tags:
       - hotels
+  /hotels/{hotel_id}/rooms/:
+    get:
+      consumes:
+      - application/json
+      description: Get rooms from all users
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotel_id
+        required: true
+        type: string
+      - default: 1
+        description: Page
+        format: int64
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Limit
+        format: int64
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.RoomList'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Get rooms
+      tags:
+      - rooms
+    post:
+      consumes:
+      - application/json
+      description: Create a new room from admin or owner provider
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotel_id
+        required: true
+        type: string
+      - description: Room data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/hotel_internal_http_dto_request.RoomCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.Room'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Create room
+      tags:
+      - rooms
+  /hotels/{hotel_id}/rooms/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete room by ID from admin or owner provider
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotel_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Delete room by ID
+      tags:
+      - rooms
+    get:
+      consumes:
+      - application/json
+      description: Get room by ID from all users
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotel_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.Room'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Get room by ID
+      tags:
+      - rooms
+    put:
+      consumes:
+      - application/json
+      description: Update room by ID from admin or owner provider
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotel_id
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Room data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/hotel_internal_http_dto_request.RoomUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.RoomUpdate'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/hotel_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Update room by ID
+      tags:
+      - rooms
   /hotels/{id}:
     delete:
       consumes:

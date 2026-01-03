@@ -39,7 +39,7 @@
                     {
                         "type": "integer",
                         "format": "int64",
-                        "default": 100,
+                        "default": 20,
                         "description": "Limit",
                         "name": "limit",
                         "in": "query"
@@ -115,6 +115,345 @@
                     },
                     "409": {
                         "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
+        },
+        "/hotels/{hotel_id}/rooms/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get rooms from all users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 20,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.RoomList"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new room from admin or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Create room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Room data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_request.RoomCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.Room"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
+        },
+        "/hotels/{hotel_id}/rooms/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get room by ID from all users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get room by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.Room"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update room by ID from admin or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Update room by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Room data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_request.RoomUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.RoomUpdate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete room by ID from admin or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Delete room by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
                         }
@@ -387,6 +726,100 @@
                 }
             }
         },
+        "hotel_internal_http_dto_request.RoomCreate": {
+            "type": "object",
+            "required": [
+                "capacity",
+                "description",
+                "price",
+                "room_number",
+                "type"
+            ],
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                }
+            }
+        },
+        "hotel_internal_http_dto_request.RoomUpdate": {
+            "type": "object",
+            "required": [
+                "amenities",
+                "area_sqm",
+                "capacity",
+                "description",
+                "floor",
+                "images",
+                "price",
+                "room_number",
+                "type"
+            ],
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                }
+            }
+        },
         "hotel_internal_http_dto_response.ErrorSchema": {
             "type": "object",
             "properties": {
@@ -451,7 +884,7 @@
                 "total_page_count": {
                     "type": "integer"
                 },
-                "total_users_count": {
+                "total_rooms_count": {
                     "type": "integer"
                 }
             }
@@ -509,6 +942,195 @@
                     "type": "number"
                 }
             }
+        },
+        "hotel_internal_http_dto_response.Room": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomStatus"
+                },
+                "type": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.RoomList": {
+            "type": "object",
+            "properties": {
+                "current_page": {
+                    "type": "integer"
+                },
+                "limit": {
+                    "type": "integer"
+                },
+                "links": {
+                    "$ref": "#/definitions/helper.PaginationLinks"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/hotel_internal_http_dto_response.RoomShort"
+                    }
+                },
+                "total_page_count": {
+                    "type": "integer"
+                },
+                "total_rooms_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.RoomShort": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomStatus"
+                },
+                "type": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                }
+            }
+        },
+        "hotel_internal_http_dto_response.RoomUpdate": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "number"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                }
+            }
+        },
+        "hotel_internal_repository_models.RoomStatus": {
+            "type": "string",
+            "enum": [
+                "available",
+                "occupied",
+                "maintenance",
+                "cleaning"
+            ],
+            "x-enum-varnames": [
+                "RoomStatusAvailable",
+                "RoomStatusOccupied",
+                "RoomStatusMaintenance",
+                "RoomStatusCleaning"
+            ]
+        },
+        "hotel_internal_repository_models.RoomType": {
+            "type": "string",
+            "enum": [
+                "single",
+                "double",
+                "suite",
+                "deluxe",
+                "family",
+                "presidential"
+            ],
+            "x-enum-varnames": [
+                "RoomTypeSingle",
+                "RoomTypeDouble",
+                "RoomTypeSuite",
+                "RoomTypeDeluxe",
+                "RoomTypeFamily",
+                "RoomTypePresidential"
+            ]
         }
     },
     "securityDefinitions": {

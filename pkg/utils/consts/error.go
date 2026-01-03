@@ -15,10 +15,18 @@ var (
 	Unauthorized        = errors.New("unauthorized")
 )
 
+// hotel
 var (
 	HotelNotFound    = errors.New("hotel not found")
 	UniqueHotelField = errors.New("hotel name already exists")
 )
+
+// room
+var (
+	RoomNotFound    = errors.New("room not found")
+	UniqueRoomField = errors.New("room number already exists")
+)
+
 var (
 	InvalidID         = errors.New("invalid ID")
 	InvalidQueryParam = errors.New("invalid query parameter")

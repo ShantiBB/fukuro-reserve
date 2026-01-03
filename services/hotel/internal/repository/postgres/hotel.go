@@ -33,7 +33,7 @@ func (r *Repository) HotelCreate(ctx context.Context, h models.HotelCreate) (mod
 	if err := r.db.QueryRow(ctx, query.HotelCreateQuery, insertArgs...).Scan(scanArgs...); err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return models.Hotel{}, errors.New("username or email already exists")
+			return models.Hotel{}, consts.UniqueHotelField
 		}
 		return models.Hotel{}, err
 	}
@@ -68,7 +68,7 @@ func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (models.
 
 	if err := r.db.QueryRow(ctx, q, field).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Hotel{}, errors.New("hotel not found")
+			return models.Hotel{}, consts.HotelNotFound
 		}
 		return models.Hotel{}, err
 	}

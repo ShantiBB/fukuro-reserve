@@ -13,11 +13,10 @@ const (
 	                  amenities,
 	                  images)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	RETURNING id, created_at, updated_at`
+	RETURNING id, status, created_at, updated_at`
 
 	RoomGetByID = `
 	SELECT id,
-	       hotel_id,
 		   description,
 		   room_number,
 		   type,
@@ -31,38 +30,40 @@ const (
 		   created_at,
 		   updated_at
 	FROM room 
-	WHERE id = $1`
+	WHERE hotel_id = $1 AND id = $2`
 
 	RoomGetAll = `
 	SELECT id,
-	       hotel_id,
 	       description,
 		   room_number,
 		   type,
+		   status,
 		   price,
 		   capacity,
 		   area_sqm,
-		   floor,
 		   amenities,
 		   images
 	FROM room
-	ORDER BY name
-	LIMIT $1 OFFSET $2;`
+	WHERE hotel_id = $1
+	ORDER BY room_number
+	LIMIT $2 OFFSET $3;`
 
 	RoomUpdateByID = `
 	UPDATE room 
-	SET description = $5,
-	    price = $1,
-		capacity = $2,
-		area_sqm = $3,
-		floor = $4,
-		amenities = $6,
-		images = $7
-	WHERE id = $6;`
+	SET description = $1,
+	    room_number = $2,
+	    type = $3,
+	    price = $4,
+		capacity = $5,
+		area_sqm = $6,
+		floor = $7,
+		amenities = $8,
+		images = $9
+	WHERE hotel_id = $10 AND id = $11;`
 
 	RoomDeleteByID = `
 	DELETE FROM room 
-	WHERE id = $1;`
+	WHERE hotel_id = $1 AND id = $2;`
 
 	RoomGetCountRows = `SELECT COUNT(*) FROM room;`
 )

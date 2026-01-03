@@ -48,5 +48,5 @@ type HotelList struct {
 	Limit            uint64                 `json:"limit"`
 	Links            helper.PaginationLinks `json:"links"`
 	TotalPageCount   uint64                 `json:"total_page_count"`
-	TotalHotelsCount uint64                 `json:"total_users_count"`
+	TotalHotelsCount uint64                 `json:"total_rooms_count"`
 }

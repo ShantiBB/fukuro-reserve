@@ -8,7 +8,6 @@ import (
 )
 
 type RoomCreate struct {
-	HotelID     uuid.UUID
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -34,7 +33,6 @@ type RoomUpdate struct {
 
 type Room struct {
 	ID          uuid.UUID
-	HotelID     uuid.UUID
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -51,7 +49,6 @@ type Room struct {
 
 type RoomShort struct {
 	ID          uuid.UUID
-	HotelID     uuid.UUID
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -69,7 +66,6 @@ type RoomList struct {
 
 func (r *RoomCreate) ToRead() Room {
 	return Room{
-		HotelID:     r.HotelID,
 		Description: r.Description,
 		RoomNumber:  r.RoomNumber,
 		Type:        r.Type,

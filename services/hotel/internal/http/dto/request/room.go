@@ -1,17 +1,15 @@
 package request
 
 import (
-	"hotel/internal/http/dto"
+	"hotel/internal/repository/models"
 
-	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 )
 
 type RoomCreate struct {
-	HotelID     uuid.UUID       `json:"hotel_id" validate:"required"`
 	Description string          `json:"description" validate:"required"`
 	RoomNumber  string          `json:"room_number" validate:"required"`
-	Type        dto.RoomType    `json:"type" validate:"required"`
+	Type        models.RoomType `json:"type" validate:"required"`
 	Price       decimal.Decimal `json:"price" validate:"required"`
 	Capacity    int             `json:"capacity" validate:"required"`
 	AreaSqm     float64         `json:"area_sqm"`
@@ -23,7 +21,7 @@ type RoomCreate struct {
 type RoomUpdate struct {
 	Description string          `json:"description" validate:"required"`
 	RoomNumber  string          `json:"room_number" validate:"required"`
-	Type        dto.RoomType    `json:"type" validate:"required"`
+	Type        models.RoomType `json:"type" validate:"required"`
 	Price       decimal.Decimal `json:"price" validate:"required"`
 	Capacity    int             `json:"capacity" validate:"required"`
 	AreaSqm     float64         `json:"area_sqm" validate:"required"`

@@ -2,11 +2,11 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 CREATE TABLE hotel (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    country_code CHAR(2) NOT NULL CHECK (country_code ~ '^[a-z]{2}$'),
+    city_slug VARCHAR(100) NOT NULL CHECK (city_slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
     title VARCHAR(100) NOT NULL,
     slug VARCHAR(100) NOT NULL CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
     owner_id BIGINT NOT NULL,
-    country_code CHAR(2) NOT NULL CHECK (country_code ~ '^[a-z]{2}$'),
-    city_slug VARCHAR(100) NOT NULL CHECK (city_slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
     description TEXT,
     address TEXT NOT NULL,
     location GEOGRAPHY(Point, 4326) NOT NULL,

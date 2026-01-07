@@ -7,21 +7,20 @@ import (
 	"hotel/internal/repository/models"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"github.com/google/uuid"
-
 	"fukuro-reserve/pkg/utils/consts"
 	"fukuro-reserve/pkg/utils/helper"
 	"hotel/internal/http/dto/request"
 	"hotel/internal/http/dto/response"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type HotelService interface {
-	HotelCreate(ctx context.Context, h models.HotelCreate) (models.Hotel, error)
-	HotelGetByIDOrName(ctx context.Context, field any) (models.Hotel, error)
-	HotelGetAll(ctx context.Context, limit, offset uint64) (models.HotelList, error)
-	HotelUpdateByID(ctx context.Context, id uuid.UUID, h models.HotelUpdate) error
-	HotelDeleteByID(ctx context.Context, id uuid.UUID) error
+	HotelCreate(ctx context.Context, countryCode, citySlug string, h models.HotelCreate) (models.Hotel, error)
+	HotelGetBySlug(ctx context.Context, countryCode, citySlug, slug string) (models.Hotel, error)
+	HotelGetAll(ctx context.Context, countryCode, citySlug, sortField string, page, limit uint64) (models.HotelList, error)
+	HotelUpdateBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string, h models.HotelUpdate) error
+	HotelDeleteBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string) error
 }
 
 // HotelCreate   godoc
@@ -30,14 +29,16 @@ type HotelService interface {
 // @Tags         hotels
 // @Accept       json
 // @Produce      json
-// @Param        request  body      request.HotelCreate  true  "Hotel data"
-// @Success      201      {object}  response.Hotel
-// @Failure      400      {object}  response.ErrorSchema
-// @Failure      401      {object}  response.ErrorSchema
-// @Failure      409      {object}  response.ErrorSchema
-// @Failure      500      {object}  response.ErrorSchema
+// @Param		 country_code	path		string	true	"Country Code"
+// @Param	  	 city_slug    	path		string	true	"City Slug"
+// @Param        request        body        request.HotelCreate  true  "Hotel data"
+// @Success      201            {object}    response.Hotel
+// @Failure      400            {object}    response.ErrorSchema
+// @Failure      401            {object}    response.ErrorSchema
+// @Failure      409            {object}    response.ErrorSchema
+// @Failure      500            {object}    response.ErrorSchema
 // @Security     Bearer
-// @Router       /hotels/  [post]
+// @Router       /{country_code}/{city_slug}/hotels/  [post]
 func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.HotelCreate
@@ -46,8 +47,11 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
 	newHotel := mapper.HotelCreateRequestToEntity(req)
-	createdHotel, err := h.svc.HotelCreate(ctx, newHotel)
+
+	createdHotel, err := h.svc.HotelCreate(ctx, countryCode, citySlug, newHotel)
 	if err != nil {
 		if errors.Is(err, consts.UniqueHotelField) {
 			errMsg := response.ErrorResp(consts.UniqueHotelField)
@@ -59,7 +63,7 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hotelResponse := mapper.HotelEntityToResponse(createdHotel)
+	hotelResponse := mapper.HotelCreateEntityToResponse(createdHotel)
 	helper.SendSuccess(w, r, http.StatusCreated, hotelResponse)
 }
 
@@ -70,15 +74,20 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 //	@Tags			hotels
 //	@Accept			json
 //	@Produce		json
-//	@Param			page	query		uint64	false	"Page"	default(1)
-//	@Param			limit	query		uint64	false	"Limit"	default(20)
-//	@Success		200		{object}	response.HotelList
-//	@Failure		401		{object}	response.ErrorSchema
-//	@Failure		500		{object}	response.ErrorSchema
+//	@Param			country_code	path		string	true	"Country Code"
+//	@Param			city_slug    	path		string	true	"City Slug"
+//	@Param			page	        query		uint64	false	"Page"	default(1)
+//	@Param			limit	        query		uint64	false	"Limit"	default(20)
+//	@Success		200		        {object}	response.HotelList
+//	@Failure		401		        {object}	response.ErrorSchema
+//	@Failure		500		        {object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/ [get]
+//	@Router			/{country_code}/{city_slug}/hotels/ [get]
 func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
+	sortField := chi.URLParam(r, "sort")
 
 	pagination, err := helper.ParsePaginationQuery(r)
 	if err != nil {
@@ -87,7 +96,7 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hotelList, err := h.svc.HotelGetAll(ctx, pagination.Page, pagination.Limit)
+	hotelList, err := h.svc.HotelGetAll(ctx, countryCode, citySlug, sortField, pagination.Page, pagination.Limit)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
@@ -114,33 +123,30 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 	helper.SendSuccess(w, r, http.StatusOK, hotelListResp)
 }
 
-// HotelGetByID    godoc
+// HotelGetBySlug    godoc
 //
-//	@Summary		Get hotel by ID
-//	@Description	Get hotel by ID from admin, moderator or owner provider
+//	@Summary		Get hotel by slug
+//	@Description	Get hotel by slug from admin, moderator or owner provider
 //	@Tags			hotels
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string	true	"Hotel ID"
+//	@Param			country_code	path		         string	true	"Country Code"
+//	@Param			city_slug    	path		         string	true	"City Slug"
+//	@Param			slug	        path		         string	true	"Hotel slug"
 //	@Success		200	{object}	response.Hotel
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{id} [get]
-func (h *Handler) HotelGetByID(w http.ResponseWriter, r *http.Request) {
+//	@Router			/{country_code}/{city_slug}/hotels/{slug} [get]
+func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
+	slug := chi.URLParam(r, "slug")
 
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-
-	hotel, err := h.svc.HotelGetByIDOrName(ctx, id)
+	hotel, err := h.svc.HotelGetBySlug(ctx, countryCode, citySlug, slug)
 	if err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
@@ -152,46 +158,41 @@ func (h *Handler) HotelGetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hotelResponse := mapper.HotelEntityToResponse(hotel)
+	hotelResponse := mapper.HotelGetEntityToResponse(hotel)
 	helper.SendSuccess(w, r, http.StatusOK, hotelResponse)
 }
 
-// HotelUpdateByID    godoc
+// HotelUpdateBySlug    godoc
 //
-//	@Summary		Update hotel by ID
-//	@Description	Update hotel by ID from admin, moderator or owner provider
+//	@Summary		Update hotel by slug
+//	@Description	Update hotel by slug from admin, moderator or owner provider
 //	@Tags			hotels
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string	true	"Hotel ID"
-//
-// @Param           request  body   request.HotelUpdate  true  "Hotel data"
-//
-//	@Success		200	{object}	response.HotelUpdate
-//	@Failure		400	{object}	response.ErrorSchema
-//	@Failure		401	{object}	response.ErrorSchema
-//	@Failure		404	{object}	response.ErrorSchema
-//	@Failure		500	{object}	response.ErrorSchema
+//	@Param			country_code	path		string	true	"Country Code"
+//	@Param			city_slug    	path		string	true	"City Slug"
+//	@Param			slug	        path		string	true	"Hotel slug"
+//	@Param          request         body        request.HotelUpdate  true  "Hotel data"
+//	@Success		200	{object}	            response.HotelUpdate
+//	@Failure		400	{object}	            response.ErrorSchema
+//	@Failure		401	{object}	            response.ErrorSchema
+//	@Failure		404	{object}	            response.ErrorSchema
+//	@Failure		500	{object}	            response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{id} [put]
-func (h *Handler) HotelUpdateByID(w http.ResponseWriter, r *http.Request) {
+//	@Router			/{country_code}/{city_slug}/hotels/{slug} [put]
+func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
+	slug := chi.URLParam(r, "slug")
 
 	var req request.HotelUpdate
-	if err = helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
 		return
 	}
 
 	hotelUpdate := mapper.HotelUpdateRequestToEntity(req)
-	if err = h.svc.HotelUpdateByID(ctx, id, hotelUpdate); err != nil {
+	if err := h.svc.HotelUpdateBySlug(ctx, countryCode, citySlug, slug, hotelUpdate); err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
@@ -202,37 +203,34 @@ func (h *Handler) HotelUpdateByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hotelResponse := mapper.HotelUpdateEntityToResponse(id, hotelUpdate)
+	hotelResponse := mapper.HotelUpdateEntityToResponse(hotelUpdate)
 	helper.SendSuccess(w, r, http.StatusOK, hotelResponse)
 }
 
-// HotelDeleteByID    godoc
+// HotelDeleteBySlug    godoc
 //
-//	@Summary		Delete hotel by ID
-//	@Description	Delete hotel by ID from admin or owner provider
+//	@Summary		Delete hotel by slug
+//	@Description	Delete hotel by slug from admin or owner provider
 //	@Tags			hotels
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string	true	"Hotel ID"
+//	@Param			country_code	path		string	true	"Country Code"
+//	@Param			city_slug    	path		string	true	"City Slug"
+//	@Param			slug	        path		string	true	"Hotel slug"
 //	@Success		204	{object}	nil
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{id} [delete]
-func (h *Handler) HotelDeleteByID(w http.ResponseWriter, r *http.Request) {
+//	@Router			/{country_code}/{city_slug}/hotels/{slug} [delete]
+func (h *Handler) HotelDeleteBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
+	slug := chi.URLParam(r, "slug")
 
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-
-	if err = h.svc.HotelDeleteByID(ctx, id); err != nil {
+	if err := h.svc.HotelDeleteBySlug(ctx, countryCode, citySlug, slug); err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)

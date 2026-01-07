@@ -3,11 +3,9 @@ package postgres
 import (
 	"context"
 	"errors"
-	"fmt"
 	"hotel/internal/repository/models"
 	"hotel/internal/repository/postgres/query"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
@@ -17,7 +15,10 @@ import (
 func (r *Repository) HotelCreate(ctx context.Context, h models.HotelCreate) (models.Hotel, error) {
 	newHotel := h.ToRead()
 	insertArgs := []any{
-		h.Name,
+		h.CountryCode,
+		h.CitySlug,
+		h.Title,
+		h.Slug,
 		h.OwnerID,
 		h.Description,
 		h.Address,
@@ -41,45 +42,46 @@ func (r *Repository) HotelCreate(ctx context.Context, h models.HotelCreate) (mod
 	return newHotel, nil
 }
 
-func (r *Repository) HotelGetByIDOrName(ctx context.Context, field any) (models.Hotel, error) {
-	var hotel models.Hotel
+func (r *Repository) HotelGetBySlug(ctx context.Context, h models.Hotel) (models.Hotel, error) {
+	insertArgs := []any{
+		h.CountryCode,
+		h.CitySlug,
+		h.Slug,
+	}
 	scanArgs := []any{
-		&hotel.ID,
-		&hotel.Name,
-		&hotel.OwnerID,
-		&hotel.Description,
-		&hotel.Address,
-		&hotel.Location.Longitude,
-		&hotel.Location.Latitude,
-		&hotel.Rating,
-		&hotel.CreatedAt,
-		&hotel.UpdatedAt,
+		&h.ID,
+		&h.Title,
+		&h.OwnerID,
+		&h.Description,
+		&h.Address,
+		&h.Location.Longitude,
+		&h.Location.Latitude,
+		&h.Rating,
+		&h.CreatedAt,
+		&h.UpdatedAt,
 	}
 
-	var q string
-	switch v := field.(type) {
-	case uuid.UUID:
-		q = query.HotelGetByID
-	case string:
-		q = query.HotelGetByName
-	default:
-		return models.Hotel{}, fmt.Errorf("unsupported type %T", v)
-	}
-
-	if err := r.db.QueryRow(ctx, q, field).Scan(scanArgs...); err != nil {
+	if err := r.db.QueryRow(ctx, query.HotelGetBySlug, insertArgs...).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Hotel{}, consts.HotelNotFound
 		}
 		return models.Hotel{}, err
 	}
 
-	return hotel, nil
+	return h, nil
 }
 
-func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) (models.HotelList, error) {
+func (r *Repository) HotelGetAll(ctx context.Context, filter models.HotelFilter) (models.HotelList, error) {
 	var hotelList models.HotelList
+	selectArgs := []any{
+		filter.CountryCode,
+		filter.CitySlug,
+		filter.SortField,
+		filter.Limit,
+		filter.Offset,
+	}
 
-	rows, err := r.db.Query(ctx, query.HotelGetAll, limit, offset)
+	rows, err := r.db.Query(ctx, query.HotelGetAll, selectArgs...)
 	if err != nil {
 		return models.HotelList{}, err
 	}
@@ -87,7 +89,14 @@ func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) (mod
 	var h models.HotelShort
 	for rows.Next() {
 		err = rows.Scan(
-			&h.ID, &h.Name, &h.OwnerID, &h.Address, &h.Rating, &h.Location.Longitude, &h.Location.Latitude,
+			&h.ID,
+			&h.Title,
+			&h.Slug,
+			&h.OwnerID,
+			&h.Address,
+			&h.Rating,
+			&h.Location.Longitude,
+			&h.Location.Latitude,
 		)
 		if err != nil {
 			return models.HotelList{}, err
@@ -103,16 +112,20 @@ func (r *Repository) HotelGetAll(ctx context.Context, limit, offset uint64) (mod
 	return hotelList, nil
 }
 
-func (r *Repository) HotelUpdateByID(ctx context.Context, id uuid.UUID, h models.HotelUpdate) error {
-	row, err := r.db.Exec(
-		ctx, query.HotelUpdateByID,
-		h.Name,
+func (r *Repository) HotelUpdateBySlug(ctx context.Context, hotelSlug string, h models.HotelUpdate) error {
+	updateArgs := []any{
+		h.Title,
+		h.Slug,
 		h.Description,
 		h.Address,
 		h.Location.Longitude,
 		h.Location.Latitude,
-		id,
-	)
+		h.CountryCode,
+		h.CitySlug,
+		hotelSlug,
+	}
+
+	row, err := r.db.Exec(ctx, query.HotelUpdateBySlug, updateArgs...)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
@@ -127,8 +140,8 @@ func (r *Repository) HotelUpdateByID(ctx context.Context, id uuid.UUID, h models
 	return nil
 }
 
-func (r *Repository) HotelDeleteByID(ctx context.Context, id uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.HotelDeleteByID, id)
+func (r *Repository) HotelDeleteBySlug(ctx context.Context, countryCode, citySlug, slug string) error {
+	row, err := r.db.Exec(ctx, query.HotelDeleteBySlug, countryCode, citySlug, slug)
 	if err != nil {
 		return err
 	}

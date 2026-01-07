@@ -18,6 +18,6 @@ func New(r chi.Router, h *handler.Handler) {
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/swagger/*", httpswagger.WrapHandler)
 
-		hotelRouter("/hotels", r, h)
+		hotelRouter("/{countryCode}/{citySlug}/hotels", r, h)
 	})
 }

@@ -15,125 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/hotels/": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get hotels from admin or moderator provider",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "hotels"
-                ],
-                "summary": "Get hotels",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "format": "int64",
-                        "default": 20,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.HotelList"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new hotel from admin provider",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "hotels"
-                ],
-                "summary": "Create hotel",
-                "parameters": [
-                    {
-                        "description": "Hotel data",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_request.HotelCreate"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.Hotel"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
-                        }
-                    }
-                }
-            }
-        },
         "/hotels/{hotel_id}/rooms/": {
             "get": {
                 "security": [
@@ -473,14 +354,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/hotels/{id}": {
+        "/{country_code}/{city_slug}/hotels/": {
             "get": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Get hotel by ID from admin, moderator or owner provider",
+                "description": "Get hotels from admin or moderator provider",
                 "consumes": [
                     "application/json"
                 ],
@@ -490,12 +371,173 @@ const docTemplate = `{
                 "tags": [
                     "hotels"
                 ],
-                "summary": "Get hotel by ID",
+                "summary": "Get hotels",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Hotel ID",
-                        "name": "id",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 1,
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "default": 20,
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.HotelList"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new hotel from admin provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Create hotel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Hotel data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_request.HotelCreate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.Hotel"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
+        },
+        "/{country_code}/{city_slug}/hotels/{slug}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get hotel by slug from admin, moderator or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "slug",
                         "in": "path",
                         "required": true
                     }
@@ -539,7 +581,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Update hotel by ID from admin, moderator or owner provider",
+                "description": "Update hotel by slug from admin, moderator or owner provider",
                 "consumes": [
                     "application/json"
                 ],
@@ -549,12 +591,26 @@ const docTemplate = `{
                 "tags": [
                     "hotels"
                 ],
-                "summary": "Update hotel by ID",
+                "summary": "Update hotel by slug",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Hotel ID",
-                        "name": "id",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "slug",
                         "in": "path",
                         "required": true
                     },
@@ -607,7 +663,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Delete hotel by ID from admin or owner provider",
+                "description": "Delete hotel by slug from admin or owner provider",
                 "consumes": [
                     "application/json"
                 ],
@@ -617,12 +673,26 @@ const docTemplate = `{
                 "tags": [
                     "hotels"
                 ],
-                "summary": "Delete hotel by ID",
+                "summary": "Delete hotel by slug",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Hotel ID",
-                        "name": "id",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "slug",
                         "in": "path",
                         "required": true
                     }
@@ -680,8 +750,8 @@ const docTemplate = `{
         "hotel_internal_http_dto_request.HotelCreate": {
             "type": "object",
             "required": [
-                "name",
-                "owner_id"
+                "owner_id",
+                "title"
             ],
             "properties": {
                 "address": {
@@ -693,18 +763,18 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "owner_id": {
                     "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
         "hotel_internal_http_dto_request.HotelUpdate": {
             "type": "object",
             "required": [
-                "name"
+                "title"
             ],
             "properties": {
                 "address": {
@@ -716,7 +786,7 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
                 },
-                "name": {
+                "title": {
                     "type": "string"
                 }
             }
@@ -855,14 +925,14 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "owner_id": {
                     "type": "integer"
                 },
                 "rating": {
                     "type": "number"
+                },
+                "title": {
+                    "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
@@ -907,14 +977,14 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "owner_id": {
                     "type": "integer"
                 },
                 "rating": {
                     "type": "number"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -933,7 +1003,7 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
                 },
-                "name": {
+                "title": {
                     "type": "string"
                 }
             }

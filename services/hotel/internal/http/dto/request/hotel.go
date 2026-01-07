@@ -6,7 +6,7 @@ type Location struct {
 }
 
 type HotelCreate struct {
-	Name        string   `json:"name" validate:"required"`
+	Title       string   `json:"title" validate:"required"`
 	OwnerID     int64    `json:"owner_id" validate:"required"`
 	Description *string  `json:"description"`
 	Address     string   `json:"address"`
@@ -14,7 +14,7 @@ type HotelCreate struct {
 }
 
 type HotelUpdate struct {
-	Name        string   `json:"name" validate:"required"`
+	Title       string   `json:"title" validate:"required"`
 	Description *string  `json:"description"`
 	Address     string   `json:"address"`
 	Location    Location `json:"location"`

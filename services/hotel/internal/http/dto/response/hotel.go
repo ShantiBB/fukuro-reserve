@@ -13,17 +13,29 @@ type Location struct {
 	Longitude float64 `json:"longitude"`
 }
 
-type HotelUpdate struct {
+type HotelCreate struct {
 	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
+	Title       string    `json:"title"`
+	Slug        string    `json:"slug"`
+	OwnerID     int64     `json:"owner_id"`
 	Description *string   `json:"description"`
 	Address     string    `json:"address"`
 	Location    Location  `json:"location"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+}
+
+type HotelUpdate struct {
+	Title       string   `json:"title"`
+	Description *string  `json:"description"`
+	Address     string   `json:"address"`
+	Location    Location `json:"location"`
 }
 
 type HotelShort struct {
 	ID       uuid.UUID `json:"id"`
-	Name     string    `json:"name"`
+	Title    string    `json:"title"`
+	Slug     string    `json:"slug"`
 	OwnerID  int64     `json:"owner_id"`
 	Address  string    `json:"address"`
 	Rating   *float32  `json:"rating"`
@@ -32,7 +44,7 @@ type HotelShort struct {
 
 type Hotel struct {
 	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
+	Title       string    `json:"title"`
 	OwnerID     int64     `json:"owner_id"`
 	Description *string   `json:"description"`
 	Address     string    `json:"address"`

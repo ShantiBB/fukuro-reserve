@@ -18,7 +18,7 @@ var (
 // hotel
 var (
 	HotelNotFound    = errors.New("hotel not found")
-	UniqueHotelField = errors.New("hotel name already exists")
+	UniqueHotelField = errors.New("hotel title already exists")
 )
 
 // room
@@ -29,6 +29,7 @@ var (
 
 var (
 	InvalidID         = errors.New("invalid ID")
+	InvalidSlug       = errors.New("invalid slug")
 	InvalidQueryParam = errors.New("invalid query parameter")
 	FieldRequired     = errors.New("field is required")
 	InternalServer    = errors.New("internal server error")

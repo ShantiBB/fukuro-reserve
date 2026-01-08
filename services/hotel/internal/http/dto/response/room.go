@@ -11,6 +11,7 @@ import (
 
 type Room struct {
 	ID          uuid.UUID         `json:"id"`
+	Title       string            `json:"title"`
 	Description string            `json:"description"`
 	RoomNumber  string            `json:"room_number"`
 	Type        models.RoomType   `json:"type"`
@@ -26,19 +27,20 @@ type Room struct {
 }
 
 type RoomShort struct {
-	ID          uuid.UUID         `json:"id"`
-	Description string            `json:"description"`
-	RoomNumber  string            `json:"room_number"`
-	Type        models.RoomType   `json:"type"`
-	Status      models.RoomStatus `json:"status"`
-	Price       decimal.Decimal   `json:"price"`
-	Capacity    int               `json:"capacity"`
-	AreaSqm     float64           `json:"area_sqm"`
-	Amenities   []string          `json:"amenities"`
-	Images      []string          `json:"images"`
+	ID         uuid.UUID         `json:"id"`
+	Title      string            `json:"title"`
+	RoomNumber string            `json:"room_number"`
+	Type       models.RoomType   `json:"type"`
+	Status     models.RoomStatus `json:"status"`
+	Price      decimal.Decimal   `json:"price"`
+	Capacity   int               `json:"capacity"`
+	AreaSqm    float64           `json:"area_sqm"`
+	Amenities  []string          `json:"amenities"`
+	Images     []string          `json:"images"`
 }
 
 type RoomUpdate struct {
+	Title       string          `json:"title"`
 	Description string          `json:"description"`
 	RoomNumber  string          `json:"room_number"`
 	Type        models.RoomType `json:"type"`

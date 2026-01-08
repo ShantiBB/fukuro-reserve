@@ -17,11 +17,11 @@ import (
 )
 
 type RoomService interface {
-	RoomCreate(ctx context.Context, hotelId uuid.UUID, room models.RoomCreate) (models.Room, error)
-	RoomGetByID(ctx context.Context, hotelID, id uuid.UUID) (models.Room, error)
-	RoomGetAll(ctx context.Context, hotelID uuid.UUID, page, limit uint64) (models.RoomList, error)
-	RoomUpdateByID(ctx context.Context, hotelID, id uuid.UUID, room models.RoomUpdate) error
-	RoomDeleteByID(ctx context.Context, hotelID, id uuid.UUID) error
+	RoomCreate(ctx context.Context, hotel models.HotelRef, room models.RoomCreate) (models.Room, error)
+	RoomGetByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) (models.Room, error)
+	RoomGetAll(ctx context.Context, hotel models.HotelRef, limit, offset uint64) (models.RoomList, error)
+	RoomUpdateByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID, room models.RoomUpdate) error
+	RoomDeleteByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) error
 }
 
 // RoomCreate   godoc
@@ -30,33 +30,33 @@ type RoomService interface {
 // @Tags         rooms
 // @Accept       json
 // @Produce      json
-// @Param		 hotel_id path		string	true	    "Hotel ID"
-// @Param        request  body      request.RoomCreate  true  "Room data"
-// @Success      201      {object}  response.Room
-// @Failure      400      {object}  response.ErrorSchema
-// @Failure      401      {object}  response.ErrorSchema
-// @Failure      409      {object}  response.ErrorSchema
-// @Failure      500      {object}  response.ErrorSchema
+// @Param		 country_code    path		string	true	"Country Code"
+// @Param		 city_slug    	 path		string	true	"City Slug"
+// @Param		 hotel_slug      path		string	true	"Hotel slug"
+// @Param        request         body       request.RoomCreate  true  "Room data"
+// @Success      201             {object}   response.Room
+// @Failure      400             {object}   response.ErrorSchema
+// @Failure      401             {object}   response.ErrorSchema
+// @Failure      409             {object}   response.ErrorSchema
+// @Failure      500             {object}   response.ErrorSchema
 // @Security     Bearer
-// @Router       /hotels/{hotel_id}/rooms/  [post]
+// @Router       /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/  [post]
 func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramHotelID := chi.URLParam(r, "hotel_id")
-	hotelID, err := uuid.Parse(paramHotelID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
+	hotelRef := models.HotelRef{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
 	var req request.RoomCreate
-	if err = helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
 		return
 	}
 
 	newRoom := mapper.RoomCreateRequestToEntity(req)
-	createdRoom, err := h.svc.RoomCreate(ctx, hotelID, newRoom)
+	createdRoom, err := h.svc.RoomCreate(ctx, hotelRef, newRoom)
 	if err != nil {
 		if errors.Is(err, consts.UniqueRoomField) {
 			errMsg := response.ErrorResp(consts.UniqueRoomField)
@@ -74,28 +74,28 @@ func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 
 // RoomGetAll    godoc
 //
-//	@Summary		Get rooms
-//	@Description	Get rooms from all users
-//	@Tags			rooms
-//	@Accept			json
-//	@Produce		json
-//	@Param			hotel_id path		string	true	"Hotel ID"
-//	@Param			page	 query		uint64	false	"Page"	default(1)
-//	@Param			limit	 query		uint64	false	"Limit"	default(20)
-//	@Success		200		 {object}	response.RoomList
-//	@Failure		401		 {object}	response.ErrorSchema
-//	@Failure		500		 {object}	response.ErrorSchema
-//	@Security		Bearer
-//	@Router			/hotels/{hotel_id}/rooms/ [get]
+// @Summary		 Get rooms
+// @Description	 Get rooms from all users
+// @Tags		 rooms
+// @Accept		 json
+// @Produce		 json
+// @Param		 country_code       path		string	true	"Country Code"
+// @Param		 city_slug    	    path		string	true	"City Slug"
+// @Param		 hotel_slug         path		string	true	"Hotel slug"
+// @Param	     page	            query		uint64	false	"Page"	default(1)
+// @Param	     limit	            query		uint64	false	"Limit"	default(20)
+// @Success		 200		        {object}	response.RoomList
+// @Failure		 401		        {object}	response.ErrorSchema
+// @Failure		 500		        {object}	response.ErrorSchema
+// @Security	 Bearer
+// @Router		 /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/ [get]
 func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramHotelID := chi.URLParam(r, "hotel_id")
-	hotelID, err := uuid.Parse(paramHotelID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
+	hotelRef := models.HotelRef{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
 	pagination, err := helper.ParsePaginationQuery(r)
@@ -105,7 +105,7 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	roomList, err := h.svc.RoomGetAll(ctx, hotelID, pagination.Page, pagination.Limit)
+	roomList, err := h.svc.RoomGetAll(ctx, hotelRef, pagination.Page, pagination.Limit)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
@@ -139,24 +139,24 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 //	@Tags			rooms
 //	@Accept			json
 //	@Produce		json
-//	@Param			hotel_id path		string	true	"Hotel ID"
-//	@Param			id	     path		string	true	"Room ID"
-//	@Success		200	     {object}	response.Room
-//	@Failure		400	     {object}	response.ErrorSchema
-//	@Failure		401	     {object}	response.ErrorSchema
-//	@Failure		404	     {object}	response.ErrorSchema
-//	@Failure		500	     {object}	response.ErrorSchema
+//	@Param		    country_code   path		string	true	"Country Code"
+//	@Param		    city_slug      path		string	true	"City Slug"
+//	@Param		    hotel_slug     path		string	true	"Hotel slug"
+//	@Param			id	           path		string	true	"Room ID"
+//	@Success		200	           {object}	response.Room
+//	@Failure		400	           {object}	response.ErrorSchema
+//	@Failure		401	           {object}	response.ErrorSchema
+//	@Failure		404	           {object}	response.ErrorSchema
+//	@Failure		500	           {object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{hotel_id}/rooms/{id} [get]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [get]
 func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramHotelID := chi.URLParam(r, "hotel_id")
-	hotelID, err := uuid.Parse(paramHotelID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
+	hotelRef := models.HotelRef{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
 	paramID := chi.URLParam(r, "id")
@@ -167,7 +167,7 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	room, err := h.svc.RoomGetByID(ctx, hotelID, id)
+	room, err := h.svc.RoomGetByID(ctx, hotelRef, id)
 	if err != nil {
 		if errors.Is(err, consts.RoomNotFound) {
 			errMsg := response.ErrorResp(consts.RoomNotFound)
@@ -190,7 +190,9 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 //	@Tags			rooms
 //	@Accept			json
 //	@Produce		json
-//	@Param			hotel_id path	string	true	"Hotel ID"
+//	@Param		    country_code    path		string	true	"Country Code"
+//	@Param		    city_slug       path		string	true	"City Slug"
+//	@Param		    hotel_slug      path		string	true	"Hotel slug"
 //	@Param			id	path		string	true	"Room ID"
 //	@Param          request  body   request.RoomUpdate  true  "Room data"
 //	@Success		200	{object}	response.RoomUpdate
@@ -199,16 +201,14 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{hotel_id}/rooms/{id} [put]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [put]
 func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramHotelID := chi.URLParam(r, "hotel_id")
-	hotelID, err := uuid.Parse(paramHotelID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
+	hotelRef := models.HotelRef{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
 	paramID := chi.URLParam(r, "id")
@@ -225,7 +225,7 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roomUpdate := mapper.RoomUpdateRequestToEntity(req)
-	if err = h.svc.RoomUpdateByID(ctx, hotelID, id, roomUpdate); err != nil {
+	if err = h.svc.RoomUpdateByID(ctx, hotelRef, id, roomUpdate); err != nil {
 		if errors.Is(err, consts.RoomNotFound) {
 			errMsg := response.ErrorResp(consts.RoomNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
@@ -247,7 +247,9 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 //	@Tags			rooms
 //	@Accept			json
 //	@Produce		json
-//	@Param			hotel_id path	string	true	"Hotel ID"
+//	@Param		    country_code    path		string	true	"Country Code"
+//	@Param		    city_slug       path		string	true	"City Slug"
+//	@Param		    hotel_slug      path		string	true	"Hotel slug"
 //	@Param			id	path		string	true	"Room ID"
 //	@Success		204	{object}	nil
 //	@Failure		400	{object}	response.ErrorSchema
@@ -255,16 +257,14 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/hotels/{hotel_id}/rooms/{id} [delete]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [delete]
 func (h *Handler) RoomDeleteByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	paramHotelID := chi.URLParam(r, "hotel_id")
-	hotelID, err := uuid.Parse(paramHotelID)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
+	hotelRef := models.HotelRef{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
 	paramID := chi.URLParam(r, "id")
@@ -275,7 +275,7 @@ func (h *Handler) RoomDeleteByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = h.svc.RoomDeleteByID(ctx, hotelID, id); err != nil {
+	if err = h.svc.RoomDeleteByID(ctx, hotelRef, id); err != nil {
 		if errors.Is(err, consts.RoomNotFound) {
 			errMsg := response.ErrorResp(consts.RoomNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)

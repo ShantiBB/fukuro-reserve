@@ -132,19 +132,19 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			country_code	path		         string	true	"Country Code"
 //	@Param			city_slug    	path		         string	true	"City Slug"
-//	@Param			slug	        path		         string	true	"Hotel slug"
+//	@Param			hotel_slug      path		         string	true	"Hotel slug"
 //	@Success		200	{object}	response.Hotel
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/{country_code}/{city_slug}/hotels/{slug} [get]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [get]
 func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	countryCode := chi.URLParam(r, "countryCode")
 	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "slug")
+	slug := chi.URLParam(r, "hotelSlug")
 
 	hotel, err := h.svc.HotelGetBySlug(ctx, countryCode, citySlug, slug)
 	if err != nil {
@@ -171,7 +171,7 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			country_code	path		string	true	"Country Code"
 //	@Param			city_slug    	path		string	true	"City Slug"
-//	@Param			slug	        path		string	true	"Hotel slug"
+//	@Param			hotel_slug	    path		string	true	"Hotel slug"
 //	@Param          request         body        request.HotelUpdate  true  "Hotel data"
 //	@Success		200	{object}	            response.HotelUpdate
 //	@Failure		400	{object}	            response.ErrorSchema
@@ -179,12 +179,12 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Failure		404	{object}	            response.ErrorSchema
 //	@Failure		500	{object}	            response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/{country_code}/{city_slug}/hotels/{slug} [put]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [put]
 func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	countryCode := chi.URLParam(r, "countryCode")
 	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "slug")
+	slug := chi.URLParam(r, "hotelSlug")
 
 	var req request.HotelUpdate
 	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
@@ -216,19 +216,19 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Produce		json
 //	@Param			country_code	path		string	true	"Country Code"
 //	@Param			city_slug    	path		string	true	"City Slug"
-//	@Param			slug	        path		string	true	"Hotel slug"
+//	@Param			hotel_slug      path		string	true	"Hotel slug"
 //	@Success		204	{object}	nil
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
 //	@Failure		500	{object}	response.ErrorSchema
 //	@Security		Bearer
-//	@Router			/{country_code}/{city_slug}/hotels/{slug} [delete]
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [delete]
 func (h *Handler) HotelDeleteBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	countryCode := chi.URLParam(r, "countryCode")
 	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "slug")
+	slug := chi.URLParam(r, "hotelSlug")
 
 	if err := h.svc.HotelDeleteBySlug(ctx, countryCode, citySlug, slug); err != nil {
 		if errors.Is(err, consts.HotelNotFound) {

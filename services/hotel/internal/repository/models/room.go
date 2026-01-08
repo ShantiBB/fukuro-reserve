@@ -8,6 +8,7 @@ import (
 )
 
 type RoomCreate struct {
+	Title       string
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -20,6 +21,7 @@ type RoomCreate struct {
 }
 
 type RoomUpdate struct {
+	Title       string
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -33,6 +35,7 @@ type RoomUpdate struct {
 
 type Room struct {
 	ID          uuid.UUID
+	Title       string
 	Description string
 	RoomNumber  string
 	Type        RoomType
@@ -48,16 +51,16 @@ type Room struct {
 }
 
 type RoomShort struct {
-	ID          uuid.UUID
-	Description string
-	RoomNumber  string
-	Type        RoomType
-	Status      RoomStatus
-	Price       decimal.Decimal
-	Capacity    int
-	AreaSqm     float64
-	Amenities   []string
-	Images      []string
+	ID         uuid.UUID
+	Title      string
+	RoomNumber string
+	Type       RoomType
+	Status     RoomStatus
+	Price      decimal.Decimal
+	Capacity   int
+	AreaSqm    float64
+	Amenities  []string
+	Images     []string
 }
 type RoomList struct {
 	Rooms      []RoomShort
@@ -66,6 +69,7 @@ type RoomList struct {
 
 func (r *RoomCreate) ToRead() Room {
 	return Room{
+		Title:       r.Title,
 		Description: r.Description,
 		RoomNumber:  r.RoomNumber,
 		Type:        r.Type,

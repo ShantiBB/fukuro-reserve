@@ -69,13 +69,15 @@ definitions:
         type: number
       room_number:
         type: string
+      title:
+        type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
     required:
     - capacity
-    - description
     - price
     - room_number
+    - title
     - type
     type: object
   hotel_internal_http_dto_request.RoomUpdate:
@@ -100,6 +102,8 @@ definitions:
         type: number
       room_number:
         type: string
+      title:
+        type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
     required:
@@ -111,6 +115,7 @@ definitions:
     - images
     - price
     - room_number
+    - title
     - type
     type: object
   hotel_internal_http_dto_response.ErrorSchema:
@@ -170,6 +175,8 @@ definitions:
         type: integer
       rating:
         type: number
+      slug:
+        type: string
       title:
         type: string
     type: object
@@ -178,8 +185,6 @@ definitions:
       address:
         type: string
       description:
-        type: string
-      id:
         type: string
       location:
         $ref: '#/definitions/hotel_internal_http_dto_response.Location'
@@ -221,6 +226,8 @@ definitions:
         type: string
       status:
         $ref: '#/definitions/hotel_internal_repository_models.RoomStatus'
+      title:
+        type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
       updated_at:
@@ -253,8 +260,6 @@ definitions:
         type: number
       capacity:
         type: integer
-      description:
-        type: string
       id:
         type: string
       images:
@@ -267,6 +272,8 @@ definitions:
         type: string
       status:
         $ref: '#/definitions/hotel_internal_repository_models.RoomStatus'
+      title:
+        type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
     type: object
@@ -291,6 +298,8 @@ definitions:
       price:
         type: number
       room_number:
+        type: string
+      title:
         type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
@@ -427,7 +436,7 @@ paths:
       summary: Create hotel
       tags:
       - hotels
-  /{country_code}/{city_slug}/hotels/{slug}:
+  /{country_code}/{city_slug}/hotels/{hotel_slug}:
     delete:
       consumes:
       - application/json
@@ -445,7 +454,7 @@ paths:
         type: string
       - description: Hotel slug
         in: path
-        name: slug
+        name: hotel_slug
         required: true
         type: string
       produces:
@@ -491,7 +500,7 @@ paths:
         type: string
       - description: Hotel slug
         in: path
-        name: slug
+        name: hotel_slug
         required: true
         type: string
       produces:
@@ -539,7 +548,7 @@ paths:
         type: string
       - description: Hotel slug
         in: path
-        name: slug
+        name: hotel_slug
         required: true
         type: string
       - description: Hotel data
@@ -576,15 +585,25 @@ paths:
       summary: Update hotel by slug
       tags:
       - hotels
-  /hotels/{hotel_id}/rooms/:
+  /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/:
     get:
       consumes:
       - application/json
       description: Get rooms from all users
       parameters:
-      - description: Hotel ID
+      - description: Country Code
         in: path
-        name: hotel_id
+        name: country_code
+        required: true
+        type: string
+      - description: City Slug
+        in: path
+        name: city_slug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotel_slug
         required: true
         type: string
       - default: 1
@@ -624,9 +643,19 @@ paths:
       - application/json
       description: Create a new room from admin or owner provider
       parameters:
-      - description: Hotel ID
+      - description: Country Code
         in: path
-        name: hotel_id
+        name: country_code
+        required: true
+        type: string
+      - description: City Slug
+        in: path
+        name: city_slug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotel_slug
         required: true
         type: string
       - description: Room data
@@ -663,15 +692,25 @@ paths:
       summary: Create room
       tags:
       - rooms
-  /hotels/{hotel_id}/rooms/{id}:
+  /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id}:
     delete:
       consumes:
       - application/json
       description: Delete room by ID from admin or owner provider
       parameters:
-      - description: Hotel ID
+      - description: Country Code
         in: path
-        name: hotel_id
+        name: country_code
+        required: true
+        type: string
+      - description: City Slug
+        in: path
+        name: city_slug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotel_slug
         required: true
         type: string
       - description: Room ID
@@ -710,9 +749,19 @@ paths:
       - application/json
       description: Get room by ID from all users
       parameters:
-      - description: Hotel ID
+      - description: Country Code
         in: path
-        name: hotel_id
+        name: country_code
+        required: true
+        type: string
+      - description: City Slug
+        in: path
+        name: city_slug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotel_slug
         required: true
         type: string
       - description: Room ID
@@ -753,9 +802,19 @@ paths:
       - application/json
       description: Update room by ID from admin or owner provider
       parameters:
-      - description: Hotel ID
+      - description: Country Code
         in: path
-        name: hotel_id
+        name: country_code
+        required: true
+        type: string
+      - description: City Slug
+        in: path
+        name: city_slug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotel_slug
         required: true
         type: string
       - description: Room ID

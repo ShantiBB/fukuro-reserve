@@ -85,3 +85,9 @@ func (h *HotelCreate) ToRead() Hotel {
 		Location:    h.Location,
 	}
 }
+
+type HotelRef struct {
+	CountryCode string
+	CitySlug    string
+	HotelSlug   string
+}

@@ -13,10 +13,17 @@ import (
 	"fukuro-reserve/pkg/utils/consts"
 )
 
-func (r *Repository) RoomCreate(ctx context.Context, hotelId uuid.UUID, room models.RoomCreate) (models.Room, error) {
+func (r *Repository) RoomCreate(
+	ctx context.Context,
+	hotel models.HotelRef,
+	room models.RoomCreate,
+) (models.Room, error) {
 	newRoom := room.ToRead()
 	insertArgs := []any{
-		hotelId,
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		room.Title,
 		room.Description,
 		room.RoomNumber,
 		room.Type,
@@ -45,10 +52,21 @@ func (r *Repository) RoomCreate(ctx context.Context, hotelId uuid.UUID, room mod
 	return newRoom, nil
 }
 
-func (r *Repository) RoomGetByID(ctx context.Context, hotelID, id uuid.UUID) (models.Room, error) {
+func (r *Repository) RoomGetByID(
+	ctx context.Context,
+	hotel models.HotelRef,
+	roomID uuid.UUID,
+) (models.Room, error) {
 	var room models.Room
+	insertArgs := []any{
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		roomID,
+	}
 	scanArgs := []any{
 		&room.ID,
+		&room.Title,
 		&room.Description,
 		&room.RoomNumber,
 		&room.Type,
@@ -63,7 +81,7 @@ func (r *Repository) RoomGetByID(ctx context.Context, hotelID, id uuid.UUID) (mo
 		&room.UpdatedAt,
 	}
 
-	if err := r.db.QueryRow(ctx, query.RoomGetByID, hotelID, id).Scan(scanArgs...); err != nil {
+	if err := r.db.QueryRow(ctx, query.RoomGetByID, insertArgs...).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Room{}, consts.RoomNotFound
 		}
@@ -73,8 +91,21 @@ func (r *Repository) RoomGetByID(ctx context.Context, hotelID, id uuid.UUID) (mo
 	return room, nil
 }
 
-func (r *Repository) RoomGetAll(ctx context.Context, hotelID uuid.UUID, limit, offset uint64) (models.RoomList, error) {
-	rows, err := r.db.Query(ctx, query.RoomGetAll, hotelID, limit, offset)
+func (r *Repository) RoomGetAll(
+	ctx context.Context,
+	hotel models.HotelRef,
+	limit,
+	offset uint64,
+) (models.RoomList, error) {
+	rows, err := r.db.Query(
+		ctx,
+		query.RoomGetAll,
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		limit,
+		offset,
+	)
 	if err != nil {
 		return models.RoomList{}, err
 	}
@@ -86,7 +117,7 @@ func (r *Repository) RoomGetAll(ctx context.Context, hotelID uuid.UUID, limit, o
 	for rows.Next() {
 		err = rows.Scan(
 			&room.ID,
-			&room.Description,
+			&room.Title,
 			&room.RoomNumber,
 			&room.Type,
 			&room.Status,
@@ -113,9 +144,19 @@ func (r *Repository) RoomGetAll(ctx context.Context, hotelID uuid.UUID, limit, o
 	return roomList, nil
 }
 
-func (r *Repository) RoomUpdateByID(ctx context.Context, hotelID, id uuid.UUID, room models.RoomUpdate) error {
+func (r *Repository) RoomUpdateByID(
+	ctx context.Context,
+	hotel models.HotelRef,
+	roomID uuid.UUID,
+	room models.RoomUpdate,
+) error {
 	row, err := r.db.Exec(
 		ctx, query.RoomUpdateByID,
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		roomID,
+		room.Title,
 		room.Description,
 		room.RoomNumber,
 		room.Type,
@@ -125,8 +166,6 @@ func (r *Repository) RoomUpdateByID(ctx context.Context, hotelID, id uuid.UUID, 
 		room.Floor,
 		room.Amenities,
 		room.Images,
-		hotelID,
-		id,
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -142,8 +181,15 @@ func (r *Repository) RoomUpdateByID(ctx context.Context, hotelID, id uuid.UUID, 
 	return nil
 }
 
-func (r *Repository) RoomDeleteByID(ctx context.Context, hotelID, id uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.RoomDeleteByID, hotelID, id)
+func (r *Repository) RoomDeleteByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) error {
+	row, err := r.db.Exec(
+		ctx,
+		query.RoomDeleteByID,
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		roomID,
+	)
 	if err != nil {
 		return err
 	}

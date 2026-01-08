@@ -7,7 +7,8 @@ import (
 )
 
 type RoomCreate struct {
-	Description string          `json:"description" validate:"required"`
+	Title       string          `json:"title" validate:"required"`
+	Description string          `json:"description"`
 	RoomNumber  string          `json:"room_number" validate:"required"`
 	Type        models.RoomType `json:"type" validate:"required"`
 	Price       decimal.Decimal `json:"price" validate:"required"`
@@ -19,6 +20,7 @@ type RoomCreate struct {
 }
 
 type RoomUpdate struct {
+	Title       string          `json:"title" validate:"required"`
 	Description string          `json:"description" validate:"required"`
 	RoomNumber  string          `json:"room_number" validate:"required"`
 	Type        models.RoomType `json:"type" validate:"required"`

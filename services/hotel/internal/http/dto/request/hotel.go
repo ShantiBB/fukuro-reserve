@@ -9,13 +9,13 @@ type HotelCreate struct {
 	Title       string   `json:"title" validate:"required"`
 	OwnerID     int64    `json:"owner_id" validate:"required"`
 	Description *string  `json:"description"`
-	Address     string   `json:"address"`
-	Location    Location `json:"location"`
+	Address     string   `json:"address" validate:"required"`
+	Location    Location `json:"location" validate:"required"`
 }
 
 type HotelUpdate struct {
 	Title       string   `json:"title" validate:"required"`
-	Description *string  `json:"description"`
-	Address     string   `json:"address"`
-	Location    Location `json:"location"`
+	Description *string  `json:"description" validate:"required"`
+	Address     string   `json:"address" validate:"required"`
+	Location    Location `json:"location" validate:"required"`
 }

@@ -6,7 +6,6 @@ CREATE TABLE room (
     hotel_id UUID NOT NULL REFERENCES hotel(id) ON DELETE CASCADE,
     room_number VARCHAR(10) NOT NULL,
     title VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
     description TEXT,
     type room_type NOT NULL,
     status room_status NOT NULL DEFAULT 'available',
@@ -19,8 +18,7 @@ CREATE TABLE room (
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    UNIQUE(hotel_id, room_number),
-    UNIQUE(hotel_id, slug)
+    UNIQUE(hotel_id, room_number)
 );
 
 CREATE INDEX rooms_hotel_id_idx ON room (hotel_id);

@@ -2,6 +2,8 @@ package validation
 
 import (
 	"errors"
+	"reflect"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -23,10 +25,15 @@ func formatValidationErrors(
 	validationErrors validator.ValidationErrors,
 	customErr func(validator.FieldError) string,
 ) map[string]string {
-	errorMessages := make(map[string]string)
+	errorMessages := make(map[string]string, len(validationErrors))
 
-	for _, err := range validationErrors {
-		errorMessages[err.Field()] = customErr(err)
+	for _, fe := range validationErrors {
+		ns := fe.Namespace()
+		if i := strings.IndexByte(ns, '.'); i >= 0 {
+			ns = ns[i+1:]
+		}
+
+		errorMessages[ns] = customErr(fe)
 	}
 
 	return errorMessages
@@ -34,6 +41,15 @@ func formatValidationErrors(
 
 func CheckErrors(v any, customErr func(validator.FieldError) string) *ValidateError {
 	validate := validator.New()
+
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+		if name == "-" || name == "" {
+			return fld.Name
+		}
+		return name
+	})
+
 	if err := validate.Struct(v); err != nil {
 		var validateErr validator.ValidationErrors
 		errors.As(err, &validateErr)

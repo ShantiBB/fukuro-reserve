@@ -9,7 +9,7 @@ import (
 
 type RoomCreate struct {
 	Title       string
-	Description string
+	Description *string
 	RoomNumber  string
 	Type        RoomType
 	Price       decimal.Decimal
@@ -22,7 +22,7 @@ type RoomCreate struct {
 
 type RoomUpdate struct {
 	Title       string
-	Description string
+	Description *string
 	RoomNumber  string
 	Type        RoomType
 	Price       decimal.Decimal
@@ -36,7 +36,7 @@ type RoomUpdate struct {
 type Room struct {
 	ID          uuid.UUID
 	Title       string
-	Description string
+	Description *string
 	RoomNumber  string
 	Type        RoomType
 	Status      RoomStatus

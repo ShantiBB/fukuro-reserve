@@ -51,7 +51,7 @@ func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.RoomCreate
-	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -220,7 +220,7 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.RoomUpdate
-	if err = helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err = helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 

@@ -12,7 +12,7 @@ import (
 type Room struct {
 	ID          uuid.UUID         `json:"id"`
 	Title       string            `json:"title"`
-	Description string            `json:"description"`
+	Description *string           `json:"description"`
 	RoomNumber  string            `json:"room_number"`
 	Type        models.RoomType   `json:"type"`
 	Status      models.RoomStatus `json:"status"`
@@ -41,7 +41,7 @@ type RoomShort struct {
 
 type RoomUpdate struct {
 	Title       string          `json:"title"`
-	Description string          `json:"description"`
+	Description *string         `json:"description"`
 	RoomNumber  string          `json:"room_number"`
 	Type        models.RoomType `json:"type"`
 	Price       decimal.Decimal `json:"price"`

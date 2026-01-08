@@ -52,45 +52,6 @@ func (r *Repository) RoomCreate(
 	return newRoom, nil
 }
 
-func (r *Repository) RoomGetByID(
-	ctx context.Context,
-	hotel models.HotelRef,
-	roomID uuid.UUID,
-) (models.Room, error) {
-	var room models.Room
-	insertArgs := []any{
-		hotel.CountryCode,
-		hotel.CitySlug,
-		hotel.HotelSlug,
-		roomID,
-	}
-	scanArgs := []any{
-		&room.ID,
-		&room.Title,
-		&room.Description,
-		&room.RoomNumber,
-		&room.Type,
-		&room.Status,
-		&room.Price,
-		&room.Capacity,
-		&room.AreaSqm,
-		&room.Floor,
-		&room.Amenities,
-		&room.Images,
-		&room.CreatedAt,
-		&room.UpdatedAt,
-	}
-
-	if err := r.db.QueryRow(ctx, query.RoomGetByID, insertArgs...).Scan(scanArgs...); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Room{}, consts.RoomNotFound
-		}
-		return models.Room{}, err
-	}
-
-	return room, nil
-}
-
 func (r *Repository) RoomGetAll(
 	ctx context.Context,
 	hotel models.HotelRef,
@@ -137,11 +98,51 @@ func (r *Repository) RoomGetAll(
 		return models.RoomList{}, err
 	}
 
-	if err = r.db.QueryRow(ctx, query.RoomGetCountRows).Scan(&roomList.TotalCount); err != nil {
+	if err = r.db.
+		QueryRow(ctx, query.RoomGetCountRows, hotel.CountryCode, hotel.CitySlug, hotel.HotelSlug).
+		Scan(&roomList.TotalCount); err != nil {
 		return models.RoomList{}, err
 	}
 
 	return roomList, nil
+}
+
+func (r *Repository) RoomGetByID(
+	ctx context.Context,
+	hotel models.HotelRef,
+	roomID uuid.UUID,
+) (models.Room, error) {
+	room := models.Room{ID: roomID}
+	insertArgs := []any{
+		hotel.CountryCode,
+		hotel.CitySlug,
+		hotel.HotelSlug,
+		roomID,
+	}
+	scanArgs := []any{
+		&room.Title,
+		&room.Description,
+		&room.RoomNumber,
+		&room.Type,
+		&room.Status,
+		&room.Price,
+		&room.Capacity,
+		&room.AreaSqm,
+		&room.Floor,
+		&room.Amenities,
+		&room.Images,
+		&room.CreatedAt,
+		&room.UpdatedAt,
+	}
+
+	if err := r.db.QueryRow(ctx, query.RoomGetByID, insertArgs...).Scan(scanArgs...); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return models.Room{}, consts.RoomNotFound
+		}
+		return models.Room{}, err
+	}
+
+	return room, nil
 }
 
 func (r *Repository) RoomUpdateByID(

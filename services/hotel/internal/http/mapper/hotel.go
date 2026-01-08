@@ -26,10 +26,15 @@ func HotelUpdateRequestToEntity(req request.HotelUpdate) models.HotelUpdate {
 		Longitude: req.Location.Longitude,
 	}
 	return models.HotelUpdate{
-		Title:       req.Title,
 		Description: req.Description,
 		Address:     req.Address,
 		Location:    location,
+	}
+}
+
+func HotelTitleUpdateRequestToEntity(req request.HotelTitleUpdate) models.HotelTitleUpdate {
+	return models.HotelTitleUpdate{
+		Title: req.Title,
 	}
 }
 
@@ -90,9 +95,15 @@ func HotelUpdateEntityToResponse(req models.HotelUpdate) response.HotelUpdate {
 		Longitude: req.Location.Longitude,
 	}
 	return response.HotelUpdate{
-		Title:       req.Title,
 		Description: req.Description,
 		Address:     req.Address,
 		Location:    location,
+	}
+}
+
+func HotelTitleUpdateEntityToResponse(req models.HotelTitleUpdate) response.HotelTitleUpdate {
+	return response.HotelTitleUpdate{
+		Title: req.Title,
+		Slug:  req.Slug,
 	}
 }

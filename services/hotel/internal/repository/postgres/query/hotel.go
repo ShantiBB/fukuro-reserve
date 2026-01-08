@@ -46,20 +46,30 @@ const (
 	HotelUpdateBySlug = `
 		UPDATE hotel
 		SET
-		  title = $1::text,
-		  slug = CASE WHEN title IS DISTINCT FROM $1::text THEN $2 ELSE slug END,
-		  description = $3,
-		  address = $4,
-		  location = ST_SetSRID(ST_MakePoint($8, $9), 4326)::geography,
+		  description = $1,
+		  address = $2,
+		  location = ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography,
 		  updated_at = now()
-		WHERE country_code = $7 AND city_slug = $8 AND slug = $9
+		WHERE country_code = $5 AND city_slug = $6 AND slug = $7
+		RETURNING id, slug;`
+
+	HotelTitleUpdateBySlug = `
+		UPDATE hotel
+		SET
+		  title = $1,
+		  slug = $2,
+		  updated_at = now()
+		WHERE country_code = $3 AND city_slug = $4 AND slug = $5
 		RETURNING id, slug;`
 
 	HotelDeleteBySlug = `
 		DELETE FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3;`
 
-	HotelGetCountRows = `SELECT COUNT(id) FROM hotel;`
+	HotelGetCountRows = `
+		SELECT COUNT(*)
+		FROM hotel
+		WHERE country_code = $1 AND city_slug = $2;`
 
 	HotelUpdateRating = `
 		UPDATE hotel 

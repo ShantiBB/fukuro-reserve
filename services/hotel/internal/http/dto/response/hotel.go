@@ -26,10 +26,14 @@ type HotelCreate struct {
 }
 
 type HotelUpdate struct {
-	Title       string   `json:"title"`
 	Description *string  `json:"description"`
 	Address     string   `json:"address"`
 	Location    Location `json:"location"`
+}
+
+type HotelTitleUpdate struct {
+	Title string `json:"title"`
+	Slug  string `json:"slug"`
 }
 
 type HotelShort struct {

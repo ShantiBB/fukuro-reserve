@@ -797,6 +797,90 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/{country_code}/{city_slug}/hotels/{hotel_slug}/update_title": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update hotel title by slug from admin, moderator or owner provider",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Update hotel title by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country Code",
+                        "name": "country_code",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City Slug",
+                        "name": "city_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "hotel_slug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Hotel data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_request.HotelTitleUpdate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.HotelTitleUpdate"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/hotel_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -820,6 +904,8 @@ const docTemplate = `{
         "hotel_internal_http_dto_request.HotelCreate": {
             "type": "object",
             "required": [
+                "address",
+                "location",
                 "owner_id",
                 "title"
             ],
@@ -841,10 +927,22 @@ const docTemplate = `{
                 }
             }
         },
-        "hotel_internal_http_dto_request.HotelUpdate": {
+        "hotel_internal_http_dto_request.HotelTitleUpdate": {
             "type": "object",
             "required": [
                 "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "hotel_internal_http_dto_request.HotelUpdate": {
+            "type": "object",
+            "required": [
+                "address",
+                "location"
             ],
             "properties": {
                 "address": {
@@ -855,14 +953,15 @@ const docTemplate = `{
                 },
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
-                },
-                "title": {
-                    "type": "string"
                 }
             }
         },
         "hotel_internal_http_dto_request.Location": {
             "type": "object",
+            "required": [
+                "latitude",
+                "longitude"
+            ],
             "properties": {
                 "latitude": {
                     "type": "number"
@@ -1068,6 +1167,17 @@ const docTemplate = `{
                 }
             }
         },
+        "hotel_internal_http_dto_response.HotelTitleUpdate": {
+            "type": "object",
+            "properties": {
+                "slug": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "hotel_internal_http_dto_response.HotelUpdate": {
             "type": "object",
             "properties": {
@@ -1079,9 +1189,6 @@ const docTemplate = `{
                 },
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_response.Location"
-                },
-                "title": {
-                    "type": "string"
                 }
             }
         },

@@ -20,6 +20,7 @@ type HotelService interface {
 	HotelGetBySlug(ctx context.Context, countryCode, citySlug, slug string) (models.Hotel, error)
 	HotelGetAll(ctx context.Context, countryCode, citySlug, sortField string, page, limit uint64) (models.HotelList, error)
 	HotelUpdateBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string, h models.HotelUpdate) error
+	HotelTitleUpdateBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string, h models.HotelTitleUpdate) (models.HotelTitleUpdate, error)
 	HotelDeleteBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string) error
 }
 
@@ -43,7 +44,7 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.HotelCreate
 
-	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -187,7 +188,7 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	slug := chi.URLParam(r, "hotelSlug")
 
 	var req request.HotelUpdate
-	if err := helper.ParseJSON(w, r, &req, nil); err != nil {
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
 		return
 	}
 
@@ -204,6 +205,52 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hotelResponse := mapper.HotelUpdateEntityToResponse(hotelUpdate)
+	helper.SendSuccess(w, r, http.StatusOK, hotelResponse)
+}
+
+// HotelTitleUpdateBySlug    godoc
+//
+//	@Summary		Update hotel title by slug
+//	@Description	Update hotel title by slug from admin, moderator or owner provider
+//	@Tags			hotels
+//	@Accept			json
+//	@Produce		json
+//	@Param			country_code	path		string	true	"Country Code"
+//	@Param			city_slug    	path		string	true	"City Slug"
+//	@Param			hotel_slug	    path		string	true	"Hotel slug"
+//	@Param          request         body        request.HotelTitleUpdate  true  "Hotel data"
+//	@Success		200	{object}	            response.HotelTitleUpdate
+//	@Failure		400	{object}	            response.ErrorSchema
+//	@Failure		401	{object}	            response.ErrorSchema
+//	@Failure		404	{object}	            response.ErrorSchema
+//	@Failure		500	{object}	            response.ErrorSchema
+//	@Security		Bearer
+//	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/update_title [put]
+func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	countryCode := chi.URLParam(r, "countryCode")
+	citySlug := chi.URLParam(r, "citySlug")
+	slug := chi.URLParam(r, "hotelSlug")
+
+	var req request.HotelTitleUpdate
+	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
+		return
+	}
+
+	hotel := mapper.HotelTitleUpdateRequestToEntity(req)
+	hotelUpdated, err := h.svc.HotelTitleUpdateBySlug(ctx, countryCode, citySlug, slug, hotel)
+	if err != nil {
+		if errors.Is(err, consts.HotelNotFound) {
+			errMsg := response.ErrorResp(consts.HotelNotFound)
+			helper.SendError(w, r, http.StatusNotFound, errMsg)
+			return
+		}
+		errMsg := response.ErrorResp(consts.InternalServer)
+		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+		return
+	}
+
+	hotelResponse := mapper.HotelTitleUpdateEntityToResponse(hotelUpdated)
 	helper.SendSuccess(w, r, http.StatusOK, hotelResponse)
 }
 

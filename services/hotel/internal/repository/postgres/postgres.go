@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
@@ -29,6 +30,15 @@ func NewRepository(config *config.Config) (*Repository, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	cfg.MaxConns = 30
+	cfg.MinConns = 10
+
+	cfg.MaxConnIdleTime = 5 * time.Minute
+	cfg.MaxConnLifetime = 30 * time.Minute
+	cfg.HealthCheckPeriod = 1 * time.Minute
+
+	cfg.ConnConfig.ConnectTimeout = 10 * time.Second
 
 	db, err := pgxpool.NewWithConfig(context.Background(), cfg)
 

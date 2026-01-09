@@ -2,9 +2,11 @@ package validation
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-playground/validator/v10"
 
+	"hotel/internal/repository/models"
 	"hotel/pkg/utils/consts"
 )
 
@@ -33,6 +35,14 @@ func CustomValidationError(err validator.FieldError) string {
 		return consts.FieldUUID.Error()
 	case "datetime":
 		return fmt.Sprintf(consts.FieldDatetime.Error(), param)
+	case "room_status":
+		return fmt.Sprintf("must be one of: %s", strings.Join(func() []string {
+			vals := make([]string, len(models.RoomStatusValues))
+			for i, v := range models.RoomStatusValues {
+				vals[i] = string(v)
+			}
+			return vals
+		}(), ", "))
 	default:
 		return fmt.Sprintf(consts.FieldInvalid.Error(), value)
 	}

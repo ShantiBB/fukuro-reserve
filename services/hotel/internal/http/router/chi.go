@@ -14,6 +14,7 @@ func New(r chi.Router, h *handler.Handler) {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(middleware.StripSlashes)
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/swagger/*", httpswagger.WrapHandler)

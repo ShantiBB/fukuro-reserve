@@ -2,13 +2,16 @@ package helper
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 
+	"hotel/internal/http/dto/request"
+	"hotel/internal/http/utils/mapper"
 	"hotel/internal/http/utils/validation"
+	"hotel/internal/repository/models"
 	"hotel/pkg/utils/consts"
 )
 
@@ -31,14 +34,25 @@ func ParseJSON(
 	return nil
 }
 
-func ParseID(w http.ResponseWriter, r *http.Request) int64 {
-	paramID := chi.URLParam(r, "id")
-	id, err := strconv.ParseInt(paramID, 10, 64)
-	if err != nil {
-		errMsg := validation.ErrorResp(consts.InvalidID)
-		SendError(w, r, http.StatusBadRequest, errMsg)
-		return 0
+func ParseHotelPathParams(r *http.Request) (models.HotelRef, *validation.ValidateError) {
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		HotelSlug:   chi.URLParam(r, "hotelSlug"),
 	}
 
-	return id
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		return models.HotelRef{}, errMsg
+	}
+
+	return mapper.HotelPathParamsToEntity(pathParams), nil
+}
+
+func ParseUUIDParam(r *http.Request, paramName string) (uuid.UUID, error) {
+	paramID := chi.URLParam(r, paramName)
+	id, err := uuid.Parse(paramID)
+	if err != nil {
+		return uuid.Nil, consts.InvalidID
+	}
+	return id, nil
 }

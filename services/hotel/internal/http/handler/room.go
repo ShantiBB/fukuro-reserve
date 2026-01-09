@@ -2,19 +2,18 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"hotel/internal/http/dto/request"
 	"hotel/internal/http/dto/response"
-	"hotel/internal/http/mapper"
+	"hotel/internal/http/middleware"
 	"hotel/internal/http/utils/helper"
+	"hotel/internal/http/utils/mapper"
 	"hotel/internal/http/utils/pagination"
 	"hotel/internal/http/utils/validation"
 	"hotel/internal/repository/models"
 	"hotel/pkg/utils/consts"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 )
 
@@ -46,33 +45,18 @@ type RoomService interface {
 // @Router       /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/  [post]
 func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
+	hotelRef := middleware.GetHotelRef(ctx)
 
 	var req request.RoomCreate
 	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 
-	newRoom := mapper.RoomCreateRequestToEntity(req)
-	createdRoom, err := h.svc.RoomCreate(ctx, hotelRef, newRoom)
-	if err != nil {
-		if errors.Is(err, consts.UniqueRoomField) {
-			errMsg := response.ErrorResp(consts.UniqueRoomField)
-			helper.SendError(w, r, http.StatusConflict, errMsg)
-			return
-		}
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	createdRoom, err := h.svc.RoomCreate(ctx, hotelRef, mapper.RoomCreateRequestToEntity(req))
+	errHandler := &helper.ErrorHandler{
+		ConflictError: consts.UniqueRoomField,
+	}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
@@ -99,36 +83,24 @@ func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 // @Router		 /{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/ [get]
 func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
+	hotelRef := middleware.GetHotelRef(ctx)
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidQueryParam)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
 	roomList, err := h.svc.RoomGetAll(ctx, hotelRef, paginationParams.Page, paginationParams.Limit)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	errHandler := &helper.ErrorHandler{}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	rooms := make([]response.RoomShort, 0, len(roomList.Rooms))
 	for _, room := range roomList.Rooms {
-		roomResponse := mapper.RoomShortEntityToShortResponse(room)
-		rooms = append(rooms, roomResponse)
+		rooms = append(rooms, mapper.RoomShortEntityToShortResponse(room))
 	}
 
 	totalPageCount := (roomList.TotalCount + paginationParams.Limit - 1) / paginationParams.Limit
@@ -165,20 +137,9 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [get]
 func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	hotelRef := middleware.GetHotelRef(ctx)
 
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
-
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
+	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
@@ -186,14 +147,8 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	room, err := h.svc.RoomGetByID(ctx, hotelRef, id)
-	if err != nil {
-		if errors.Is(err, consts.RoomNotFound) {
-			errMsg := response.ErrorResp(consts.RoomNotFound)
-			helper.SendError(w, r, http.StatusNotFound, errMsg)
-			return
-		}
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	errHandler := &helper.ErrorHandler{NotFoundError: consts.RoomNotFound}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
@@ -222,20 +177,9 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [put]
 func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	hotelRef := middleware.GetHotelRef(ctx)
 
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
-
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
+	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
@@ -248,14 +192,9 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roomUpdate := mapper.RoomUpdateRequestToEntity(req)
-	if err = h.svc.RoomUpdateByID(ctx, hotelRef, id, roomUpdate); err != nil {
-		if errors.Is(err, consts.RoomNotFound) {
-			errMsg := response.ErrorResp(consts.RoomNotFound)
-			helper.SendError(w, r, http.StatusNotFound, errMsg)
-			return
-		}
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	err = h.svc.RoomUpdateByID(ctx, hotelRef, id, roomUpdate)
+	errHandler := &helper.ErrorHandler{NotFoundError: consts.RoomNotFound}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
@@ -284,20 +223,9 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id}/update_status [put]
 func (h *Handler) RoomStatusUpdateByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	hotelRef := middleware.GetHotelRef(ctx)
 
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
-
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
+	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
@@ -310,14 +238,9 @@ func (h *Handler) RoomStatusUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roomUpdate := mapper.RoomStatusUpdateRequestToEntity(req)
-	if err = h.svc.RoomStatusUpdateByID(ctx, hotelRef, id, roomUpdate); err != nil {
-		if errors.Is(err, consts.RoomNotFound) {
-			errMsg := response.ErrorResp(consts.RoomNotFound)
-			helper.SendError(w, r, http.StatusNotFound, errMsg)
-			return
-		}
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	err = h.svc.RoomStatusUpdateByID(ctx, hotelRef, id, roomUpdate)
+	errHandler := &helper.ErrorHandler{NotFoundError: consts.RoomNotFound}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
@@ -345,34 +268,18 @@ func (h *Handler) RoomStatusUpdateByID(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/rooms/{id} [delete]
 func (h *Handler) RoomDeleteByID(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	hotelRef := middleware.GetHotelRef(ctx)
 
-	pathParams := request.HotelPathParams{
-		CountryCode: chi.URLParam(r, "countryCode"),
-		CitySlug:    chi.URLParam(r, "citySlug"),
-		HotelSlug:   chi.URLParam(r, "hotelSlug"),
-	}
-	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
-		return
-	}
-	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
-
-	paramID := chi.URLParam(r, "id")
-	id, err := uuid.Parse(paramID)
+	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
-	if err = h.svc.RoomDeleteByID(ctx, hotelRef, id); err != nil {
-		if errors.Is(err, consts.RoomNotFound) {
-			errMsg := response.ErrorResp(consts.RoomNotFound)
-			helper.SendError(w, r, http.StatusNotFound, errMsg)
-			return
-		}
-		errMsg := response.ErrorResp(consts.InternalServer)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	err = h.svc.RoomDeleteByID(ctx, hotelRef, id)
+	errHandler := &helper.ErrorHandler{NotFoundError: consts.RoomNotFound}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 

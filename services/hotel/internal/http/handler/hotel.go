@@ -49,11 +49,18 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
+
 	newHotel := mapper.HotelCreateRequestToEntity(req)
 
-	createdHotel, err := h.svc.HotelCreate(ctx, countryCode, citySlug, newHotel)
+	createdHotel, err := h.svc.HotelCreate(ctx, pathParams.CountryCode, pathParams.CitySlug, newHotel)
 	if err != nil {
 		if errors.Is(err, consts.UniqueHotelField) {
 			errMsg := response.ErrorResp(consts.UniqueHotelField)
@@ -87,9 +94,16 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/ [get]
 func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
 	sortField := chi.URLParam(r, "sort")
+
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
 
 	pagination, err := helper.ParsePaginationQuery(r)
 	if err != nil {
@@ -98,7 +112,14 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hotelList, err := h.svc.HotelGetAll(ctx, countryCode, citySlug, sortField, pagination.Page, pagination.Limit)
+	hotelList, err := h.svc.HotelGetAll(
+		ctx,
+		pathParams.CountryCode,
+		pathParams.CitySlug,
+		sortField,
+		pagination.Page,
+		pagination.Limit,
+	)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
@@ -144,11 +165,18 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [get]
 func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "hotelSlug")
 
-	hotel, err := h.svc.HotelGetBySlug(ctx, countryCode, citySlug, slug)
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		Slug:        chi.URLParam(r, "hotelSlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
+
+	hotel, err := h.svc.HotelGetBySlug(ctx, pathParams.CountryCode, pathParams.CitySlug, pathParams.Slug)
 	if err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
@@ -184,17 +212,24 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [put]
 func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "hotelSlug")
 
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		Slug:        chi.URLParam(r, "hotelSlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
 	var req request.HotelUpdate
 	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 
 	hotelUpdate := mapper.HotelUpdateRequestToEntity(req)
-	if err := h.svc.HotelUpdateBySlug(ctx, countryCode, citySlug, slug, hotelUpdate); err != nil {
+	err := h.svc.HotelUpdateBySlug(ctx, pathParams.CountryCode, pathParams.CitySlug, pathParams.Slug, hotelUpdate)
+	if err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)
@@ -229,9 +264,16 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug}/update_title [put]
 func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "hotelSlug")
+
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		Slug:        chi.URLParam(r, "hotelSlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
 
 	var req request.HotelTitleUpdate
 	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
@@ -239,7 +281,13 @@ func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request)
 	}
 
 	hotel := mapper.HotelTitleUpdateRequestToEntity(req)
-	hotelUpdated, err := h.svc.HotelTitleUpdateBySlug(ctx, countryCode, citySlug, slug, hotel)
+	hotelUpdated, err := h.svc.HotelTitleUpdateBySlug(
+		ctx,
+		pathParams.CountryCode,
+		pathParams.CitySlug,
+		pathParams.Slug,
+		hotel,
+	)
 	if err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
@@ -274,11 +322,18 @@ func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request)
 //	@Router			/{country_code}/{city_slug}/hotels/{hotel_slug} [delete]
 func (h *Handler) HotelDeleteBySlug(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	slug := chi.URLParam(r, "hotelSlug")
 
-	if err := h.svc.HotelDeleteBySlug(ctx, countryCode, citySlug, slug); err != nil {
+	pathParams := request.HotelPathParams{
+		CountryCode: chi.URLParam(r, "countryCode"),
+		CitySlug:    chi.URLParam(r, "citySlug"),
+		Slug:        chi.URLParam(r, "hotelSlug"),
+	}
+	if errMsg := validation.CheckErrors(pathParams, validation.CustomValidationError); errMsg != nil {
+		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+		return
+	}
+
+	if err := h.svc.HotelDeleteBySlug(ctx, pathParams.CountryCode, pathParams.CitySlug, pathParams.Slug); err != nil {
 		if errors.Is(err, consts.HotelNotFound) {
 			errMsg := response.ErrorResp(consts.HotelNotFound)
 			helper.SendError(w, r, http.StatusNotFound, errMsg)

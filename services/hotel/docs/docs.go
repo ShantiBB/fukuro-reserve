@@ -975,23 +975,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "helper.PaginationLinks": {
-            "type": "object",
-            "properties": {
-                "first": {
-                    "type": "string"
-                },
-                "last": {
-                    "type": "string"
-                },
-                "next": {
-                    "type": "string"
-                },
-                "prev": {
-                    "type": "string"
-                }
-            }
-        },
         "hotel_internal_http_dto_request.HotelCreate": {
             "type": "object",
             "required": [
@@ -1190,11 +1173,11 @@ const docTemplate = `{
         "hotel_internal_http_dto_response.ErrorSchema": {
             "type": "object",
             "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -1246,7 +1229,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "links": {
-                    "$ref": "#/definitions/helper.PaginationLinks"
+                    "$ref": "#/definitions/hotel_internal_http_utils_helper.PaginationLinks"
                 },
                 "total_page_count": {
                     "type": "integer"
@@ -1381,7 +1364,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "links": {
-                    "$ref": "#/definitions/helper.PaginationLinks"
+                    "$ref": "#/definitions/hotel_internal_http_utils_helper.PaginationLinks"
                 },
                 "rooms": {
                     "type": "array",
@@ -1484,6 +1467,23 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
+                }
+            }
+        },
+        "hotel_internal_http_utils_helper.PaginationLinks": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "type": "string"
+                },
+                "last": {
+                    "type": "string"
+                },
+                "next": {
+                    "type": "string"
+                },
+                "prev": {
+                    "type": "string"
                 }
             }
         },

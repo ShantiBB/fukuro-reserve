@@ -15,18 +15,20 @@ var (
 )
 
 // Field
-var (
-	FieldRequired = errors.New("field is required")
-	FieldInvalid  = errors.New("field is invalid: %v")
-	FieldMin      = errors.New("field must be at least %s")
-	FieldMax      = errors.New("field must be at most %s")
-	FieldGt       = errors.New("field must be > %s, got %v")
-	FieldGte      = errors.New("field must be ≥ %s, got %v")
-	FieldLt       = errors.New("field must be < %s, got %v")
-	FieldLte      = errors.New("field must be ≤ %s, got %v")
-	FieldEmail    = errors.New("field must be a valid email")
-	FieldUUID     = errors.New("field must be a valid UUID")
-	FieldDatetime = errors.New("field must be in the format %s")
+const (
+	ValidationUnregister = "failed to register validation"
+	FieldRequired        = "field is required"
+	FieldInvalid         = "field is invalid: %v"
+	FieldMin             = "field must be at least %s"
+	FieldMax             = "field must be at most %s"
+	FieldGt              = "field must be > %s, got %v"
+	FieldGte             = "field must be ≥ %s, got %v"
+	FieldLt              = "field must be < %s, got %v"
+	FieldLte             = "field must be ≤ %s, got %v"
+	FieldEmail           = "field must be a valid email"
+	FieldUUID            = "field must be a valid UUID"
+	FieldDatetime        = "field must be in the format %s"
+	FieldEnum            = "field must be one of: %s"
 )
 
 var (

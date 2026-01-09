@@ -16,34 +16,38 @@ func CustomValidationError(err validator.FieldError) string {
 
 	switch err.Tag() {
 	case "required":
-		return consts.FieldRequired.Error()
+		return consts.FieldRequired
 	case "min":
-		return fmt.Sprintf(consts.FieldMin.Error(), param)
+		return fmt.Sprintf(consts.FieldMin, param)
 	case "max":
-		return fmt.Sprintf(consts.FieldMax.Error(), param)
-	case "gt":
-		return fmt.Sprintf(consts.FieldGt.Error(), param, value)
+		return fmt.Sprintf(consts.FieldMax, param)
+	case "gt", "decimal_gt":
+		return fmt.Sprintf(consts.FieldGt, param, value)
 	case "gte":
-		return fmt.Sprintf(consts.FieldGte.Error(), param, value)
-	case "lt":
-		return fmt.Sprintf(consts.FieldLt.Error(), param, value)
+		return fmt.Sprintf(consts.FieldGte, param, value)
+	case "lt", "decimal_lt":
+		return fmt.Sprintf(consts.FieldLt, param, value)
 	case "lte":
-		return fmt.Sprintf(consts.FieldLte.Error(), param, value)
+		return fmt.Sprintf(consts.FieldLte, param, value)
 	case "email":
-		return consts.FieldEmail.Error()
+		return consts.FieldEmail
 	case "uuid":
-		return consts.FieldUUID.Error()
+		return consts.FieldUUID
 	case "datetime":
-		return fmt.Sprintf(consts.FieldDatetime.Error(), param)
+		return fmt.Sprintf(consts.FieldDatetime, param)
 	case "room_status":
-		return fmt.Sprintf("must be one of: %s", strings.Join(func() []string {
-			vals := make([]string, len(models.RoomStatusValues))
-			for i, v := range models.RoomStatusValues {
-				vals[i] = string(v)
-			}
-			return vals
-		}(), ", "))
+		vals := make([]string, len(models.RoomStatusValues))
+		for i, v := range models.RoomStatusValues {
+			vals[i] = string(v)
+		}
+		return fmt.Sprintf(consts.FieldEnum, strings.Join(vals, ", "))
+	case "room_type":
+		vals := make([]string, len(models.RoomTypeValues))
+		for i, v := range models.RoomTypeValues {
+			vals[i] = string(v)
+		}
+		return fmt.Sprintf(consts.FieldEnum, strings.Join(vals, ", "))
 	default:
-		return fmt.Sprintf(consts.FieldInvalid.Error(), value)
+		return fmt.Sprintf(consts.FieldInvalid, value)
 	}
 }

@@ -1,16 +1,5 @@
 basePath: /api/v1
 definitions:
-  helper.PaginationLinks:
-    properties:
-      first:
-        type: string
-      last:
-        type: string
-      next:
-        type: string
-      prev:
-        type: string
-    type: object
   hotel_internal_http_dto_request.HotelCreate:
     properties:
       address:
@@ -151,10 +140,10 @@ definitions:
     type: object
   hotel_internal_http_dto_response.ErrorSchema:
     properties:
-      message:
-        type: string
-      type:
-        type: string
+      errors:
+        additionalProperties:
+          type: string
+        type: object
     type: object
   hotel_internal_http_dto_response.Hotel:
     properties:
@@ -188,7 +177,7 @@ definitions:
       limit:
         type: integer
       links:
-        $ref: '#/definitions/helper.PaginationLinks'
+        $ref: '#/definitions/hotel_internal_http_utils_helper.PaginationLinks'
       total_page_count:
         type: integer
       total_rooms_count:
@@ -276,7 +265,7 @@ definitions:
       limit:
         type: integer
       links:
-        $ref: '#/definitions/helper.PaginationLinks'
+        $ref: '#/definitions/hotel_internal_http_utils_helper.PaginationLinks'
       rooms:
         items:
           $ref: '#/definitions/hotel_internal_http_dto_response.RoomShort'
@@ -344,6 +333,17 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
+    type: object
+  hotel_internal_http_utils_helper.PaginationLinks:
+    properties:
+      first:
+        type: string
+      last:
+        type: string
+      next:
+        type: string
+      prev:
+        type: string
     type: object
   hotel_internal_repository_models.RoomStatus:
     enum:

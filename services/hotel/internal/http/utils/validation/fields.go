@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
+
+	"hotel/pkg/utils/consts"
 )
 
 type ErrorSchema struct {
@@ -41,8 +43,20 @@ func formatValidationErrors(
 
 func CheckErrors(v any, customErr func(validator.FieldError) string) *ValidateError {
 	validate := validator.New()
+	if err := validate.RegisterValidation("slug_format", slugFormatValidator); err != nil {
+		panic(consts.ValidationUnregister + err.Error())
+	}
 	if err := validate.RegisterValidation("room_status", roomStatusValidator); err != nil {
-		panic("failed to register validation: " + err.Error())
+		panic(consts.ValidationUnregister + err.Error())
+	}
+	if err := validate.RegisterValidation("room_type", roomTypeValidator); err != nil {
+		panic(consts.ValidationUnregister + err.Error())
+	}
+	if err := validate.RegisterValidation("decimal_gt", decimalGtValidator); err != nil {
+		panic(consts.ValidationUnregister + err.Error())
+	}
+	if err := validate.RegisterValidation("decimal_lt", decimalLtValidator); err != nil {
+		panic(consts.ValidationUnregister + err.Error())
 	}
 
 	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {

@@ -9,10 +9,10 @@ import (
 
 	"auth/internal/config"
 	"auth/internal/http/handler"
-	"auth/internal/http/lib/jwt"
 	"auth/internal/http/router"
 	"auth/internal/repository/postgres"
 	"auth/internal/service"
+	"auth/pkg/utils/jwt"
 )
 
 type App struct {

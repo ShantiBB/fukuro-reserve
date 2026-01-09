@@ -7,7 +7,7 @@ import (
 
 	_ "auth/docs"
 	"auth/internal/http/handler"
-	"auth/internal/http/lib/permission"
+	"auth/internal/http/utils/permission"
 )
 
 var (

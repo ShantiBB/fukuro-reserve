@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
 type PaginationQuery struct {

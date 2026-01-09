@@ -1,8 +1,8 @@
 package service
 
 import (
-	"auth/internal/http/lib/jwt"
 	"auth/internal/repository/postgres"
+	"auth/pkg/utils/jwt"
 )
 
 type Repository interface {

@@ -9,13 +9,13 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"auth/internal/http/dto/response"
-	"auth/internal/http/lib/jwt"
-	"fukuro-reserve/pkg/utils/consts"
-	"fukuro-reserve/pkg/utils/helper"
+	"auth/internal/http/utils/helper"
+	"auth/pkg/utils/consts"
+	jwt2 "auth/pkg/utils/jwt"
 )
 
 type contextKey string
-type Check func(r *http.Request, claims *jwt.Claims) bool
+type Check func(r *http.Request, claims *jwt2.Claims) bool
 
 const ClaimsKey contextKey = "claims"
 
@@ -29,7 +29,7 @@ func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 				return
 			}
 
-			claims, err := jwt.ParseToken(token, []byte(jwtSecret))
+			claims, err := jwt2.ParseToken(token, []byte(jwtSecret))
 			if err != nil {
 				helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.Forbidden))
 				return
@@ -41,8 +41,8 @@ func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 	}
 }
 
-func GetClaims(ctx context.Context) *jwt.Claims {
-	claims, ok := ctx.Value(ClaimsKey).(*jwt.Claims)
+func GetClaims(ctx context.Context) *jwt2.Claims {
+	claims, ok := ctx.Value(ClaimsKey).(*jwt2.Claims)
 	if !ok {
 		return nil
 	}
@@ -70,7 +70,7 @@ func RequireRoles(checks ...Check) func(next http.Handler) http.Handler {
 	}
 }
 
-func IsOwner(r *http.Request, claims *jwt.Claims) bool {
+func IsOwner(r *http.Request, claims *jwt2.Claims) bool {
 	userID := chi.URLParam(r, "id")
 	targetUserID, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
@@ -79,10 +79,10 @@ func IsOwner(r *http.Request, claims *jwt.Claims) bool {
 	return claims.Sub == targetUserID
 }
 
-func IsAdmin(_ *http.Request, claims *jwt.Claims) bool {
+func IsAdmin(_ *http.Request, claims *jwt2.Claims) bool {
 	return claims.Role == RoleAdmin
 }
 
-func IsModerator(_ *http.Request, claims *jwt.Claims) bool {
+func IsModerator(_ *http.Request, claims *jwt2.Claims) bool {
 	return claims.Role == RoleModerator
 }

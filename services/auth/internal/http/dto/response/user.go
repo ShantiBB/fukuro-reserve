@@ -3,7 +3,7 @@ package response
 import (
 	"time"
 
-	"fukuro-reserve/pkg/utils/helper"
+	"auth/internal/http/utils/helper"
 )
 
 type User struct {

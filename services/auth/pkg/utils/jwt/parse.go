@@ -3,7 +3,7 @@ package jwt
 import (
 	"github.com/golang-jwt/jwt/v5"
 
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
 func ParseToken(tokenStr string, secret []byte) (*Claims, error) {

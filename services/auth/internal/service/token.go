@@ -5,10 +5,10 @@ import (
 	"errors"
 	"log/slog"
 
-	"auth/internal/http/lib/jwt"
-	"auth/internal/http/lib/password"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
+	"auth/pkg/utils/jwt"
+	"auth/pkg/utils/password"
 )
 
 func (s *Service) RegisterByEmail(ctx context.Context, email, password string) (*jwt.Token, error) {

@@ -4,7 +4,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"auth/internal/http/handler"
-	"auth/internal/http/lib/permission"
+	"auth/internal/http/utils/permission"
 )
 
 func userRouter(pattern string, r chi.Router, h *handler.Handler, jwtSecret string) {

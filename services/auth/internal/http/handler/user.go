@@ -7,10 +7,11 @@ import (
 
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
-	"auth/internal/http/lib/password"
+	"auth/internal/http/utils/helper"
+	"auth/internal/http/utils/validation"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/consts"
-	"fukuro-reserve/pkg/utils/helper"
+	"auth/pkg/utils/consts"
+	"auth/pkg/utils/password"
 )
 
 type UserService interface {
@@ -42,7 +43,7 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var req request.UserCreate
 
-	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
+	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 
@@ -186,7 +187,7 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserUpdate
-	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
+	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 
@@ -237,7 +238,7 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req request.UserRoleStatus
-	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
+	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 
@@ -289,7 +290,7 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 	}
 
 	var req request.UserActiveStatus
-	if err := helper.ParseJSON(w, r, &req, h.customValidationError); err != nil {
+	if err := helper.ParseJSON(w, r, &req, validation.CustomValidationError); err != nil {
 		return
 	}
 

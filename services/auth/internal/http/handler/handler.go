@@ -1,12 +1,9 @@
 package handler
 
 import (
-	"github.com/go-playground/validator/v10"
-
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/consts"
 )
 
 type Service interface {
@@ -56,18 +53,5 @@ func (h *Handler) UserShortEntityToResponse(user *models.UserShort) *response.Us
 		Email:    user.Email,
 		Role:     user.Role,
 		IsActive: user.IsActive,
-	}
-}
-
-func (h *Handler) customValidationError(err validator.FieldError) string {
-	switch err.Tag() {
-	case "required":
-		return consts.FieldRequired.Error()
-	case "email":
-		return consts.InvalidEmail.Error()
-	case "min":
-		return consts.InvalidPassword.Error()
-	default:
-		return consts.InternalServer.Error()
 	}
 }

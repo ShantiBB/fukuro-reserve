@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
 func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*models.User, error) {

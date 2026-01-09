@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"auth/internal/http/dto/request"
-	"auth/internal/http/lib/jwt"
 	"auth/internal/repository/postgres/models"
+	"auth/pkg/utils/jwt"
 )
 
 var (

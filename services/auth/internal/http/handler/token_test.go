@@ -10,10 +10,10 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"auth/internal/http/dto/request"
-	"auth/internal/http/lib/jwt"
 	"auth/internal/mocks"
+	"auth/pkg/utils/consts"
+	"auth/pkg/utils/jwt"
 	"auth/test/handler/unit"
-	"fukuro-reserve/pkg/utils/consts"
 )
 
 func TestRegisterByEmail(t *testing.T) {
@@ -43,7 +43,7 @@ func TestRegisterByEmail(t *testing.T) {
 			requestBody:    request.UserCreate{},
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   unit.CheckFieldsRequired("Email", "Password"),
+			respCheckers:   unit.CheckFieldsRequired("email", "password"),
 		},
 		{
 			name:           "Invalid Email and Password",
@@ -51,8 +51,8 @@ func TestRegisterByEmail(t *testing.T) {
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers: unit.CheckFieldsInvalid(map[string]error{
-				"Email":    consts.InvalidEmail,
-				"Password": consts.InvalidPassword,
+				"email":    consts.InvalidEmail,
+				"password": consts.InvalidPassword,
 			}),
 		},
 		{
@@ -124,14 +124,14 @@ func TestLoginByEmail(t *testing.T) {
 			requestBody:    request.UserCreate{},
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   unit.CheckFieldsRequired("Email", "Password"),
+			respCheckers:   unit.CheckFieldsRequired("email", "password"),
 		},
 		{
 			name:           "Invalid Email",
 			requestBody:    unit.LoginBadEmailAndPasswordReq,
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   unit.CheckFieldsInvalid(map[string]error{"Email": consts.InvalidEmail}),
+			respCheckers:   unit.CheckFieldsInvalid(map[string]error{"email": consts.InvalidEmail}),
 		},
 		{
 			name:           "Invalid credentials",
@@ -209,7 +209,7 @@ func TestRefreshToken(t *testing.T) {
 			requestBody:    jwt.RefreshToken{},
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   unit.CheckFieldsRequired("RefreshToken"),
+			respCheckers:   unit.CheckFieldsRequired("refresh_token"),
 		},
 		{
 			name:           "Invalid refresh tokenCreds",

@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"auth/internal/mocks"
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
 // RegisterByEmail mocks

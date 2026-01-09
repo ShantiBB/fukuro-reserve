@@ -14,8 +14,8 @@ import (
 
 	"auth/internal/http/dto/request"
 	"auth/internal/mocks"
+	"auth/pkg/utils/consts"
 	"auth/test/handler/unit"
-	"fukuro-reserve/pkg/utils/consts"
 )
 
 func TestUserCreate(t *testing.T) {
@@ -45,7 +45,7 @@ func TestUserCreate(t *testing.T) {
 			requestBody:    request.UserCreate{},
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
-			respCheckers:   unit.CheckFieldsRequired("Email", "Password"),
+			respCheckers:   unit.CheckFieldsRequired("email", "password"),
 		},
 		{
 			name:           "Invalid Email and Password",
@@ -53,8 +53,8 @@ func TestUserCreate(t *testing.T) {
 			mockSetup:      func(m *mocks.MockService) {},
 			expectedStatus: http.StatusBadRequest,
 			respCheckers: unit.CheckFieldsInvalid(map[string]error{
-				"Email":    consts.InvalidEmail,
-				"Password": consts.InvalidPassword,
+				"email":    consts.InvalidEmail,
+				"password": consts.InvalidPassword,
 			}),
 		},
 		{

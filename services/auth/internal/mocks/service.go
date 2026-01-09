@@ -5,7 +5,7 @@ package mocks
 import (
 	context "context"
 
-	jwt "auth/internal/http/lib/jwt"
+	jwt "auth/pkg/utils/jwt"
 
 	mock "github.com/stretchr/testify/mock"
 

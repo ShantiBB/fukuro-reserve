@@ -5,7 +5,7 @@ import (
 
 	"auth/internal/mocks"
 	"auth/internal/repository/postgres/models"
-	"fukuro-reserve/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
 var (

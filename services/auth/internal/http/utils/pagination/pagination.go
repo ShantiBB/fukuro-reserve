@@ -1,4 +1,4 @@
-package helper
+package pagination
 
 import (
 	"fmt"
@@ -6,22 +6,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"hotel/pkg/utils/consts"
+	"auth/pkg/utils/consts"
 )
 
-type PaginationQuery struct {
-	Page  uint64
-	Limit uint64
-}
-
-type PaginationLinks struct {
-	Prev  *string `json:"prev"`
-	Next  *string `json:"next"`
-	First string  `json:"first"`
-	Last  string  `json:"last"`
-}
-
-func ParsePaginationQuery(r *http.Request) (PaginationQuery, error) {
+func ParsePaginationQuery(r *http.Request) (Query, error) {
 	page := r.URL.Query().Get("page")
 	limit := r.URL.Query().Get("limit")
 
@@ -33,20 +21,20 @@ func ParsePaginationQuery(r *http.Request) (PaginationQuery, error) {
 	}
 
 	if page == "0" || limit == "0" {
-		return PaginationQuery{}, consts.InvalidQueryParam
+		return Query{}, consts.InvalidQueryParam
 	}
 
 	pageUInt, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
-		return PaginationQuery{}, consts.InvalidQueryParam
+		return Query{}, consts.InvalidQueryParam
 	}
 
 	limitUInt, err := strconv.ParseUint(limit, 10, 32)
 	if err != nil {
-		return PaginationQuery{}, consts.InvalidQueryParam
+		return Query{}, consts.InvalidQueryParam
 	}
 
-	return PaginationQuery{
+	return Query{
 		Page:  pageUInt,
 		Limit: limitUInt,
 	}, nil
@@ -66,7 +54,7 @@ func parseFullURL(r *http.Request, query map[string]string) string {
 	return fmt.Sprintf("%s://%s%s?%s", scheme, r.Host, r.URL.Path, q.Encode())
 }
 
-func BuildPaginationLinks(r *http.Request, p PaginationQuery, totalPages uint64) PaginationLinks {
+func BuildPaginationLinks(r *http.Request, p Query, totalPages uint64) Links {
 	firstPage := parseFullURL(r, map[string]string{
 		"page":  "1",
 		"limit": strconv.FormatUint(p.Limit, 10),
@@ -92,7 +80,7 @@ func BuildPaginationLinks(r *http.Request, p PaginationQuery, totalPages uint64)
 		nextPage = &next
 	}
 
-	return PaginationLinks{
+	return Links{
 		Prev:  prevPage,
 		Next:  nextPage,
 		First: firstPage,

@@ -8,6 +8,7 @@ import (
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"
+	"auth/internal/http/utils/pagination"
 	"auth/internal/http/utils/validation"
 	"auth/internal/repository/postgres/models"
 	"auth/pkg/utils/consts"
@@ -88,14 +89,14 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	pagination, err := helper.ParsePaginationQuery(r)
+	paginationParams, err := pagination.ParsePaginationQuery(r)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidQueryParam)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	userList, err := h.svc.UserGetAll(ctx, pagination.Page, pagination.Limit)
+	userList, err := h.svc.UserGetAll(ctx, paginationParams.Page, paginationParams.Limit)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
@@ -108,12 +109,12 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 		users = append(users, *userResponse)
 	}
 
-	totalPageCount := (userList.TotalCount + pagination.Limit - 1) / pagination.Limit
-	pageLinks := helper.BuildPaginationLinks(r, pagination, totalPageCount)
+	totalPageCount := (userList.TotalCount + paginationParams.Limit - 1) / paginationParams.Limit
+	pageLinks := pagination.BuildPaginationLinks(r, paginationParams, totalPageCount)
 	usersResp := response.UserList{
 		Users:           users,
-		CurrentPage:     pagination.Page,
-		Limit:           pagination.Limit,
+		CurrentPage:     paginationParams.Page,
+		Limit:           paginationParams.Limit,
 		Links:           pageLinks,
 		TotalPageCount:  totalPageCount,
 		TotalUsersCount: userList.TotalCount,

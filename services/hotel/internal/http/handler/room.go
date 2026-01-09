@@ -9,6 +9,7 @@ import (
 	"hotel/internal/http/dto/response"
 	"hotel/internal/http/mapper"
 	"hotel/internal/http/utils/helper"
+	"hotel/internal/http/utils/pagination"
 	"hotel/internal/http/utils/validation"
 	"hotel/internal/repository/models"
 	"hotel/pkg/utils/consts"
@@ -110,14 +111,14 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 	}
 	hotelRef := mapper.HotelPathParamsToEntity(pathParams)
 
-	pagination, err := helper.ParsePaginationQuery(r)
+	paginationParams, err := pagination.ParsePaginationQuery(r)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InvalidQueryParam)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	roomList, err := h.svc.RoomGetAll(ctx, hotelRef, pagination.Page, pagination.Limit)
+	roomList, err := h.svc.RoomGetAll(ctx, hotelRef, paginationParams.Page, paginationParams.Limit)
 	if err != nil {
 		errMsg := response.ErrorResp(consts.InternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
@@ -130,12 +131,12 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 		rooms = append(rooms, roomResponse)
 	}
 
-	totalPageCount := (roomList.TotalCount + pagination.Limit - 1) / pagination.Limit
-	pageLinks := helper.BuildPaginationLinks(r, pagination, totalPageCount)
+	totalPageCount := (roomList.TotalCount + paginationParams.Limit - 1) / paginationParams.Limit
+	pageLinks := pagination.BuildPaginationLinks(r, paginationParams, totalPageCount)
 	roomListResp := response.RoomList{
 		Rooms:           rooms,
-		CurrentPage:     pagination.Page,
-		Limit:           pagination.Limit,
+		CurrentPage:     paginationParams.Page,
+		Limit:           paginationParams.Limit,
 		Links:           pageLinks,
 		TotalPageCount:  totalPageCount,
 		TotalRoomsCount: roomList.TotalCount,

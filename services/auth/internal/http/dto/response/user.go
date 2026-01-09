@@ -3,7 +3,7 @@ package response
 import (
 	"time"
 
-	"auth/internal/http/utils/helper"
+	"auth/internal/http/utils/pagination"
 )
 
 type User struct {
@@ -25,12 +25,12 @@ type UserShort struct {
 }
 
 type UserList struct {
-	Users           []UserShort            `json:"users"`
-	CurrentPage     uint64                 `json:"current_page"`
-	Limit           uint64                 `json:"limit"`
-	Links           helper.PaginationLinks `json:"links"`
-	TotalPageCount  uint64                 `json:"total_page_count"`
-	TotalUsersCount uint64                 `json:"total_users_count"`
+	Users           []UserShort      `json:"users"`
+	CurrentPage     uint64           `json:"current_page"`
+	Limit           uint64           `json:"limit"`
+	Links           pagination.Links `json:"links"`
+	TotalPageCount  uint64           `json:"total_page_count"`
+	TotalUsersCount uint64           `json:"total_users_count"`
 }
 
 type UserRoleStatus struct {

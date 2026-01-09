@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"hotel/internal/http/utils/helper"
+	"hotel/internal/http/utils/pagination"
 )
 
 type Location struct {
@@ -59,10 +59,10 @@ type Hotel struct {
 }
 
 type HotelList struct {
-	Hotels           []HotelShort           `json:"hotels"`
-	CurrentPage      uint64                 `json:"current_page"`
-	Limit            uint64                 `json:"limit"`
-	Links            helper.PaginationLinks `json:"links"`
-	TotalPageCount   uint64                 `json:"total_page_count"`
-	TotalHotelsCount uint64                 `json:"total_rooms_count"`
+	Hotels           []HotelShort     `json:"hotels"`
+	CurrentPage      uint64           `json:"current_page"`
+	Limit            uint64           `json:"limit"`
+	Links            pagination.Links `json:"links"`
+	TotalPageCount   uint64           `json:"total_page_count"`
+	TotalHotelsCount uint64           `json:"total_rooms_count"`
 }

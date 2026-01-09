@@ -214,8 +214,8 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 
 // UserUpdateRoleStatus    godoc
 //
-//	@Summary		Update user by ID
-//	@Description	Update user by ID from admin or owner provider
+//	@Summary		Update user role by ID
+//	@Description	Update user role by ID from admin or owner provider
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
@@ -266,8 +266,8 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 
 // UserUpdateActiveStatus    godoc
 //
-//	@Summary		Update user by ID
-//	@Description	Update user by ID from admin or owner provider
+//	@Summary		Update user active status by ID
+//	@Description	Update user active status by ID from admin or owner provider
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json

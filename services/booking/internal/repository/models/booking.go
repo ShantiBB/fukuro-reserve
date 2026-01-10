@@ -43,6 +43,25 @@ type Booking struct {
 	UpdatedAt   time.Time
 }
 
+type BookingShort struct {
+	ID          string
+	UserID      int64
+	HotelID     string
+	CheckIn     string
+	CheckOut    string
+	Status      BookingStatus
+	GuestName   string
+	GuestEmail  *string
+	GuestPhone  *string
+	Currency    string
+	TotalAmount string
+}
+
+type BookingList struct {
+	Booking    []BookingShort
+	TotalCount uint64
+}
+
 func (b *BookingCreate) ToRead() Booking {
 	return Booking{
 		UserID:      b.UserID,

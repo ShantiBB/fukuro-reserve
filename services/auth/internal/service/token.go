@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log/slog"
 
-	"auth/internal/repository/postgres/models"
+	"auth/internal/repository/models"
 	"auth/pkg/utils/consts"
 	"auth/pkg/utils/jwt"
 	"auth/pkg/utils/password"

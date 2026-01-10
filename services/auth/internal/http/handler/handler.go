@@ -3,7 +3,7 @@ package handler
 import (
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
-	"auth/internal/repository/postgres/models"
+	"auth/internal/repository/models"
 )
 
 type Service interface {

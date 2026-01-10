@@ -40,7 +40,6 @@ const (
 
 	BookingGetByID = `
 		SELECT
-			id,
 			user_id,
 			hotel_id,
 			check_in,
@@ -56,7 +55,7 @@ const (
 		FROM booking
 		WHERE id = $1;`
 
-	BookingUpdate = `
+	BookingUpdateByID = `
 		UPDATE booking
 		SET
 			guest_name = $2,
@@ -67,12 +66,19 @@ const (
 			total_amount = $7
 		WHERE id = $1`
 
-	BookingUpdateStatus = `
+	BookingStatusUpdateByID = `
 		UPDATE booking
 		SET status = $2
 		WHERE id = $1`
 
-	BookingDelete = `
+	BookingDeleteByID = `
 		DELETE FROM booking
 		WHERE id = $1;`
+
+	BookingGetCountRows = `
+		SELECT COUNT(*)
+		FROM booking
+		WHERE ($1::bigint IS NULL OR user_id = $1)
+		  AND ($2::uuid IS NULL OR hotel_id = $2)
+		  AND ($3::booking_status IS NULL OR status = $3);`
 )

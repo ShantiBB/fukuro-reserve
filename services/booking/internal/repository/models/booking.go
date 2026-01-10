@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type BookingCreate struct {
 	UserID      int64
@@ -15,11 +19,11 @@ type BookingCreate struct {
 }
 
 type BookingUpdate struct {
-	CheckIn     *string
-	CheckOut    *string
 	GuestName   *string
 	GuestEmail  *string
 	GuestPhone  *string
+	CheckIn     *string
+	CheckOut    *string
 	TotalAmount *string
 }
 
@@ -60,6 +64,12 @@ type BookingShort struct {
 type BookingList struct {
 	Booking    []BookingShort
 	TotalCount uint64
+}
+
+type BookingRef struct {
+	UserID  int64
+	HotelID uuid.UUID
+	Status  BookingStatus
 }
 
 func (b *BookingCreate) ToRead() Booking {

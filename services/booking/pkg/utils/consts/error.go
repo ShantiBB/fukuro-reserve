@@ -2,16 +2,10 @@ package consts
 
 import "errors"
 
-// Hotel
+// Booking
 var (
-	HotelNotFound    = errors.New("booking not found")
-	UniqueHotelField = errors.New("booking title already exists")
-)
-
-// Room
-var (
-	RoomNotFound    = errors.New("room not found")
-	UniqueRoomField = errors.New("room number already exists")
+	BookingNotFound    = errors.New("booking not found")
+	UniqueBookingField = errors.New("booking title already exists")
 )
 
 // Field

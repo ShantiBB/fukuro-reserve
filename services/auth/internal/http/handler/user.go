@@ -48,15 +48,16 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hashPassword, err := password.HashPassword(req.Password)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.PasswordHashing)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	errHandler := &helper.ErrorHandler{
+		BadRequest: consts.PasswordHashing,
+	}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	newUser := h.UserCreateRequestToEntity(&req, hashPassword)
 	createdUser, err := h.svc.UserCreate(ctx, *newUser)
-	errHandler := &helper.ErrorHandler{
+	errHandler = &helper.ErrorHandler{
 		Conflict: consts.UniqueUserField,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
@@ -85,14 +86,15 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidQueryParam)
-		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
+	errHandler := &helper.ErrorHandler{
+		BadRequest: consts.InvalidQueryParam,
+	}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	userList, err := h.svc.UserGetAll(ctx, paginationParams.Page, paginationParams.Limit)
-	errHandler := &helper.ErrorHandler{}
+	errHandler = &helper.ErrorHandler{}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}

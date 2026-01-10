@@ -9,8 +9,10 @@ import (
 )
 
 type ErrorHandler struct {
-	NotFoundError error
-	ConflictError error
+	NotFound     error
+	Conflict     error
+	BadRequest   error
+	Unauthorized error
 }
 
 func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, err error) error {
@@ -18,15 +20,27 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, err error)
 		return nil
 	}
 
-	if h.NotFoundError != nil && errors.Is(err, h.NotFoundError) {
-		errMsg := response.ErrorResp(h.NotFoundError)
+	if h.NotFound != nil && errors.Is(err, h.NotFound) {
+		errMsg := response.ErrorResp(h.NotFound)
 		SendError(w, r, http.StatusNotFound, errMsg)
 		return err
 	}
 
-	if h.ConflictError != nil && errors.Is(err, h.ConflictError) {
-		errMsg := response.ErrorResp(h.ConflictError)
+	if h.Conflict != nil && errors.Is(err, h.Conflict) {
+		errMsg := response.ErrorResp(h.Conflict)
 		SendError(w, r, http.StatusConflict, errMsg)
+		return err
+	}
+
+	if h.BadRequest != nil && errors.Is(err, h.BadRequest) {
+		errMsg := response.ErrorResp(h.BadRequest)
+		SendError(w, r, http.StatusBadRequest, errMsg)
+		return err
+	}
+
+	if h.Unauthorized != nil && errors.Is(err, h.Unauthorized) {
+		errMsg := response.ErrorResp(h.Unauthorized)
+		SendError(w, r, http.StatusUnauthorized, errMsg)
 		return err
 	}
 

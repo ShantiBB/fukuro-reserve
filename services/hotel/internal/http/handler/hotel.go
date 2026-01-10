@@ -53,9 +53,7 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 
 	newHotel := mapper.HotelCreateRequestToEntity(req)
 	createdHotel, err := h.svc.HotelCreate(ctx, hotelRef, newHotel)
-	errHandler := &helper.ErrorHandler{
-		ConflictError: consts.UniqueHotelField,
-	}
+	errHandler := &helper.ErrorHandler{Conflict: consts.UniqueHotelField}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -86,14 +84,13 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 	sortField := chi.URLParam(r, "sort")
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidQueryParam)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	errHandler := &helper.ErrorHandler{BadRequest: consts.InvalidQueryParam}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	hotelList, err := h.svc.HotelGetAll(ctx, hotelRef, sortField, paginationParams.Page, paginationParams.Limit)
-	errHandler := &helper.ErrorHandler{}
+	errHandler = &helper.ErrorHandler{}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -140,7 +137,7 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 	hotelRef := middleware.GetHotelRef(ctx)
 
 	hotel, err := h.svc.HotelGetBySlug(ctx, hotelRef)
-	errHandler := &helper.ErrorHandler{NotFoundError: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -178,7 +175,7 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 
 	hotelUpdate := mapper.HotelUpdateRequestToEntity(req)
 	err := h.svc.HotelUpdateBySlug(ctx, hotelRef, hotelUpdate)
-	errHandler := &helper.ErrorHandler{NotFoundError: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -215,7 +212,7 @@ func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request)
 	}
 
 	hotelUpdated, err := h.svc.HotelTitleUpdateBySlug(ctx, hotelRef, mapper.HotelTitleUpdateRequestToEntity(req))
-	errHandler := &helper.ErrorHandler{NotFoundError: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -246,7 +243,7 @@ func (h *Handler) HotelDeleteBySlug(w http.ResponseWriter, r *http.Request) {
 	hotelRef := middleware.GetHotelRef(ctx)
 
 	err := h.svc.HotelDeleteBySlug(ctx, hotelRef)
-	errHandler := &helper.ErrorHandler{NotFoundError: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}

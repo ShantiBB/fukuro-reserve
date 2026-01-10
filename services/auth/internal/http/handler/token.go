@@ -43,14 +43,15 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hashPassword, err := password.HashPassword(req.Password)
-	if err != nil {
-		errMsg := response.ErrorResp(consts.PasswordHashing)
-		helper.SendError(w, r, http.StatusBadRequest, errMsg)
+	errHandler := &helper.ErrorHandler{
+		BadRequest: consts.PasswordHashing,
+	}
+	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	tokens, err := h.svc.RegisterByEmail(ctx, req.Email, hashPassword)
-	errHandler := &helper.ErrorHandler{
+	errHandler = &helper.ErrorHandler{
 		Conflict: consts.UniqueUserField,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {

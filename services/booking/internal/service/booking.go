@@ -32,7 +32,7 @@ type BookingRepository interface {
 
 type BookingRoomRepository interface {
 	CreateBookingRoom(ctx context.Context, tx pgx.Tx, bRoom models.CreateBookingRoom) (models.BookingRoom, error)
-	GetBookingRoomsByBookingID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) (models.BookingRoomList, error)
+	GetBookingRoomsByBookingID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) ([]models.BookingRoom, error)
 	GetBookingRoomByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (models.BookingRoom, error)
 	UpdateBookingRoomGuestCountsByID(
 		ctx context.Context,
@@ -45,7 +45,7 @@ type BookingRoomRepository interface {
 
 type RoomLockRepository interface {
 	CreateRoomLock(ctx context.Context, tx pgx.Tx, roomLock models.CreateRoomLock) (models.RoomLock, error)
-	GetRoomsLockByBookingID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) (models.RoomLockList, error)
+	GetRoomsLockByBookingID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) ([]models.RoomLock, error)
 	GetRoomLockByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (models.RoomLock, error)
 	UpdateRoomLockActivityByID(
 		ctx context.Context,

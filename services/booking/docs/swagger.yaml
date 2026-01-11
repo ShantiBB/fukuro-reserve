@@ -1,0 +1,138 @@
+basePath: /api/v1
+definitions:
+  booking_internal_http_dto_request.CreateBooking:
+    properties:
+      check_in:
+        type: string
+      check_out:
+        type: string
+      currency:
+        type: string
+      guest_email:
+        type: string
+      guest_name:
+        type: string
+      guest_phone:
+        type: string
+      hotel_id:
+        type: string
+      rooms:
+        items:
+          $ref: '#/definitions/booking_internal_http_dto_request.CreateBookingRoom'
+        type: array
+      total_amount:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  booking_internal_http_dto_request.CreateBookingRoom:
+    properties:
+      adults:
+        type: integer
+      children:
+        type: integer
+      price_per_night:
+        type: number
+      room_id:
+        type: string
+    type: object
+  booking_internal_http_dto_response.Booking:
+    properties:
+      check_in:
+        type: string
+      check_out:
+        type: string
+      created_at:
+        type: string
+      currency:
+        type: string
+      guest_email:
+        type: string
+      guest_name:
+        type: string
+      guest_phone:
+        type: string
+      hotel_id:
+        type: string
+      id:
+        type: string
+      status:
+        $ref: '#/definitions/booking_internal_repository_models.BookingStatus'
+      total_amount:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  booking_internal_http_dto_response.ErrorSchema:
+    properties:
+      errors:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  booking_internal_repository_models.BookingStatus:
+    enum:
+    - pending
+    - confirmed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - BookingStatusPending
+    - BookingStatusConfirmed
+    - BookingStatusCancelled
+host: localhost:8083
+info:
+  contact: {}
+  description: Bookings service for microservices.
+  title: Swagger Bookings API
+  version: "1.0"
+paths:
+  /bookings:
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking with rooms
+      parameters:
+      - description: Booking data with rooms
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/booking_internal_http_dto_request.CreateBooking'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/booking_internal_http_dto_response.Booking'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/booking_internal_http_dto_response.ErrorSchema'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/booking_internal_http_dto_response.ErrorSchema'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/booking_internal_http_dto_response.ErrorSchema'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/booking_internal_http_dto_response.ErrorSchema'
+      security:
+      - Bearer: []
+      summary: Create booking
+      tags:
+      - bookings
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

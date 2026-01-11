@@ -1,0 +1,209 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Bookings service for microservices.",
+        "title": "Swagger Bookings API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8083",
+    "basePath": "/api/v1",
+    "paths": {
+        "/bookings": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new booking with rooms",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Create booking",
+                "parameters": [
+                    {
+                        "description": "Booking data with rooms",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_request.CreateBooking"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_response.Booking"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_response.ErrorSchema"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/booking_internal_http_dto_response.ErrorSchema"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "booking_internal_http_dto_request.CreateBooking": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "guest_email": {
+                    "type": "string"
+                },
+                "guest_name": {
+                    "type": "string"
+                },
+                "guest_phone": {
+                    "type": "string"
+                },
+                "hotel_id": {
+                    "type": "string"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/booking_internal_http_dto_request.CreateBookingRoom"
+                    }
+                },
+                "total_amount": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "booking_internal_http_dto_request.CreateBookingRoom": {
+            "type": "object",
+            "properties": {
+                "adults": {
+                    "type": "integer"
+                },
+                "children": {
+                    "type": "integer"
+                },
+                "price_per_night": {
+                    "type": "number"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "booking_internal_http_dto_response.Booking": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "guest_email": {
+                    "type": "string"
+                },
+                "guest_name": {
+                    "type": "string"
+                },
+                "guest_phone": {
+                    "type": "string"
+                },
+                "hotel_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/booking_internal_repository_models.BookingStatus"
+                },
+                "total_amount": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "booking_internal_http_dto_response.ErrorSchema": {
+            "type": "object",
+            "properties": {
+                "errors": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "booking_internal_repository_models.BookingStatus": {
+            "type": "string",
+            "enum": [
+                "pending",
+                "confirmed",
+                "cancelled"
+            ],
+            "x-enum-varnames": [
+                "BookingStatusPending",
+                "BookingStatusConfirmed",
+                "BookingStatusCancelled"
+            ]
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

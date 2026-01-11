@@ -6,13 +6,12 @@ import (
 
 	"github.com/joho/godotenv"
 
-	"booking/internal/app/booking"
 	"booking/internal/config"
 )
 
-//	@title			Swagger Booking API
+//	@title			Swagger Bookings API
 //	@version		1.0
-//	@description	Booking service for microservices.
+//	@description	Bookings service for microservices.
 
 //	@host		localhost:8083
 //	@BasePath	/api/v1

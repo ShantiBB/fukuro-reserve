@@ -10,10 +10,9 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (r *Repository) BookingCreate(ctx context.Context, b models.BookingCreate) (models.Booking, error) {
+func (r *Repository) CreateBooking(ctx context.Context, b models.CreateBooking) (models.Booking, error) {
 	newBooking := b.ToRead()
 	insertArgs := []any{
 		b.UserID,
@@ -32,18 +31,14 @@ func (r *Repository) BookingCreate(ctx context.Context, b models.BookingCreate) 
 		&newBooking.UpdatedAt,
 	}
 
-	if err := r.db.QueryRow(ctx, query.BookingCreate, insertArgs...).Scan(scanArgs...); err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return models.Booking{}, consts.UniqueBookingField
-		}
+	if err := r.db.QueryRow(ctx, query.CreateBooking, insertArgs...).Scan(scanArgs...); err != nil {
 		return models.Booking{}, err
 	}
 
 	return newBooking, nil
 }
 
-func (r *Repository) BookingGetAll(
+func (r *Repository) GetBookingsByHotelInfo(
 	ctx context.Context,
 	bookingRef models.BookingRef,
 	limit uint64,
@@ -58,7 +53,7 @@ func (r *Repository) BookingGetAll(
 		offset,
 	}
 
-	rows, err := r.db.Query(ctx, query.BookingGetAll, selectArgs...)
+	rows, err := r.db.Query(ctx, query.GetBookingsByHotelInfo, selectArgs...)
 	if err != nil {
 		return models.BookingList{}, err
 	}
@@ -76,18 +71,19 @@ func (r *Repository) BookingGetAll(
 			b.GuestEmail,
 			b.GuestPhone,
 			b.Currency,
-			b.TotalAmount)
+			b.TotalAmount,
+		)
 		if err != nil {
 			return models.BookingList{}, err
 		}
 
-		bookingList.Booking = append(bookingList.Booking, b)
+		bookingList.Bookings = append(bookingList.Bookings, b)
 	}
 
 	if err = r.db.
 		QueryRow(
 			ctx,
-			query.BookingGetCountRows,
+			query.GetBookingCountRows,
 			bookingRef.UserID,
 			bookingRef.HotelID,
 			bookingRef.Status,
@@ -99,7 +95,7 @@ func (r *Repository) BookingGetAll(
 	return bookingList, nil
 }
 
-func (r *Repository) BookingGetByID(ctx context.Context, id uuid.UUID) (models.Booking, error) {
+func (r *Repository) GetBookingByID(ctx context.Context, id uuid.UUID) (models.Booking, error) {
 	var b models.Booking
 	scanArgs := []any{
 		b.UserID,
@@ -116,7 +112,7 @@ func (r *Repository) BookingGetByID(ctx context.Context, id uuid.UUID) (models.B
 		b.UpdatedAt,
 	}
 
-	if err := r.db.QueryRow(ctx, query.BookingGetByID, id).Scan(scanArgs...); err != nil {
+	if err := r.db.QueryRow(ctx, query.GetBookingByID, id).Scan(scanArgs...); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Booking{}, consts.BookingNotFound
 		}
@@ -126,7 +122,7 @@ func (r *Repository) BookingGetByID(ctx context.Context, id uuid.UUID) (models.B
 	return b, nil
 }
 
-func (r *Repository) BookingGuestInfoUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingUpdate) error {
+func (r *Repository) UpdateBookingGuestInfoByID(ctx context.Context, id uuid.UUID, b models.UpdateBooking) error {
 	updateArgs := []any{
 		id,
 		b.GuestName,
@@ -134,7 +130,7 @@ func (r *Repository) BookingGuestInfoUpdateByID(ctx context.Context, id uuid.UUI
 		b.GuestPhone,
 	}
 
-	row, err := r.db.Exec(ctx, query.BookingGuestInfoUpdateByID, updateArgs...)
+	row, err := r.db.Exec(ctx, query.UpdateBookingGuestInfoByID, updateArgs...)
 	if err != nil {
 		return err
 	}
@@ -145,13 +141,13 @@ func (r *Repository) BookingGuestInfoUpdateByID(ctx context.Context, id uuid.UUI
 	return nil
 }
 
-func (r *Repository) BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusUpdate) error {
+func (r *Repository) UpdateBookingStatusByID(ctx context.Context, id uuid.UUID, b models.BookingStatusInfo) error {
 	updateArgs := []any{
 		id,
 		b.Status,
 	}
 
-	row, err := r.db.Exec(ctx, query.BookingStatusUpdateByID, updateArgs...)
+	row, err := r.db.Exec(ctx, query.UpdateBookingStatusByID, updateArgs...)
 	if err != nil {
 		return err
 	}
@@ -162,8 +158,8 @@ func (r *Repository) BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, 
 	return nil
 }
 
-func (r *Repository) BookingDeleteByID(ctx context.Context, id uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.BookingDeleteByID, id)
+func (r *Repository) DeleteBookingByID(ctx context.Context, id uuid.UUID) error {
+	row, err := r.db.Exec(ctx, query.DeleteBookingByID, id)
 	if err != nil {
 		return err
 	}

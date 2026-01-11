@@ -1,12 +1,12 @@
 package query
 
 const (
-	BookingRoomCreate = `
+	CreateBookingRoom = `
 		INSERT INTO booking_room (booking_id, room_id, adults, children, price_per_night)
 		VALUES ($1, $2, $3, $4, $5)
 		RETURNING id, created_at;`
 
-	BookingRoomGetAll = `
+	GetBookingRoomsByBookingID = `
 		SELECT
 		  id,
 		  booking_id,
@@ -19,7 +19,7 @@ const (
 		WHERE booking_id = $1
 		ORDER BY created_at;`
 
-	BookingRoomGetByID = `
+	GetBookingRoomByID = `
 		SELECT
 		  id,
 		  booking_id,
@@ -31,14 +31,14 @@ const (
 		FROM booking_room
 		WHERE id = $1;`
 
-	BookingGuestsUpdateByID = `
+	UpdateBookingRoomGuestCountsByID = `
 		UPDATE booking_room
 		SET
 		  adults = $2,
 		  children = $3
 		WHERE id = $1;`
 
-	BookingRoomDeleteByID = `
+	DeleteBookingRoomByID = `
 		DELETE FROM booking_room
 		WHERE id = $1;`
 )

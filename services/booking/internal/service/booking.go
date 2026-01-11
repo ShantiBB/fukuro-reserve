@@ -8,15 +8,20 @@ import (
 )
 
 type BookingRepository interface {
-	BookingCreate(ctx context.Context, b models.BookingCreate) (models.Booking, error)
-	BookingGetAll(ctx context.Context, bookingRef models.BookingRef, limit uint64, offset uint64) (models.BookingList, error)
+	BookingCreate(ctx context.Context, b models.CreateBooking) (models.Booking, error)
+	BookingGetAll(
+		ctx context.Context,
+		bookingRef models.BookingRef,
+		limit uint64,
+		offset uint64,
+	) (models.BookingList, error)
 	BookingGetByID(ctx context.Context, id uuid.UUID) (models.Booking, error)
-	BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingUpdate) error
-	BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusUpdate) error
+	BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.UpdateBooking) error
+	BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusInfo) error
 	BookingDeleteByID(ctx context.Context, id uuid.UUID) error
 }
 
-func (s *Service) BookingCreate(ctx context.Context, b models.BookingCreate) (models.Booking, error) {
+func (s *Service) BookingCreate(ctx context.Context, b models.CreateBooking) (models.Booking, error) {
 
 	newBooking, err := s.repo.BookingCreate(ctx, b)
 	if err != nil {
@@ -51,7 +56,7 @@ func (s *Service) BookingGetByID(ctx context.Context, id uuid.UUID) (models.Book
 	return b, nil
 }
 
-func (s *Service) BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingUpdate) error {
+func (s *Service) BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.UpdateBooking) error {
 	if err := s.repo.BookingUpdateByID(ctx, id, b); err != nil {
 		return err
 	}
@@ -59,7 +64,7 @@ func (s *Service) BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.
 	return nil
 }
 
-func (s *Service) BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusUpdate) error {
+func (s *Service) BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusInfo) error {
 	if err := s.repo.BookingStatusUpdateByID(ctx, id, b); err != nil {
 		return err
 	}

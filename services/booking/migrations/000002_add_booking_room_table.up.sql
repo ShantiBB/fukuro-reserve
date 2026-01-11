@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS booking_room (
 
     room_id UUID NOT NULL,
 
-    adults INT NOT NULL DEFAULT 1 CHECK (adults >= 1 AND adults <= 10),
-    children INT NOT NULL DEFAULT 0 CHECK (children >= 0 AND children <= 10),
+    adults INT8 NOT NULL DEFAULT 1 CHECK (adults >= 1 AND adults <= 10),
+    children INT8 NOT NULL DEFAULT 0 CHECK (children >= 0 AND children <= 10),
 
     price_per_night NUMERIC(12,2) NOT NULL CHECK (price_per_night >= 0),
 

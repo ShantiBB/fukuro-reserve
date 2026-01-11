@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type BookingCreate struct {
+type CreateBooking struct {
 	UserID      int64
 	HotelID     string
 	CheckIn     string
@@ -18,7 +18,7 @@ type BookingCreate struct {
 	TotalAmount string
 }
 
-type BookingUpdate struct {
+type UpdateBooking struct {
 	GuestName   *string
 	GuestEmail  *string
 	GuestPhone  *string
@@ -27,7 +27,7 @@ type BookingUpdate struct {
 	TotalAmount *string
 }
 
-type BookingStatusUpdate struct {
+type BookingStatusInfo struct {
 	Status BookingStatus
 }
 
@@ -62,7 +62,7 @@ type BookingShort struct {
 }
 
 type BookingList struct {
-	Booking    []BookingShort
+	Bookings   []BookingShort
 	TotalCount uint64
 }
 
@@ -72,7 +72,7 @@ type BookingRef struct {
 	Status  BookingStatus
 }
 
-func (b *BookingCreate) ToRead() Booking {
+func (b *CreateBooking) ToRead() Booking {
 	return Booking{
 		UserID:      b.UserID,
 		HotelID:     b.HotelID,

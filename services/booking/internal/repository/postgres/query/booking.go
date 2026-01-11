@@ -1,7 +1,7 @@
 package query
 
 const (
-	BookingCreate = `
+	CreateBooking = `
 		INSERT INTO booking (
 			user_id,
 			hotel_id,
@@ -16,7 +16,7 @@ const (
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id, created_at, updated_at;`
 
-	BookingGetAll = `
+	GetBookingsByHotelInfo = `
 		SELECT
 			id,
 			user_id,
@@ -38,7 +38,7 @@ const (
 		ORDER BY created_at DESC
 		LIMIT $4 OFFSET $5;`
 
-	BookingGetByID = `
+	GetBookingByID = `
 		SELECT
 			user_id,
 			hotel_id,
@@ -55,7 +55,7 @@ const (
 		FROM booking
 		WHERE id = $1;`
 
-	BookingGuestInfoUpdateByID = `
+	UpdateBookingGuestInfoByID = `
 		UPDATE booking
 		SET
 			guest_name = $2,
@@ -63,16 +63,16 @@ const (
 			guest_phone = $4
 		WHERE id = $1`
 
-	BookingStatusUpdateByID = `
+	UpdateBookingStatusByID = `
 		UPDATE booking
 		SET status = $2
 		WHERE id = $1`
 
-	BookingDeleteByID = `
+	DeleteBookingByID = `
 		DELETE FROM booking
 		WHERE id = $1;`
 
-	BookingGetCountRows = `
+	GetBookingCountRows = `
 		SELECT COUNT(*)
 		FROM booking
 		WHERE ($1::bigint IS NULL OR user_id = $1)

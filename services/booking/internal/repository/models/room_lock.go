@@ -32,10 +32,6 @@ type RoomLock struct {
 	CreatedAt time.Time
 }
 
-type RoomLockList struct {
-	RoomsLock []RoomLock
-}
-
 func (roomLock *CreateRoomLock) ToRead() RoomLock {
 	return RoomLock{
 		RoomID:    roomLock.RoomID,

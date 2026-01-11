@@ -41,13 +41,13 @@ func (r *Repository) GetBookingRoomsByBookingID(
 	ctx context.Context,
 	tx pgx.Tx,
 	bookingID uuid.UUID,
-) (models.BookingRoomList, error) {
+) ([]models.BookingRoom, error) {
 	db := r.executor(tx)
 
-	var bookingRoomList models.BookingRoomList
+	var bookingRoomList []models.BookingRoom
 	rows, err := db.Query(ctx, query.GetBookingRoomsByBookingID, bookingID)
 	if err != nil {
-		return models.BookingRoomList{}, err
+		return []models.BookingRoom{}, err
 	}
 
 	var bRoom models.BookingRoom
@@ -62,10 +62,10 @@ func (r *Repository) GetBookingRoomsByBookingID(
 			bRoom.CreatedAt,
 		)
 		if err != nil {
-			return models.BookingRoomList{}, err
+			return []models.BookingRoom{}, err
 		}
 
-		bookingRoomList.BookingRooms = append(bookingRoomList.BookingRooms, bRoom)
+		bookingRoomList = append(bookingRoomList, bRoom)
 	}
 
 	return bookingRoomList, nil

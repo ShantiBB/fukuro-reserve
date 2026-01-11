@@ -30,10 +30,6 @@ type BookingRoom struct {
 	CreatedAt     time.Time
 }
 
-type BookingRoomList struct {
-	BookingRooms []BookingRoom
-}
-
 func (b *CreateBookingRoom) ToRead() BookingRoom {
 	return BookingRoom{
 		BookingID:     b.BookingID,

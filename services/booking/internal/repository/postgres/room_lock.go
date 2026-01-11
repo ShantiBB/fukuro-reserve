@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
@@ -23,7 +24,8 @@ func (r *Repository) CreateRoomLock(
 	insertArgs := []any{
 		roomLock.RoomID,
 		roomLock.BookingID,
-		roomLock.StayRange,
+		roomLock.StayRange.Start,
+		roomLock.StayRange.End,
 		roomLock.ExpiresAt,
 	}
 	scanArgs := []any{
@@ -33,6 +35,10 @@ func (r *Repository) CreateRoomLock(
 	}
 
 	if err := db.QueryRow(ctx, query.CreateRoomLock, insertArgs...).Scan(scanArgs...); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23P01" {
+			return models.RoomLock{}, consts.RoomLockAlreadyExist
+		}
 		return models.RoomLock{}, err
 	}
 
@@ -43,13 +49,13 @@ func (r *Repository) GetRoomsLockByBookingID(
 	ctx context.Context,
 	tx pgx.Tx,
 	bookingID uuid.UUID,
-) (models.RoomLockList, error) {
+) ([]models.RoomLock, error) {
 	db := r.executor(tx)
 
-	var roomLockList models.RoomLockList
+	var roomLockList []models.RoomLock
 	rows, err := db.Query(ctx, query.GetRoomsLockByBookingID, bookingID)
 	if err != nil {
-		return models.RoomLockList{}, err
+		return []models.RoomLock{}, err
 	}
 
 	var roomLock models.RoomLock
@@ -64,10 +70,10 @@ func (r *Repository) GetRoomsLockByBookingID(
 			roomLock.CreatedAt,
 		)
 		if err != nil {
-			return models.RoomLockList{}, err
+			return []models.RoomLock{}, err
 		}
 
-		roomLockList.RoomsLock = append(roomLockList.RoomsLock, roomLock)
+		roomLockList = append(roomLockList, roomLock)
 	}
 
 	return roomLockList, nil

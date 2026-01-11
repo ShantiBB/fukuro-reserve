@@ -986,12 +986,12 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string",
-                    "maxLength": 300,
+                    "maxLength": 500,
                     "minLength": 5
                 },
                 "description": {
                     "type": "string",
-                    "maxLength": 1000
+                    "maxLength": 2000
                 },
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
@@ -1028,12 +1028,12 @@ const docTemplate = `{
             "properties": {
                 "address": {
                     "type": "string",
-                    "maxLength": 300,
+                    "maxLength": 500,
                     "minLength": 5
                 },
                 "description": {
                     "type": "string",
-                    "maxLength": 1000
+                    "maxLength": 2000
                 },
                 "location": {
                     "$ref": "#/definitions/hotel_internal_http_dto_request.Location"
@@ -1073,24 +1073,32 @@ const docTemplate = `{
             "properties": {
                 "amenities": {
                     "type": "array",
+                    "maxItems": 50,
                     "items": {
                         "type": "string"
                     }
                 },
                 "area_sqm": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 9999.99
                 },
                 "capacity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 10,
+                    "minimum": 1
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000
                 },
                 "floor": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 0
                 },
                 "images": {
                     "type": "array",
+                    "maxItems": 50,
                     "items": {
                         "type": "string"
                     }
@@ -1099,10 +1107,14 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "room_number": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
                 },
                 "type": {
                     "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
@@ -1134,24 +1146,32 @@ const docTemplate = `{
             "properties": {
                 "amenities": {
                     "type": "array",
+                    "maxItems": 50,
                     "items": {
                         "type": "string"
                     }
                 },
                 "area_sqm": {
-                    "type": "number"
+                    "type": "number",
+                    "maximum": 9999.99
                 },
                 "capacity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 10,
+                    "minimum": 1
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 1000
                 },
                 "floor": {
-                    "type": "integer"
+                    "type": "integer",
+                    "maximum": 2147483647,
+                    "minimum": 0
                 },
                 "images": {
                     "type": "array",
+                    "maxItems": 50,
                     "items": {
                         "type": "string"
                     }
@@ -1160,10 +1180,14 @@ const docTemplate = `{
                     "type": "number"
                 },
                 "room_number": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 10,
+                    "minLength": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 3
                 },
                 "type": {
                     "$ref": "#/definitions/hotel_internal_repository_models.RoomType"
@@ -1229,7 +1253,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "links": {
-                    "$ref": "#/definitions/hotel_internal_http_utils_helper.PaginationLinks"
+                    "$ref": "#/definitions/hotel_internal_http_utils_pagination.Links"
                 },
                 "total_page_count": {
                     "type": "integer"
@@ -1364,7 +1388,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "links": {
-                    "$ref": "#/definitions/hotel_internal_http_utils_helper.PaginationLinks"
+                    "$ref": "#/definitions/hotel_internal_http_utils_pagination.Links"
                 },
                 "rooms": {
                     "type": "array",
@@ -1470,7 +1494,7 @@ const docTemplate = `{
                 }
             }
         },
-        "hotel_internal_http_utils_helper.PaginationLinks": {
+        "hotel_internal_http_utils_pagination.Links": {
             "type": "object",
             "properties": {
                 "first": {

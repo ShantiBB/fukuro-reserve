@@ -3,11 +3,11 @@ definitions:
   hotel_internal_http_dto_request.HotelCreate:
     properties:
       address:
-        maxLength: 300
+        maxLength: 500
         minLength: 5
         type: string
       description:
-        maxLength: 1000
+        maxLength: 2000
         type: string
       location:
         $ref: '#/definitions/hotel_internal_http_dto_request.Location'
@@ -35,11 +35,11 @@ definitions:
   hotel_internal_http_dto_request.HotelUpdate:
     properties:
       address:
-        maxLength: 300
+        maxLength: 500
         minLength: 5
         type: string
       description:
-        maxLength: 1000
+        maxLength: 2000
         type: string
       location:
         $ref: '#/definitions/hotel_internal_http_dto_request.Location'
@@ -66,24 +66,36 @@ definitions:
       amenities:
         items:
           type: string
+        maxItems: 50
         type: array
       area_sqm:
+        maximum: 9999.99
         type: number
       capacity:
+        maximum: 10
+        minimum: 1
         type: integer
       description:
+        maxLength: 1000
         type: string
       floor:
+        maximum: 2147483647
+        minimum: 0
         type: integer
       images:
         items:
           type: string
+        maxItems: 50
         type: array
       price:
         type: number
       room_number:
+        maxLength: 10
+        minLength: 1
         type: string
       title:
+        maxLength: 100
+        minLength: 3
         type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
@@ -108,24 +120,36 @@ definitions:
       amenities:
         items:
           type: string
+        maxItems: 50
         type: array
       area_sqm:
+        maximum: 9999.99
         type: number
       capacity:
+        maximum: 10
+        minimum: 1
         type: integer
       description:
+        maxLength: 1000
         type: string
       floor:
+        maximum: 2147483647
+        minimum: 0
         type: integer
       images:
         items:
           type: string
+        maxItems: 50
         type: array
       price:
         type: number
       room_number:
+        maxLength: 10
+        minLength: 1
         type: string
       title:
+        maxLength: 100
+        minLength: 3
         type: string
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
@@ -177,7 +201,7 @@ definitions:
       limit:
         type: integer
       links:
-        $ref: '#/definitions/hotel_internal_http_utils_helper.PaginationLinks'
+        $ref: '#/definitions/hotel_internal_http_utils_pagination.Links'
       total_page_count:
         type: integer
       total_rooms_count:
@@ -265,7 +289,7 @@ definitions:
       limit:
         type: integer
       links:
-        $ref: '#/definitions/hotel_internal_http_utils_helper.PaginationLinks'
+        $ref: '#/definitions/hotel_internal_http_utils_pagination.Links'
       rooms:
         items:
           $ref: '#/definitions/hotel_internal_http_dto_response.RoomShort'
@@ -334,7 +358,7 @@ definitions:
       type:
         $ref: '#/definitions/hotel_internal_repository_models.RoomType'
     type: object
-  hotel_internal_http_utils_helper.PaginationLinks:
+  hotel_internal_http_utils_pagination.Links:
     properties:
       first:
         type: string
@@ -391,7 +415,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -438,7 +462,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -488,7 +512,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -534,7 +558,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -582,7 +606,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -637,7 +661,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -689,7 +713,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -744,7 +768,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -795,7 +819,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -848,7 +872,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -908,7 +932,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true
@@ -968,7 +992,7 @@ paths:
         name: country_code
         required: true
         type: string
-      - description: City Slug
+      - description: City HotelSlug
         in: path
         name: city_slug
         required: true

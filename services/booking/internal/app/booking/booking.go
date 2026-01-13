@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net"
 
+	"buf.build/go/protovalidate"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -25,8 +26,13 @@ func (app *App) MustLoadGRPC() {
 		panic(err.Error())
 	}
 
+	validator, err := protovalidate.New()
+	if err != nil {
+		panic(err.Error())
+	}
+
 	svc := service.New(repo)
-	h := handler.New(svc)
+	h := handler.New(svc, validator)
 
 	addr := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
 	lis, err := net.Listen("tcp", addr)

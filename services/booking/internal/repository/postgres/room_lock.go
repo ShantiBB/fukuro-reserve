@@ -42,10 +42,6 @@ func (r *Repository) CreateRoomLocks(
 
 	rows, err := db.Query(ctx, query.CreateRoomLocks, roomIDs, bookingIDs, startDates, endDates, expiresAts)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23P01" {
-			return nil, consts.RoomLockAlreadyExist
-		}
 		return nil, err
 	}
 	defer rows.Close()
@@ -66,6 +62,10 @@ func (r *Repository) CreateRoomLocks(
 	}
 
 	if err = rows.Err(); err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23P01" {
+			return nil, consts.RoomLockAlreadyExist
+		}
 		return nil, err
 	}
 

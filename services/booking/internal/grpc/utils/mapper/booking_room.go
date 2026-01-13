@@ -6,7 +6,17 @@ import (
 
 	bookingv1 "booking/api/booking/v1"
 	"booking/internal/repository/models"
+	"booking/pkg/utils/consts"
 )
+
+func BookingRoomToProto(r *models.BookingRoom) *bookingv1.CreateBookingRoomResponse {
+	return &bookingv1.CreateBookingRoomResponse{
+		RoomId:        r.RoomID.String(),
+		Adults:        uint32(r.Adults),
+		Children:      uint32(r.Children),
+		PricePerNight: r.PricePerNight.String(),
+	}
+}
 
 func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]models.CreateBookingRoom, error) {
 	result := make([]models.CreateBookingRoom, 0, len(rooms))
@@ -14,12 +24,12 @@ func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]models.
 	for _, r := range rooms {
 		roomID, err := uuid.Parse(r.RoomId)
 		if err != nil {
-			return nil, err
+			return nil, consts.InvalidRoomID
 		}
 
 		price, err := decimal.NewFromString(r.PricePerNight)
 		if err != nil {
-			return nil, err
+			return nil, consts.InvalidPricePerNightID
 		}
 
 		result = append(

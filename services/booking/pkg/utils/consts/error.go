@@ -30,8 +30,11 @@ const (
 )
 
 var (
-	InvalidID         = errors.New("invalid ID")
-	InvalidQueryParam = errors.New("invalid query parameter")
-	InternalServer    = errors.New("internal server error")
-	InvalidJSON       = errors.New("invalid JSON body")
+	InvalidHotelID               = errors.New("invalid hotel ID")
+	InvalidRoomID                = errors.New("invalid room ID")
+	InvalidPricePerNightID       = errors.New("invalid price per night. example: 123.45")
+	InvalidExpectedTotalAmountID = errors.New("invalid expected total amount. example: 123.45")
+	InvalidQueryParam            = errors.New("invalid query parameter")
+	InternalServer               = errors.New("internal server error")
+	InvalidJSON                  = errors.New("invalid JSON body")
 )

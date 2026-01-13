@@ -12,11 +12,12 @@ import (
 
 type Handler struct {
 	bookingv1.UnimplementedBookingServiceServer
-	svc BookingService
+	svc       BookingService
+	validator protovalidate.Validator
 }
 
-func New(svc BookingService) *Handler {
-	return &Handler{svc: svc}
+func New(svc BookingService, validator protovalidate.Validator) *Handler {
+	return &Handler{svc: svc, validator: validator}
 }
 
 type BookingService interface {

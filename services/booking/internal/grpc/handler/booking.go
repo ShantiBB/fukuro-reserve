@@ -15,22 +15,18 @@ func (h *Handler) CreateBooking(
 	ctx context.Context,
 	req *bookingv1.CreateBookingRequest,
 ) (*bookingv1.CreateBookingResponse, error) {
-	v, err := getValidator()
-	if err != nil {
-		return nil, status.Error(codes.Internal, "validator init failed")
-	}
-	if err = v.Validate(req); err != nil {
+	if err := h.validator.Validate(req); err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	booking, err := mapper.CreateBookingRequestToDomain(req)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid hotel id")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	rooms, err := mapper.CreateBookingRoomsToDomain(req.Rooms)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, "invalid rooms data")
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	created, err := h.svc.BookingCreate(ctx, *booking, rooms)
@@ -41,5 +37,4 @@ func (h *Handler) CreateBooking(
 	return &bookingv1.CreateBookingResponse{
 		Booking: mapper.BookingToProto(&created),
 	}, nil
-
 }

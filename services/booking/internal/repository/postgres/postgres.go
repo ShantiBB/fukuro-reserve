@@ -40,11 +40,6 @@ func NewRepository(cfgApp *config.Config) (*Repository, error) {
 		return nil, err
 	}
 
-	//cfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-	//	_, err = conn.Exec(ctx, "SET log_min_duration_statement = 0")
-	//	return err
-	//}
-
 	cfg.MaxConns = 20
 	cfg.MinConns = 5
 	cfg.MaxConnIdleTime = 5 * time.Minute
@@ -52,8 +47,15 @@ func NewRepository(cfgApp *config.Config) (*Repository, error) {
 	cfg.HealthCheckPeriod = 1 * time.Minute
 	cfg.ConnConfig.ConnectTimeout = 10 * time.Second
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), cfg)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	pool, err := pgxpool.NewWithConfig(ctx, cfg)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = pool.Ping(ctx); err != nil {
 		return nil, err
 	}
 

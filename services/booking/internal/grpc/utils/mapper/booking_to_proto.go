@@ -25,9 +25,9 @@ func BookingToProto(b *models.Booking) *bookingv1.Booking {
 	}
 
 	if len(b.BookingRooms) > 0 {
-		p.BookingRooms = make([]*bookingv1.BookingRoomResponse, 0, len(b.BookingRooms))
+		p.BookingRooms = make([]*bookingv1.BookingRoomInfo, 0, len(b.BookingRooms))
 		for i := range b.BookingRooms {
-			p.BookingRooms = append(p.BookingRooms, BookingRoomToProto(&b.BookingRooms[i]))
+			p.BookingRooms = append(p.BookingRooms, BookingRoomInfoToProto(&b.BookingRooms[i]))
 		}
 	}
 

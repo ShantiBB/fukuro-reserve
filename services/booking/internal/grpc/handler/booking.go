@@ -10,18 +10,7 @@ import (
 	bookingv1 "booking/api/booking/v1"
 	"booking/internal/grpc/utils/helper"
 	"booking/internal/grpc/utils/mapper"
-	"booking/internal/repository/models"
 )
-
-type BookingService interface {
-	BookingCreate(ctx context.Context, b models.CreateBooking, rooms []models.CreateBookingRoom) (models.Booking, error)
-	GetBookings(
-		ctx context.Context,
-		bookingRef models.BookingRef,
-		page uint64,
-		limit uint64,
-	) (models.BookingList, error)
-}
 
 func (h *Handler) CreateBooking(
 	ctx context.Context,

@@ -35,3 +35,12 @@ func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]models.
 
 	return result, nil
 }
+
+func GetBookingRoomsRequestToDomain(req *bookingv1.GetBookingRoomsRequest) (uuid.UUID, error) {
+	bookingID, err := uuid.Parse(req.BookingId)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return bookingID, nil
+}

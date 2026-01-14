@@ -1,13 +1,32 @@
 package handler
 
 import (
+	"context"
+
 	"buf.build/go/protovalidate"
+	"github.com/google/uuid"
 
 	bookingv1 "booking/api/booking/v1"
+	"booking/internal/repository/models"
 )
+
+type BookingService interface {
+	BookingCreate(ctx context.Context, b models.CreateBooking, rooms []models.CreateBookingRoom) (models.Booking, error)
+	GetBookings(
+		ctx context.Context,
+		bookingRef models.BookingRef,
+		page uint64,
+		limit uint64,
+	) (models.BookingList, error)
+}
+
+type BookingRoomService interface {
+	GetBookingRooms(ctx context.Context, bookingID uuid.UUID) ([]models.BookingRoomFullInfo, error)
+}
 
 type Service interface {
 	BookingService
+	BookingRoomService
 }
 
 type Handler struct {

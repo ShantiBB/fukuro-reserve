@@ -9,11 +9,23 @@ import "booking/v1/enums/booking_status.proto";
 import "booking/v1/models/booking.proto";
 
 message GetBookingsRequest {
-  int64 user_id = 1 [(buf.validate.field).int64.gt = 0];
-  string hotel_id = 2 [(buf.validate.field).string.uuid = true];
-  BookingStatus status = 3;
-  uint64 page = 4 [(buf.validate.field).uint64.gte = 1];
-  uint64 limit = 5 [(buf.validate.field).uint64 = {gte: 1, lte: 100}];
+  int64 user_id = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).int64.gt = 0
+  ];
+  string hotel_id = 2 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.uuid = true
+  ];
+  BookingStatus status = 3 [(buf.validate.field).required = true];
+  uint64 page = 4 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).uint64.gte = 1
+  ];
+  uint64 limit = 5 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).uint64 = {gte: 1, lte: 100}
+  ];
 }
 
 message GetBookingsResponse {

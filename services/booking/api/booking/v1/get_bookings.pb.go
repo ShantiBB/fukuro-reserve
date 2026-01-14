@@ -171,13 +171,15 @@ var File_booking_v1_rpc_get_bookings_proto protoreflect.FileDescriptor
 const file_booking_v1_rpc_get_bookings_proto_rawDesc = "" +
 	"\n" +
 	"!booking/v1/rpc/get_bookings.proto\x12\n" +
-	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\x1a\x1fbooking/v1/models/booking.proto\"\xcc\x01\n" +
-	"\x12GetBookingsRequest\x12 \n" +
-	"\auser_id\x18\x01 \x01(\x03B\a\xbaH\x04\"\x02 \x00R\x06userId\x12#\n" +
-	"\bhotel_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x121\n" +
-	"\x06status\x18\x03 \x01(\x0e2\x19.booking.v1.BookingStatusR\x06status\x12\x1b\n" +
-	"\x04page\x18\x04 \x01(\x04B\a\xbaH\x042\x02(\x01R\x04page\x12\x1f\n" +
-	"\x05limit\x18\x05 \x01(\x04B\t\xbaH\x062\x04\x18d(\x01R\x05limit\"\x96\x01\n" +
+	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\x1a\x1fbooking/v1/models/booking.proto\"\xe0\x01\n" +
+	"\x12GetBookingsRequest\x12#\n" +
+	"\auser_id\x18\x01 \x01(\x03B\n" +
+	"\xbaH\a\xc8\x01\x01\"\x02 \x00R\x06userId\x12&\n" +
+	"\bhotel_id\x18\x02 \x01(\tB\v\xbaH\b\xc8\x01\x01r\x03\xb0\x01\x01R\ahotelId\x129\n" +
+	"\x06status\x18\x03 \x01(\x0e2\x19.booking.v1.BookingStatusB\x06\xbaH\x03\xc8\x01\x01R\x06status\x12\x1e\n" +
+	"\x04page\x18\x04 \x01(\x04B\n" +
+	"\xbaH\a\xc8\x01\x012\x02(\x01R\x04page\x12\"\n" +
+	"\x05limit\x18\x05 \x01(\x04B\f\xbaH\t\xc8\x01\x012\x04\x18d(\x01R\x05limit\"\x96\x01\n" +
 	"\x13GetBookingsResponse\x124\n" +
 	"\bbookings\x18\x01 \x03(\v2\x18.booking.v1.BookingShortR\bbookings\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x04R\n" +

@@ -25,24 +25,29 @@ var File_booking_v1_booking_service_proto protoreflect.FileDescriptor
 const file_booking_v1_booking_service_proto_rawDesc = "" +
 	"\n" +
 	" booking/v1/booking_service.proto\x12\n" +
-	"booking.v1\x1a#booking/v1/rpc/create_booking.proto\x1a!booking/v1/rpc/get_bookings.proto2\xb6\x01\n" +
+	"booking.v1\x1a#booking/v1/rpc/create_booking.proto\x1a!booking/v1/rpc/get_bookings.proto\x1a&booking/v1/rpc/get_booking_rooms.proto2\x92\x02\n" +
 	"\x0eBookingService\x12T\n" +
 	"\rCreateBooking\x12 .booking.v1.CreateBookingRequest\x1a!.booking.v1.CreateBookingResponse\x12N\n" +
-	"\vGetBookings\x12\x1e.booking.v1.GetBookingsRequest\x1a\x1f.booking.v1.GetBookingsResponseB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
+	"\vGetBookings\x12\x1e.booking.v1.GetBookingsRequest\x1a\x1f.booking.v1.GetBookingsResponse\x12Z\n" +
+	"\x0fGetBookingRooms\x12\".booking.v1.GetBookingRoomsRequest\x1a#.booking.v1.GetBookingRoomsResponseB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
 
 var file_booking_v1_booking_service_proto_goTypes = []any{
-	(*CreateBookingRequest)(nil),  // 0: booking.v1.CreateBookingRequest
-	(*GetBookingsRequest)(nil),    // 1: booking.v1.GetBookingsRequest
-	(*CreateBookingResponse)(nil), // 2: booking.v1.CreateBookingResponse
-	(*GetBookingsResponse)(nil),   // 3: booking.v1.GetBookingsResponse
+	(*CreateBookingRequest)(nil),    // 0: booking.v1.CreateBookingRequest
+	(*GetBookingsRequest)(nil),      // 1: booking.v1.GetBookingsRequest
+	(*GetBookingRoomsRequest)(nil),  // 2: booking.v1.GetBookingRoomsRequest
+	(*CreateBookingResponse)(nil),   // 3: booking.v1.CreateBookingResponse
+	(*GetBookingsResponse)(nil),     // 4: booking.v1.GetBookingsResponse
+	(*GetBookingRoomsResponse)(nil), // 5: booking.v1.GetBookingRoomsResponse
 }
 var file_booking_v1_booking_service_proto_depIdxs = []int32{
 	0, // 0: booking.v1.BookingService.CreateBooking:input_type -> booking.v1.CreateBookingRequest
 	1, // 1: booking.v1.BookingService.GetBookings:input_type -> booking.v1.GetBookingsRequest
-	2, // 2: booking.v1.BookingService.CreateBooking:output_type -> booking.v1.CreateBookingResponse
-	3, // 3: booking.v1.BookingService.GetBookings:output_type -> booking.v1.GetBookingsResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	2, // 2: booking.v1.BookingService.GetBookingRooms:input_type -> booking.v1.GetBookingRoomsRequest
+	3, // 3: booking.v1.BookingService.CreateBooking:output_type -> booking.v1.CreateBookingResponse
+	4, // 4: booking.v1.BookingService.GetBookings:output_type -> booking.v1.GetBookingsResponse
+	5, // 5: booking.v1.BookingService.GetBookingRooms:output_type -> booking.v1.GetBookingRoomsResponse
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -55,6 +60,7 @@ func file_booking_v1_booking_service_proto_init() {
 	}
 	file_booking_v1_rpc_create_booking_proto_init()
 	file_booking_v1_rpc_get_bookings_proto_init()
+	file_booking_v1_rpc_get_booking_rooms_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

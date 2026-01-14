@@ -4,13 +4,7 @@ package booking.v1;
 
 option go_package = "api/booking/v1;bookingv1";
 
-message BookingRoomResponse {
-  string id = 1;
-  string room_id = 2;
-  uint32 adults = 3;
-  uint32 children = 4;
-  string price_per_night = 5;
-}
+import "booking/v1/models/room_lock.proto";
 
 message BookingRoomInfo {
   string id = 1;
@@ -18,4 +12,13 @@ message BookingRoomInfo {
   uint32 adults = 3;
   uint32 children = 4;
   string price_per_night = 5;
+}
+
+message BookingRoomFullInfo {
+  string id = 1;
+  string room_id = 2;
+  uint32 adults = 3;
+  uint32 children = 4;
+  string price_per_night = 5;
+  RoomLockShort room_lock = 6;
 }

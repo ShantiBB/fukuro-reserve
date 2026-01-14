@@ -37,7 +37,7 @@ type Booking struct {
 	FinalTotalAmount string                 `protobuf:"bytes,12,opt,name=final_total_amount,json=finalTotalAmount,proto3" json:"final_total_amount,omitempty"`
 	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	BookingRooms     []*BookingRoomResponse `protobuf:"bytes,4,rep,name=booking_rooms,json=bookingRooms,proto3" json:"booking_rooms,omitempty"`
+	BookingRooms     []*BookingRoomInfo     `protobuf:"bytes,4,rep,name=booking_rooms,json=bookingRooms,proto3" json:"booking_rooms,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -163,7 +163,7 @@ func (x *Booking) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Booking) GetBookingRooms() []*BookingRoomResponse {
+func (x *Booking) GetBookingRooms() []*BookingRoomInfo {
 	if x != nil {
 		return x.BookingRooms
 	}
@@ -315,7 +315,7 @@ var File_booking_v1_models_booking_proto protoreflect.FileDescriptor
 const file_booking_v1_models_booking_proto_rawDesc = "" +
 	"\n" +
 	"\x1fbooking/v1/models/booking.proto\x12\n" +
-	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a%booking/v1/enums/booking_status.proto\x1a$booking/v1/models/booking_room.proto\"\x81\x05\n" +
+	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a%booking/v1/enums/booking_status.proto\x1a$booking/v1/models/booking_room.proto\"\xfd\x04\n" +
 	"\aBooking\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x19\n" +
@@ -335,8 +335,8 @@ const file_booking_v1_models_booking_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12D\n" +
-	"\rbooking_rooms\x18\x04 \x03(\v2\x1f.booking.v1.BookingRoomResponseR\fbookingRoomsB\x0e\n" +
+	"updated_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12@\n" +
+	"\rbooking_rooms\x18\x04 \x03(\v2\x1b.booking.v1.BookingRoomInfoR\fbookingRoomsB\x0e\n" +
 	"\f_guest_emailB\x0e\n" +
 	"\f_guest_phone\"\xb1\x04\n" +
 	"\fBookingShort\x12\x0e\n" +
@@ -378,8 +378,7 @@ var file_booking_v1_models_booking_proto_goTypes = []any{
 	(*BookingShort)(nil),          // 1: booking.v1.BookingShort
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
 	(BookingStatus)(0),            // 3: booking.v1.BookingStatus
-	(*BookingRoomResponse)(nil),   // 4: booking.v1.BookingRoomResponse
-	(*BookingRoomInfo)(nil),       // 5: booking.v1.BookingRoomInfo
+	(*BookingRoomInfo)(nil),       // 4: booking.v1.BookingRoomInfo
 }
 var file_booking_v1_models_booking_proto_depIdxs = []int32{
 	2,  // 0: booking.v1.Booking.check_in:type_name -> google.protobuf.Timestamp
@@ -387,11 +386,11 @@ var file_booking_v1_models_booking_proto_depIdxs = []int32{
 	3,  // 2: booking.v1.Booking.status:type_name -> booking.v1.BookingStatus
 	2,  // 3: booking.v1.Booking.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 4: booking.v1.Booking.updated_at:type_name -> google.protobuf.Timestamp
-	4,  // 5: booking.v1.Booking.booking_rooms:type_name -> booking.v1.BookingRoomResponse
+	4,  // 5: booking.v1.Booking.booking_rooms:type_name -> booking.v1.BookingRoomInfo
 	2,  // 6: booking.v1.BookingShort.check_in:type_name -> google.protobuf.Timestamp
 	2,  // 7: booking.v1.BookingShort.check_out:type_name -> google.protobuf.Timestamp
 	3,  // 8: booking.v1.BookingShort.status:type_name -> booking.v1.BookingStatus
-	5,  // 9: booking.v1.BookingShort.rooms:type_name -> booking.v1.BookingRoomInfo
+	4,  // 9: booking.v1.BookingShort.rooms:type_name -> booking.v1.BookingRoomInfo
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name

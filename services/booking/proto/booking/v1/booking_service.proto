@@ -6,8 +6,10 @@ option go_package = "api/booking/v1;bookingv1";
 
 import "booking/v1/rpc/create_booking.proto";
 import "booking/v1/rpc/get_bookings.proto";
+import "booking/v1/rpc/get_booking_rooms.proto";
 
 service BookingService {
   rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
   rpc GetBookings(GetBookingsRequest) returns (GetBookingsResponse);
+  rpc GetBookingRooms(GetBookingRoomsRequest) returns (GetBookingRoomsResponse);
 }

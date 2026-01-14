@@ -22,7 +22,7 @@ message Booking {
   string final_total_amount = 12;
   google.protobuf.Timestamp created_at = 13;
   google.protobuf.Timestamp updated_at = 14;
-  repeated BookingRoomResponse booking_rooms = 4;
+  repeated BookingRoomInfo booking_rooms = 4;
 }
 
 message BookingShort {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
@@ -106,6 +107,49 @@ func (r *Repository) GetBookingRoomsInfoByBookingIDs(
 		if err != nil {
 			return []models.BookingRoomInfo{}, err
 		}
+
+		bookingRoomList = append(bookingRoomList, bRoom)
+	}
+
+	return bookingRoomList, nil
+}
+
+func (r *Repository) GetBookingRoomsFullInfoByBookingIDs(
+	ctx context.Context,
+	tx pgx.Tx,
+	bookingID uuid.UUID,
+) ([]models.BookingRoomFullInfo, error) {
+	db := r.executor(tx)
+
+	var bookingRoomList []models.BookingRoomFullInfo
+	rows, err := db.Query(ctx, query.GetBookingRoomsFullInfoByBookingID, bookingID)
+	if err != nil {
+		return []models.BookingRoomFullInfo{}, err
+	}
+
+	var bRoom models.BookingRoomFullInfo
+	var stayRange *pgtype.Range[pgtype.Date]
+	for rows.Next() {
+		err = rows.Scan(
+			&bRoom.ID,
+			&bRoom.BookingID,
+			&bRoom.RoomID,
+			&bRoom.Adults,
+			&bRoom.Children,
+			&bRoom.PricePerNight,
+			&bRoom.CreatedAt,
+			&bRoom.RoomLock.ID,
+			&stayRange,
+			&bRoom.RoomLock.ISActive,
+			&bRoom.RoomLock.ExpiresAt,
+			&bRoom.RoomLock.CreatedAt,
+		)
+		if err != nil {
+			return []models.BookingRoomFullInfo{}, err
+		}
+
+		bRoom.RoomLock.StayRange.Start = stayRange.Lower.Time
+		bRoom.RoomLock.StayRange.End = stayRange.Upper.Time
 
 		bookingRoomList = append(bookingRoomList, bRoom)
 	}

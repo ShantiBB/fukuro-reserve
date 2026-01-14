@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package booking.v1;
+
+option go_package = "api/booking/v1;bookingv1";
+
+import "buf/validate/validate.proto";
+import "booking/v1/models/booking_room.proto";
+import "booking/v1/models/room_lock.proto";
+
+message GetBookingRoomsRequest {
+  string booking_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetBookingRoomsResponse {
+  repeated BookingRoomFullInfo booking_rooms = 1;
+}

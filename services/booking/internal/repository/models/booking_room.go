@@ -30,6 +30,17 @@ type BookingRoomInfo struct {
 	CreatedAt     time.Time
 }
 
+type BookingRoomFullInfo struct {
+	ID            uuid.UUID
+	BookingID     uuid.UUID
+	RoomID        uuid.UUID
+	RoomLock      RoomLockShort
+	Adults        uint8
+	Children      uint8
+	PricePerNight decimal.Decimal
+	CreatedAt     time.Time
+}
+
 func (b *CreateBookingRoom) ToRead() BookingRoomInfo {
 	return BookingRoomInfo{
 		BookingID:     b.BookingID,

@@ -7,9 +7,16 @@ option go_package = "api/booking/v1;bookingv1";
 import "google/protobuf/timestamp.proto";
 import "booking/v1/models/common.proto";
 
-message RoomLockShort {
+message RoomLock {
   string id = 1;
   DateRange stay_range = 2;
+  bool is_active = 3;
+  optional google.protobuf.Timestamp expires_at = 4;
+  google.protobuf.Timestamp created_at = 5;
+}
+
+message RoomLockShort {
+  string id = 1;
   bool is_active = 3;
   optional google.protobuf.Timestamp expires_at = 4;
   google.protobuf.Timestamp created_at = 5;

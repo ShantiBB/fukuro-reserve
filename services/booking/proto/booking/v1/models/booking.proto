@@ -19,10 +19,11 @@ message Booking {
   optional string guest_email = 8;
   optional string guest_phone = 9;
   string currency = 10;
-  string final_total_amount = 11;
-  google.protobuf.Timestamp created_at = 12;
-  google.protobuf.Timestamp updated_at = 13;
-  repeated BookingRoomFullInfo booking_rooms = 14;
+  string expected_total_amount = 11;
+  string final_total_amount = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  repeated BookingRoomWithLock booking_rooms = 15;
 }
 
 message BookingShort {
@@ -38,5 +39,5 @@ message BookingShort {
   string currency = 10;
   string expected_total_amount = 11;
   string final_total_amount = 12;
-  repeated BookingRoomInfo rooms = 13;
+  repeated BookingRoom booking_rooms = 13;
 }

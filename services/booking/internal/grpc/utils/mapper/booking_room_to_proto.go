@@ -5,39 +5,39 @@ import (
 	"booking/internal/repository/models"
 )
 
-func BookingRoomInfoToProto(r *models.BookingRoomFullInfo) *bookingv1.BookingRoomInfo {
-	return &bookingv1.BookingRoomInfo{
+func BookingRoomToProto(r *models.BookingRoom) *bookingv1.BookingRoom {
+	return &bookingv1.BookingRoom{
 		Id:            r.ID.String(),
 		RoomId:        r.RoomID.String(),
-		Adults:        uint32(r.Adults),
-		Children:      uint32(r.Children),
+		Adults:        r.Adults,
+		Children:      r.Children,
 		PricePerNight: r.PricePerNight.String(),
 	}
 }
 
-func BookingRoomsInfoToProto(rooms []models.BookingRoomFullInfo) []*bookingv1.BookingRoomInfo {
-	result := make([]*bookingv1.BookingRoomInfo, len(rooms))
-	for i, r := range rooms {
-		result[i] = BookingRoomInfoToProto(&r)
-	}
-	return result
-}
-
-func BookingRoomFullInfoToProto(r models.BookingRoomFullInfo) *bookingv1.BookingRoomFullInfo {
-	return &bookingv1.BookingRoomFullInfo{
+func BookingRoomWithLockToProto(r *models.BookingRoomWithLock) *bookingv1.BookingRoomWithLock {
+	return &bookingv1.BookingRoomWithLock{
 		Id:            r.ID.String(),
 		RoomId:        r.RoomID.String(),
-		Adults:        uint32(r.Adults),
-		Children:      uint32(r.Children),
+		Adults:        r.Adults,
+		Children:      r.Children,
 		PricePerNight: r.PricePerNight.String(),
 		RoomLock:      RoomLockToProto(&r.RoomLock),
 	}
 }
 
-func BookingRoomsFullInfoToProto(rooms []models.BookingRoomFullInfo) []*bookingv1.BookingRoomFullInfo {
-	result := make([]*bookingv1.BookingRoomFullInfo, len(rooms))
+func BookingRoomsWithLockToProto(rooms []*models.BookingRoomWithLock) []*bookingv1.BookingRoomWithLock {
+	result := make([]*bookingv1.BookingRoomWithLock, len(rooms))
 	for i, r := range rooms {
-		result[i] = BookingRoomFullInfoToProto(r)
+		result[i] = BookingRoomWithLockToProto(r)
+	}
+	return result
+}
+
+func BookingRoomsToProto(rooms []*models.BookingRoom) []*bookingv1.BookingRoom {
+	result := make([]*bookingv1.BookingRoom, len(rooms))
+	for i, r := range rooms {
+		result[i] = BookingRoomToProto(r)
 	}
 	return result
 }

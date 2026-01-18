@@ -9,6 +9,17 @@ import (
 
 func RoomLockToProto(r *models.RoomLockShort) *bookingv1.RoomLockShort {
 	lock := &bookingv1.RoomLockShort{
+		Id:        r.ID.String(),
+		IsActive:  r.ISActive,
+		ExpiresAt: timestamppb.New(r.ExpiresAt),
+		CreatedAt: timestamppb.New(r.CreatedAt),
+	}
+
+	return lock
+}
+
+func RoomLockWithDetailToProto(r *models.RoomLockDetail) *bookingv1.RoomLock {
+	lock := &bookingv1.RoomLock{
 		Id: r.ID.String(),
 		StayRange: &bookingv1.DateRange{
 			Start: timestamppb.New(r.StayRange.Start),

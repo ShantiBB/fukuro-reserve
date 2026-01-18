@@ -23,23 +23,24 @@ const (
 )
 
 type Booking struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Id               string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	UserId           int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	HotelId          string                 `protobuf:"bytes,3,opt,name=hotel_id,json=hotelId,proto3" json:"hotel_id,omitempty"`
-	CheckIn          *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=check_in,json=checkIn,proto3" json:"check_in,omitempty"`
-	CheckOut         *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=check_out,json=checkOut,proto3" json:"check_out,omitempty"`
-	Status           BookingStatus          `protobuf:"varint,6,opt,name=status,proto3,enum=booking.v1.BookingStatus" json:"status,omitempty"`
-	GuestName        string                 `protobuf:"bytes,7,opt,name=guest_name,json=guestName,proto3" json:"guest_name,omitempty"`
-	GuestEmail       *string                `protobuf:"bytes,8,opt,name=guest_email,json=guestEmail,proto3,oneof" json:"guest_email,omitempty"`
-	GuestPhone       *string                `protobuf:"bytes,9,opt,name=guest_phone,json=guestPhone,proto3,oneof" json:"guest_phone,omitempty"`
-	Currency         string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
-	FinalTotalAmount string                 `protobuf:"bytes,11,opt,name=final_total_amount,json=finalTotalAmount,proto3" json:"final_total_amount,omitempty"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	BookingRooms     []*BookingRoomFullInfo `protobuf:"bytes,14,rep,name=booking_rooms,json=bookingRooms,proto3" json:"booking_rooms,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Id                  string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	UserId              int64                  `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	HotelId             string                 `protobuf:"bytes,3,opt,name=hotel_id,json=hotelId,proto3" json:"hotel_id,omitempty"`
+	CheckIn             *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=check_in,json=checkIn,proto3" json:"check_in,omitempty"`
+	CheckOut            *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=check_out,json=checkOut,proto3" json:"check_out,omitempty"`
+	Status              BookingStatus          `protobuf:"varint,6,opt,name=status,proto3,enum=booking.v1.BookingStatus" json:"status,omitempty"`
+	GuestName           string                 `protobuf:"bytes,7,opt,name=guest_name,json=guestName,proto3" json:"guest_name,omitempty"`
+	GuestEmail          *string                `protobuf:"bytes,8,opt,name=guest_email,json=guestEmail,proto3,oneof" json:"guest_email,omitempty"`
+	GuestPhone          *string                `protobuf:"bytes,9,opt,name=guest_phone,json=guestPhone,proto3,oneof" json:"guest_phone,omitempty"`
+	Currency            string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
+	ExpectedTotalAmount string                 `protobuf:"bytes,11,opt,name=expected_total_amount,json=expectedTotalAmount,proto3" json:"expected_total_amount,omitempty"`
+	FinalTotalAmount    string                 `protobuf:"bytes,12,opt,name=final_total_amount,json=finalTotalAmount,proto3" json:"final_total_amount,omitempty"`
+	CreatedAt           *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt           *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	BookingRooms        []*BookingRoomWithLock `protobuf:"bytes,15,rep,name=booking_rooms,json=bookingRooms,proto3" json:"booking_rooms,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *Booking) Reset() {
@@ -142,6 +143,13 @@ func (x *Booking) GetCurrency() string {
 	return ""
 }
 
+func (x *Booking) GetExpectedTotalAmount() string {
+	if x != nil {
+		return x.ExpectedTotalAmount
+	}
+	return ""
+}
+
 func (x *Booking) GetFinalTotalAmount() string {
 	if x != nil {
 		return x.FinalTotalAmount
@@ -163,7 +171,7 @@ func (x *Booking) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Booking) GetBookingRooms() []*BookingRoomFullInfo {
+func (x *Booking) GetBookingRooms() []*BookingRoomWithLock {
 	if x != nil {
 		return x.BookingRooms
 	}
@@ -184,7 +192,7 @@ type BookingShort struct {
 	Currency            string                 `protobuf:"bytes,10,opt,name=currency,proto3" json:"currency,omitempty"`
 	ExpectedTotalAmount string                 `protobuf:"bytes,11,opt,name=expected_total_amount,json=expectedTotalAmount,proto3" json:"expected_total_amount,omitempty"`
 	FinalTotalAmount    string                 `protobuf:"bytes,12,opt,name=final_total_amount,json=finalTotalAmount,proto3" json:"final_total_amount,omitempty"`
-	Rooms               []*BookingRoomInfo     `protobuf:"bytes,13,rep,name=rooms,proto3" json:"rooms,omitempty"`
+	BookingRooms        []*BookingRoom         `protobuf:"bytes,13,rep,name=booking_rooms,json=bookingRooms,proto3" json:"booking_rooms,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -303,9 +311,9 @@ func (x *BookingShort) GetFinalTotalAmount() string {
 	return ""
 }
 
-func (x *BookingShort) GetRooms() []*BookingRoomInfo {
+func (x *BookingShort) GetBookingRooms() []*BookingRoom {
 	if x != nil {
-		return x.Rooms
+		return x.BookingRooms
 	}
 	return nil
 }
@@ -315,7 +323,7 @@ var File_booking_v1_models_booking_proto protoreflect.FileDescriptor
 const file_booking_v1_models_booking_proto_rawDesc = "" +
 	"\n" +
 	"\x1fbooking/v1/models/booking.proto\x12\n" +
-	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a%booking/v1/enums/booking_status.proto\x1a$booking/v1/models/booking_room.proto\"\x81\x05\n" +
+	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a%booking/v1/enums/booking_status.proto\x1a$booking/v1/models/booking_room.proto\"\xb5\x05\n" +
 	"\aBooking\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x19\n" +
@@ -330,15 +338,16 @@ const file_booking_v1_models_booking_proto_rawDesc = "" +
 	"\vguest_phone\x18\t \x01(\tH\x01R\n" +
 	"guestPhone\x88\x01\x01\x12\x1a\n" +
 	"\bcurrency\x18\n" +
-	" \x01(\tR\bcurrency\x12,\n" +
-	"\x12final_total_amount\x18\v \x01(\tR\x10finalTotalAmount\x129\n" +
+	" \x01(\tR\bcurrency\x122\n" +
+	"\x15expected_total_amount\x18\v \x01(\tR\x13expectedTotalAmount\x12,\n" +
+	"\x12final_total_amount\x18\f \x01(\tR\x10finalTotalAmount\x129\n" +
 	"\n" +
-	"created_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12D\n" +
-	"\rbooking_rooms\x18\x0e \x03(\v2\x1f.booking.v1.BookingRoomFullInfoR\fbookingRoomsB\x0e\n" +
+	"updated_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12D\n" +
+	"\rbooking_rooms\x18\x0f \x03(\v2\x1f.booking.v1.BookingRoomWithLockR\fbookingRoomsB\x0e\n" +
 	"\f_guest_emailB\x0e\n" +
-	"\f_guest_phone\"\xb1\x04\n" +
+	"\f_guest_phone\"\xbc\x04\n" +
 	"\fBookingShort\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\x03R\x06userId\x12\x19\n" +
@@ -355,8 +364,8 @@ const file_booking_v1_models_booking_proto_rawDesc = "" +
 	"\bcurrency\x18\n" +
 	" \x01(\tR\bcurrency\x122\n" +
 	"\x15expected_total_amount\x18\v \x01(\tR\x13expectedTotalAmount\x12,\n" +
-	"\x12final_total_amount\x18\f \x01(\tR\x10finalTotalAmount\x121\n" +
-	"\x05rooms\x18\r \x03(\v2\x1b.booking.v1.BookingRoomInfoR\x05roomsB\x0e\n" +
+	"\x12final_total_amount\x18\f \x01(\tR\x10finalTotalAmount\x12<\n" +
+	"\rbooking_rooms\x18\r \x03(\v2\x17.booking.v1.BookingRoomR\fbookingRoomsB\x0e\n" +
 	"\f_guest_emailB\x0e\n" +
 	"\f_guest_phoneB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
 
@@ -378,8 +387,8 @@ var file_booking_v1_models_booking_proto_goTypes = []any{
 	(*BookingShort)(nil),          // 1: booking.v1.BookingShort
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
 	(BookingStatus)(0),            // 3: booking.v1.BookingStatus
-	(*BookingRoomFullInfo)(nil),   // 4: booking.v1.BookingRoomFullInfo
-	(*BookingRoomInfo)(nil),       // 5: booking.v1.BookingRoomInfo
+	(*BookingRoomWithLock)(nil),   // 4: booking.v1.BookingRoomWithLock
+	(*BookingRoom)(nil),           // 5: booking.v1.BookingRoom
 }
 var file_booking_v1_models_booking_proto_depIdxs = []int32{
 	2,  // 0: booking.v1.Booking.check_in:type_name -> google.protobuf.Timestamp
@@ -387,11 +396,11 @@ var file_booking_v1_models_booking_proto_depIdxs = []int32{
 	3,  // 2: booking.v1.Booking.status:type_name -> booking.v1.BookingStatus
 	2,  // 3: booking.v1.Booking.created_at:type_name -> google.protobuf.Timestamp
 	2,  // 4: booking.v1.Booking.updated_at:type_name -> google.protobuf.Timestamp
-	4,  // 5: booking.v1.Booking.booking_rooms:type_name -> booking.v1.BookingRoomFullInfo
+	4,  // 5: booking.v1.Booking.booking_rooms:type_name -> booking.v1.BookingRoomWithLock
 	2,  // 6: booking.v1.BookingShort.check_in:type_name -> google.protobuf.Timestamp
 	2,  // 7: booking.v1.BookingShort.check_out:type_name -> google.protobuf.Timestamp
 	3,  // 8: booking.v1.BookingShort.status:type_name -> booking.v1.BookingStatus
-	5,  // 9: booking.v1.BookingShort.rooms:type_name -> booking.v1.BookingRoomInfo
+	5,  // 9: booking.v1.BookingShort.booking_rooms:type_name -> booking.v1.BookingRoom
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name

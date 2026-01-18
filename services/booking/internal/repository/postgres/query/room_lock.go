@@ -21,31 +21,6 @@ const (
 		FROM input
 		RETURNING id, room_id, booking_id, is_active, created_at;`
 
-	GetRoomsLockByBookingID = `
-		SELECT
-		  id,
-		  room_id,
-		  booking_id,
-		  stay_range,
-		  is_active,
-		  expires_at,
-		  created_at
-		FROM room_lock
-		WHERE booking_id = $1
-		ORDER BY created_at;`
-
-	GetRoomLockByID = `
-		SELECT
-		  id,
-		  room_id,
-		  booking_id,
-		  stay_range,
-		  is_active,
-		  expires_at,
-		  created_at
-		FROM room_lock
-		WHERE id = $1;`
-
 	UpdateRoomLockActivityByID = `
 		UPDATE room_lock
 		SET

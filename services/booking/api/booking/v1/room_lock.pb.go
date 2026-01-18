@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type RoomLockShort struct {
+type RoomLock struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	StayRange     *DateRange             `protobuf:"bytes,2,opt,name=stay_range,json=stayRange,proto3" json:"stay_range,omitempty"`
@@ -33,9 +33,84 @@ type RoomLockShort struct {
 	sizeCache     protoimpl.SizeCache
 }
 
+func (x *RoomLock) Reset() {
+	*x = RoomLock{}
+	mi := &file_booking_v1_models_room_lock_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoomLock) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoomLock) ProtoMessage() {}
+
+func (x *RoomLock) ProtoReflect() protoreflect.Message {
+	mi := &file_booking_v1_models_room_lock_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoomLock.ProtoReflect.Descriptor instead.
+func (*RoomLock) Descriptor() ([]byte, []int) {
+	return file_booking_v1_models_room_lock_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RoomLock) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *RoomLock) GetStayRange() *DateRange {
+	if x != nil {
+		return x.StayRange
+	}
+	return nil
+}
+
+func (x *RoomLock) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *RoomLock) GetExpiresAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ExpiresAt
+	}
+	return nil
+}
+
+func (x *RoomLock) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+type RoomLockShort struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	IsActive      bool                   `protobuf:"varint,3,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	ExpiresAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=expires_at,json=expiresAt,proto3,oneof" json:"expires_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
 func (x *RoomLockShort) Reset() {
 	*x = RoomLockShort{}
-	mi := &file_booking_v1_models_room_lock_proto_msgTypes[0]
+	mi := &file_booking_v1_models_room_lock_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +122,7 @@ func (x *RoomLockShort) String() string {
 func (*RoomLockShort) ProtoMessage() {}
 
 func (x *RoomLockShort) ProtoReflect() protoreflect.Message {
-	mi := &file_booking_v1_models_room_lock_proto_msgTypes[0]
+	mi := &file_booking_v1_models_room_lock_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +135,7 @@ func (x *RoomLockShort) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoomLockShort.ProtoReflect.Descriptor instead.
 func (*RoomLockShort) Descriptor() ([]byte, []int) {
-	return file_booking_v1_models_room_lock_proto_rawDescGZIP(), []int{0}
+	return file_booking_v1_models_room_lock_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *RoomLockShort) GetId() string {
@@ -68,13 +143,6 @@ func (x *RoomLockShort) GetId() string {
 		return x.Id
 	}
 	return ""
-}
-
-func (x *RoomLockShort) GetStayRange() *DateRange {
-	if x != nil {
-		return x.StayRange
-	}
-	return nil
 }
 
 func (x *RoomLockShort) GetIsActive() bool {
@@ -103,11 +171,19 @@ var File_booking_v1_models_room_lock_proto protoreflect.FileDescriptor
 const file_booking_v1_models_room_lock_proto_rawDesc = "" +
 	"\n" +
 	"!booking/v1/models/room_lock.proto\x12\n" +
-	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ebooking/v1/models/common.proto\"\xfc\x01\n" +
-	"\rRoomLockShort\x12\x0e\n" +
+	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ebooking/v1/models/common.proto\"\xf7\x01\n" +
+	"\bRoomLock\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x124\n" +
 	"\n" +
 	"stay_range\x18\x02 \x01(\v2\x15.booking.v1.DateRangeR\tstayRange\x12\x1b\n" +
+	"\tis_active\x18\x03 \x01(\bR\bisActive\x12>\n" +
+	"\n" +
+	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\texpiresAt\x88\x01\x01\x129\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAtB\r\n" +
+	"\v_expires_at\"\xc6\x01\n" +
+	"\rRoomLockShort\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tis_active\x18\x03 \x01(\bR\bisActive\x12>\n" +
 	"\n" +
 	"expires_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\texpiresAt\x88\x01\x01\x129\n" +
@@ -127,21 +203,24 @@ func file_booking_v1_models_room_lock_proto_rawDescGZIP() []byte {
 	return file_booking_v1_models_room_lock_proto_rawDescData
 }
 
-var file_booking_v1_models_room_lock_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_booking_v1_models_room_lock_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_booking_v1_models_room_lock_proto_goTypes = []any{
-	(*RoomLockShort)(nil),         // 0: booking.v1.RoomLockShort
-	(*DateRange)(nil),             // 1: booking.v1.DateRange
-	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
+	(*RoomLock)(nil),              // 0: booking.v1.RoomLock
+	(*RoomLockShort)(nil),         // 1: booking.v1.RoomLockShort
+	(*DateRange)(nil),             // 2: booking.v1.DateRange
+	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
 }
 var file_booking_v1_models_room_lock_proto_depIdxs = []int32{
-	1, // 0: booking.v1.RoomLockShort.stay_range:type_name -> booking.v1.DateRange
-	2, // 1: booking.v1.RoomLockShort.expires_at:type_name -> google.protobuf.Timestamp
-	2, // 2: booking.v1.RoomLockShort.created_at:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 0: booking.v1.RoomLock.stay_range:type_name -> booking.v1.DateRange
+	3, // 1: booking.v1.RoomLock.expires_at:type_name -> google.protobuf.Timestamp
+	3, // 2: booking.v1.RoomLock.created_at:type_name -> google.protobuf.Timestamp
+	3, // 3: booking.v1.RoomLockShort.expires_at:type_name -> google.protobuf.Timestamp
+	3, // 4: booking.v1.RoomLockShort.created_at:type_name -> google.protobuf.Timestamp
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_booking_v1_models_room_lock_proto_init() }
@@ -151,13 +230,14 @@ func file_booking_v1_models_room_lock_proto_init() {
 	}
 	file_booking_v1_models_common_proto_init()
 	file_booking_v1_models_room_lock_proto_msgTypes[0].OneofWrappers = []any{}
+	file_booking_v1_models_room_lock_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_booking_v1_models_room_lock_proto_rawDesc), len(file_booking_v1_models_room_lock_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

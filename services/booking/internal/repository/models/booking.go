@@ -45,7 +45,7 @@ type Booking struct {
 	GuestName           string
 	ExpectedTotalAmount decimal.Decimal
 	FinalTotalAmount    decimal.Decimal
-	BookingRooms        []BookingRoomFullInfo
+	BookingRooms        []*BookingRoomWithLock
 	UserID              int64
 	ID                  uuid.UUID
 	HotelID             uuid.UUID
@@ -61,14 +61,14 @@ type BookingShort struct {
 	Currency            string
 	ExpectedTotalAmount decimal.Decimal
 	FinalTotalAmount    decimal.Decimal
-	BookingRooms        []BookingRoomFullInfo
+	BookingRooms        []*BookingRoom
 	UserID              int64
 	ID                  uuid.UUID
 	HotelID             uuid.UUID
 }
 
 type BookingList struct {
-	Bookings   []BookingShort
+	Bookings   []*BookingShort
 	TotalCount uint64
 }
 
@@ -78,8 +78,8 @@ type BookingRef struct {
 	HotelID uuid.UUID
 }
 
-func (b *CreateBooking) ToRead() Booking {
-	return Booking{
+func (b *CreateBooking) ToRead() *Booking {
+	return &Booking{
 		UserID:              b.UserID,
 		HotelID:             b.HotelID,
 		CheckIn:             b.CheckIn,

@@ -17,27 +17,22 @@ import (
 func (r *Repository) CreateRoomLocks(
 	ctx context.Context,
 	tx pgx.Tx,
-	locks []models.CreateRoomLock,
-) ([]models.RoomLock, error) {
-
-	if len(locks) == 0 {
-		return nil, nil
-	}
-
+	locks []*models.CreateRoomLock,
+) ([]*models.RoomLockDetail, error) {
 	db := r.executor(tx)
 
-	roomIDs := make([]uuid.UUID, 0, len(locks))
-	bookingIDs := make([]uuid.UUID, 0, len(locks))
-	startDates := make([]time.Time, 0, len(locks))
-	endDates := make([]time.Time, 0, len(locks))
-	expiresAts := make([]time.Time, 0, len(locks))
+	roomIDs := make([]uuid.UUID, len(locks))
+	bookingIDs := make([]uuid.UUID, len(locks))
+	startDates := make([]time.Time, len(locks))
+	endDates := make([]time.Time, len(locks))
+	expiresAts := make([]time.Time, len(locks))
 
-	for _, l := range locks {
-		roomIDs = append(roomIDs, l.RoomID)
-		bookingIDs = append(bookingIDs, l.BookingID)
-		startDates = append(startDates, l.StayRange.Start)
-		endDates = append(endDates, l.StayRange.End)
-		expiresAts = append(expiresAts, l.ExpiresAt)
+	for i, l := range locks {
+		roomIDs[i] = l.RoomID
+		bookingIDs[i] = l.BookingID
+		startDates[i] = l.StayRange.Start
+		endDates[i] = l.StayRange.End
+		expiresAts[i] = l.ExpiresAt
 	}
 
 	rows, err := db.Query(ctx, query.CreateRoomLocks, roomIDs, bookingIDs, startDates, endDates, expiresAts)
@@ -46,10 +41,10 @@ func (r *Repository) CreateRoomLocks(
 	}
 	defer rows.Close()
 
-	i := 0
-	out := make([]models.RoomLock, 0, len(locks))
+	values := make([]models.RoomLockDetail, len(locks))
+	var rl models.RoomLockDetail
+	var idx int32
 	for rows.Next() {
-		var rl models.RoomLock
 		if err = rows.Scan(
 			&rl.ID,
 			&rl.RoomID,
@@ -60,12 +55,13 @@ func (r *Repository) CreateRoomLocks(
 			return nil, err
 		}
 
-		rl.StayRange = locks[i].StayRange
-		rl.ExpiresAt = locks[i].ExpiresAt
+		rl.StayRange = locks[idx].StayRange
+		rl.ExpiresAt = locks[idx].ExpiresAt
 
-		out = append(out, rl)
-		i++
+		values[idx] = rl
+		idx++
 	}
+	values = values[:idx]
 
 	if err = rows.Err(); err != nil {
 		var pgErr *pgconn.PgError
@@ -75,72 +71,19 @@ func (r *Repository) CreateRoomLocks(
 		return nil, err
 	}
 
+	out := make([]*models.RoomLockDetail, len(values))
+	for i := range values {
+		out[i] = &values[i]
+	}
+
 	return out, nil
-}
-
-func (r *Repository) GetRoomsLockByBookingID(
-	ctx context.Context,
-	tx pgx.Tx,
-	bookingID uuid.UUID,
-) ([]models.RoomLock, error) {
-	db := r.executor(tx)
-
-	var roomLockList []models.RoomLock
-	rows, err := db.Query(ctx, query.GetRoomsLockByBookingID, bookingID)
-	if err != nil {
-		return []models.RoomLock{}, err
-	}
-
-	var roomLock models.RoomLock
-	for rows.Next() {
-		err = rows.Scan(
-			roomLock.ID,
-			roomLock.RoomID,
-			roomLock.BookingID,
-			roomLock.StayRange,
-			roomLock.ExpiresAt,
-			roomLock.ISActive,
-			roomLock.CreatedAt,
-		)
-		if err != nil {
-			return []models.RoomLock{}, err
-		}
-
-		roomLockList = append(roomLockList, roomLock)
-	}
-
-	return roomLockList, nil
-}
-
-func (r *Repository) GetRoomLockByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (models.RoomLock, error) {
-	db := r.executor(tx)
-
-	var roomLock models.RoomLock
-	scanArgs := []any{
-		roomLock.ID,
-		roomLock.RoomID,
-		roomLock.BookingID,
-		roomLock.StayRange,
-		roomLock.ExpiresAt,
-		roomLock.ISActive,
-		roomLock.CreatedAt,
-	}
-
-	if err := db.QueryRow(ctx, query.GetRoomLockByID, id).Scan(scanArgs...); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return models.RoomLock{}, consts.ErrRoomLockNotFound
-		}
-		return models.RoomLock{}, err
-	}
-
-	return roomLock, nil
 }
 
 func (r *Repository) UpdateRoomLockActivityByID(
 	ctx context.Context,
 	tx pgx.Tx,
 	id uuid.UUID,
-	roomLock models.UpdateRoomLockActivity,
+	roomLock *models.UpdateRoomLockActivity,
 ) error {
 	db := r.executor(tx)
 
@@ -148,7 +91,7 @@ func (r *Repository) UpdateRoomLockActivityByID(
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrRoomLockNotFound
 	}
 
@@ -162,7 +105,7 @@ func (r *Repository) DeleteRoomLockByID(ctx context.Context, tx pgx.Tx, id uuid.
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrRoomLockNotFound
 	}
 

@@ -2,11 +2,9 @@ package postgres
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
@@ -16,31 +14,25 @@ import (
 func (r *Repository) CreateBookingRooms(
 	ctx context.Context,
 	tx pgx.Tx,
-	rooms []models.CreateBookingRoom,
-) ([]models.BookingRoomFullInfo, error) {
-
-	if len(rooms) == 0 {
-		return nil, nil
-	}
-
+	bookingID uuid.UUID,
+	rooms []*models.CreateBookingRoom,
+) ([]*models.BookingRoomWithLock, error) {
 	db := r.executor(tx)
 
-	bookingID := rooms[0].BookingID
+	roomIDs := make([]uuid.UUID, len(rooms))
+	adults := make([]uint32, len(rooms))
+	children := make([]uint32, len(rooms))
+	prices := make([]string, len(rooms))
 
-	roomIDs := make([]uuid.UUID, 0, len(rooms))
-	adults := make([]int32, 0, len(rooms))
-	children := make([]int32, 0, len(rooms))
-	prices := make([]string, 0, len(rooms))
-
-	for _, r := range rooms {
-		if r.BookingID != bookingID {
-			return nil, errors.New("all rooms must have same booking_id")
+	for i, room := range rooms {
+		if room.BookingID != bookingID {
+			return nil, consts.ErrConflictBookingRooms
 		}
 
-		roomIDs = append(roomIDs, r.RoomID)
-		adults = append(adults, int32(r.Adults))
-		children = append(children, int32(r.Children))
-		prices = append(prices, r.PricePerNight.StringFixed(2))
+		roomIDs[i] = room.RoomID
+		adults[i] = room.Adults
+		children[i] = room.Children
+		prices[i] = room.PricePerNight.StringFixed(2)
 	}
 
 	rows, err := db.Query(ctx, query.CreateBookingRooms, bookingID, roomIDs, adults, children, prices)
@@ -49,154 +41,129 @@ func (r *Repository) CreateBookingRooms(
 	}
 	defer rows.Close()
 
-	out := make([]models.BookingRoomFullInfo, 0, len(rooms))
+	values := make([]models.BookingRoomWithLock, len(rooms))
+	var br models.BookingRoomWithLock
+	var idx int
 	for rows.Next() {
-		var br models.BookingRoomFullInfo
+		if err = rows.Scan(&br.ID, &br.CreatedAt); err != nil {
+			return nil, err
+		}
+		br.RoomID = rooms[idx].RoomID
+		br.Adults = rooms[idx].Adults
+		br.Children = rooms[idx].Children
+		br.PricePerNight = rooms[idx].PricePerNight
+		values[idx] = br
+		idx++
+	}
+	values = values[:idx]
 
-		var a, c int32
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
 
-		if err = rows.Scan(
-			&br.ID,
-			&br.BookingID,
-			&br.RoomID,
-			&a,
-			&c,
-			&br.PricePerNight,
-			&br.CreatedAt,
-		); err != nil {
+	out := make([]*models.BookingRoomWithLock, len(values))
+	for i := range values {
+		out[i] = &values[i]
+	}
+
+	return out, nil
+}
+
+func (r *Repository) GetBookingRoomsByBookingIDs(
+	ctx context.Context,
+	tx pgx.Tx,
+	bookingIDs []uuid.UUID,
+) ([]*models.BookingRoom, error) {
+	db := r.executor(tx)
+
+	var values []models.BookingRoom
+	rows, err := db.Query(ctx, query.GetBookingRoomsByBookingID, bookingIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bRoom models.BookingRoom
+	for rows.Next() {
+		err = rows.Scan(
+			&bRoom.ID,
+			&bRoom.BookingID,
+			&bRoom.RoomID,
+			&bRoom.Adults,
+			&bRoom.Children,
+			&bRoom.PricePerNight,
+		)
+		if err != nil {
 			return nil, err
 		}
 
-		br.Adults = uint8(a)
-		br.Children = uint8(c)
-
-		out = append(out, br)
+		values = append(values, bRoom)
 	}
 
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
+	out := make([]*models.BookingRoom, len(values))
+	for i := range values {
+		out[i] = &values[i]
+	}
+
 	return out, nil
 }
 
-func (r *Repository) GetBookingRoomsInfoByBookingIDs(
+func (r *Repository) GetBookingRoomsWithLockByBookingIDs(
 	ctx context.Context,
 	tx pgx.Tx,
 	bookingIDs []uuid.UUID,
-) ([]models.BookingRoomFullInfo, error) {
+) ([]*models.BookingRoomWithLock, error) {
 	db := r.executor(tx)
 
-	var bookingRoomList []models.BookingRoomFullInfo
-	rows, err := db.Query(ctx, query.GetBookingRoomsInfoByBookingID, bookingIDs)
+	var values []models.BookingRoomWithLock
+	rows, err := db.Query(ctx, query.GetBookingRoomsWithLockByBookingID, bookingIDs)
 	if err != nil {
-		return []models.BookingRoomFullInfo{}, err
+		return nil, err
 	}
+	defer rows.Close()
 
-	var bRoom models.BookingRoomFullInfo
+	var bRoom models.BookingRoomWithLock
 	for rows.Next() {
 		err = rows.Scan(
 			&bRoom.ID,
-			&bRoom.BookingID,
-			&bRoom.RoomID,
-			&bRoom.Adults,
-			&bRoom.Children,
-			&bRoom.PricePerNight,
-			&bRoom.CreatedAt,
-		)
-		if err != nil {
-			return []models.BookingRoomFullInfo{}, err
-		}
-
-		bookingRoomList = append(bookingRoomList, bRoom)
-	}
-
-	return bookingRoomList, nil
-}
-
-func (r *Repository) GetBookingRoomsFullInfoByBookingIDs(
-	ctx context.Context,
-	tx pgx.Tx,
-	bookingID uuid.UUID,
-) ([]models.BookingRoomFullInfo, error) {
-	db := r.executor(tx)
-
-	var bookingRoomList []models.BookingRoomFullInfo
-	rows, err := db.Query(ctx, query.GetBookingRoomsFullInfoByBookingID, bookingID)
-	if err != nil {
-		return []models.BookingRoomFullInfo{}, err
-	}
-
-	var bRoom models.BookingRoomFullInfo
-	var stayRange *pgtype.Range[pgtype.Date]
-	for rows.Next() {
-		err = rows.Scan(
-			&bRoom.ID,
-			&bRoom.BookingID,
 			&bRoom.RoomID,
 			&bRoom.Adults,
 			&bRoom.Children,
 			&bRoom.PricePerNight,
 			&bRoom.CreatedAt,
 			&bRoom.RoomLock.ID,
-			&stayRange,
 			&bRoom.RoomLock.ISActive,
 			&bRoom.RoomLock.ExpiresAt,
 			&bRoom.RoomLock.CreatedAt,
 		)
 		if err != nil {
-			return []models.BookingRoomFullInfo{}, err
+			return nil, err
 		}
 
-		bRoom.RoomLock.StayRange.Start = stayRange.Lower.Time
-		bRoom.RoomLock.StayRange.End = stayRange.Upper.Time
-
-		bookingRoomList = append(bookingRoomList, bRoom)
+		values = append(values, bRoom)
 	}
 
-	return bookingRoomList, nil
-}
-
-func (r *Repository) GetBookingRoomByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (
-	models.BookingRoomFullInfo, error,
-) {
-	db := r.executor(tx)
-
-	var bRoom models.BookingRoomFullInfo
-	var stayRange *pgtype.Range[pgtype.Date]
-	scanArgs := []any{
-		&bRoom.ID,
-		&bRoom.BookingID,
-		&bRoom.RoomID,
-		&bRoom.Adults,
-		&bRoom.Children,
-		&bRoom.PricePerNight,
-		&bRoom.CreatedAt,
-		&bRoom.RoomLock.ID,
-		&stayRange,
-		&bRoom.RoomLock.ISActive,
-		&bRoom.RoomLock.ExpiresAt,
-		&bRoom.RoomLock.CreatedAt,
+	if err = rows.Err(); err != nil {
+		return nil, err
 	}
 
-	if err := db.QueryRow(ctx, query.GetBookingRoomFullInfoByID, id).Scan(scanArgs...); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return models.BookingRoomFullInfo{}, consts.ErrBookingRoomNotFound
-		}
-		return models.BookingRoomFullInfo{}, err
+	out := make([]*models.BookingRoomWithLock, len(values))
+	for i := range values {
+		out[i] = &values[i]
 	}
 
-	bRoom.RoomLock.StayRange.Start = stayRange.Lower.Time
-	bRoom.RoomLock.StayRange.End = stayRange.Upper.Time
-
-	return bRoom, nil
+	return out, nil
 }
 
 func (r *Repository) UpdateBookingRoomGuestCountsByID(
 	ctx context.Context,
 	tx pgx.Tx,
 	id uuid.UUID,
-	bRoom models.BookingRoomGuestCounts,
+	bRoom *models.BookingRoomGuestCounts,
 ) error {
 	db := r.executor(tx)
 
@@ -204,7 +171,7 @@ func (r *Repository) UpdateBookingRoomGuestCountsByID(
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrBookingRoomNotFound
 	}
 
@@ -218,7 +185,7 @@ func (r *Repository) DeleteBookingRoomByID(ctx context.Context, tx pgx.Tx, id uu
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrBookingRoomNotFound
 	}
 

@@ -22,7 +22,16 @@ type UpdateRoomLockActivity struct {
 	ExpiresAt time.Time
 	IsActive  bool
 }
+
 type RoomLock struct {
+	StayRange DateRange
+	ExpiresAt time.Time
+	CreatedAt time.Time
+	ID        uuid.UUID
+	ISActive  bool
+}
+
+type RoomLockDetail struct {
 	StayRange DateRange
 	ExpiresAt time.Time
 	CreatedAt time.Time
@@ -33,15 +42,14 @@ type RoomLock struct {
 }
 
 type RoomLockShort struct {
-	StayRange DateRange
 	ExpiresAt time.Time
 	CreatedAt time.Time
 	ID        uuid.UUID
 	ISActive  bool
 }
 
-func (roomLock *CreateRoomLock) ToRead() RoomLock {
-	return RoomLock{
+func (roomLock *CreateRoomLock) ToRead() RoomLockDetail {
+	return RoomLockDetail{
 		RoomID:    roomLock.RoomID,
 		BookingID: roomLock.BookingID,
 		StayRange: roomLock.StayRange,

@@ -12,11 +12,13 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (r *Repository) CreateBooking(ctx context.Context, tx pgx.Tx, b models.CreateBooking) (models.Booking, error) {
+func (r *Repository) CreateBooking(ctx context.Context, tx pgx.Tx, b *models.CreateBooking) (*models.Booking, error) {
 	db := r.executor(tx)
 
 	newBooking := b.ToRead()
-	insertArgs := []any{
+	err := db.QueryRow(
+		ctx,
+		query.CreateBooking,
 		b.UserID,
 		b.HotelID,
 		b.CheckIn,
@@ -27,16 +29,14 @@ func (r *Repository) CreateBooking(ctx context.Context, tx pgx.Tx, b models.Crea
 		b.Currency,
 		b.ExpectedTotalAmount,
 		b.FinalTotalAmount,
-	}
-	scanArgs := []any{
+	).Scan(
 		&newBooking.ID,
 		&newBooking.Status,
 		&newBooking.CreatedAt,
 		&newBooking.UpdatedAt,
-	}
-
-	if err := db.QueryRow(ctx, query.CreateBooking, insertArgs...).Scan(scanArgs...); err != nil {
-		return models.Booking{}, err
+	)
+	if err != nil {
+		return nil, err
 	}
 
 	return newBooking, nil
@@ -48,26 +48,28 @@ func (r *Repository) GetBookingsByHotelInfo(
 	bookingRef models.BookingRef,
 	limit uint64,
 	offset uint64,
-) (models.BookingList, error) {
+) (*models.BookingList, error) {
 	db := r.executor(tx)
 
-	var bookingList models.BookingList
-	selectArgs := []any{
+	rows, err := db.Query(
+		ctx,
+		query.GetBookingsByHotelInfo,
 		bookingRef.UserID,
 		bookingRef.HotelID,
 		bookingRef.Status,
 		limit,
 		offset,
-	}
-
-	rows, err := db.Query(ctx, query.GetBookingsByHotelInfo, selectArgs...)
+	)
 	if err != nil {
-		return models.BookingList{}, err
+		return nil, err
 	}
+	defer rows.Close()
 
+	values := make([]models.BookingShort, 0, limit)
 	var b models.BookingShort
+
 	for rows.Next() {
-		err = rows.Scan(
+		if err = rows.Scan(
 			&b.ID,
 			&b.UserID,
 			&b.HotelID,
@@ -80,34 +82,43 @@ func (r *Repository) GetBookingsByHotelInfo(
 			&b.Currency,
 			&b.ExpectedTotalAmount,
 			&b.FinalTotalAmount,
-		)
-		if err != nil {
-			return models.BookingList{}, err
+		); err != nil {
+			return nil, err
 		}
 
-		bookingList.Bookings = append(bookingList.Bookings, b)
+		values = append(values, b)
 	}
 
-	if err = db.
-		QueryRow(
-			ctx,
-			query.GetBookingCountRows,
-			bookingRef.UserID,
-			bookingRef.HotelID,
-			bookingRef.Status,
-		).
-		Scan(&bookingList.TotalCount); err != nil {
-		return models.BookingList{}, err
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	bookingList := &models.BookingList{
+		Bookings: make([]*models.BookingShort, len(values)),
+	}
+
+	for i := range values {
+		bookingList.Bookings[i] = &values[i]
+	}
+
+	if err = db.QueryRow(
+		ctx,
+		query.GetBookingCountRows,
+		bookingRef.UserID,
+		bookingRef.HotelID,
+		bookingRef.Status,
+	).Scan(&bookingList.TotalCount); err != nil {
+		return nil, err
 	}
 
 	return bookingList, nil
 }
 
-func (r *Repository) GetBookingByID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) (models.Booking, error) {
+func (r *Repository) GetBookingByID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) (*models.Booking, error) {
 	db := r.executor(tx)
 
 	var b models.Booking
-	scanArgs := []any{
+	err := db.QueryRow(ctx, query.GetBookingByID, bookingID).Scan(
 		&b.ID,
 		&b.UserID,
 		&b.HotelID,
@@ -122,31 +133,33 @@ func (r *Repository) GetBookingByID(ctx context.Context, tx pgx.Tx, bookingID uu
 		&b.FinalTotalAmount,
 		&b.CreatedAt,
 		&b.UpdatedAt,
-	}
-
-	if err := db.QueryRow(ctx, query.GetBookingByID, bookingID).Scan(scanArgs...); err != nil {
+	)
+	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Booking{}, consts.ErrBookingNotFound
+			return nil, consts.ErrBookingNotFound
 		}
-		return models.Booking{}, err
+		return nil, err
 	}
 
-	return b, nil
+	return &b, nil
 }
 
 func (r *Repository) UpdateBookingGuestInfoByID(
-	ctx context.Context, tx pgx.Tx, id uuid.UUID, b models.UpdateBooking,
+	ctx context.Context,
+	tx pgx.Tx,
+	id uuid.UUID,
+	b *models.UpdateBooking,
 ) error {
 	db := r.executor(tx)
 
-	updateArgs := []any{
+	row, err := db.Exec(
+		ctx,
+		query.UpdateBookingGuestInfoByID,
 		id,
 		b.GuestName,
 		b.GuestEmail,
 		b.GuestPhone,
-	}
-
-	row, err := db.Exec(ctx, query.UpdateBookingGuestInfoByID, updateArgs...)
+	)
 	if err != nil {
 		return err
 	}
@@ -158,7 +171,10 @@ func (r *Repository) UpdateBookingGuestInfoByID(
 }
 
 func (r *Repository) UpdateBookingStatusByID(
-	ctx context.Context, tx pgx.Tx, id uuid.UUID, b models.BookingStatusInfo,
+	ctx context.Context,
+	tx pgx.Tx,
+	id uuid.UUID,
+	b *models.BookingStatusInfo,
 ) error {
 	db := r.executor(tx)
 
@@ -166,7 +182,7 @@ func (r *Repository) UpdateBookingStatusByID(
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrBookingNotFound
 	}
 
@@ -180,7 +196,7 @@ func (r *Repository) DeleteBookingByID(ctx context.Context, tx pgx.Tx, id uuid.U
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
+	if row.RowsAffected() == 0 {
 		return consts.ErrBookingNotFound
 	}
 

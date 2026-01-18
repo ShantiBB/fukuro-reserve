@@ -9,8 +9,8 @@ import (
 	"booking/pkg/utils/consts"
 )
 
-func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]models.CreateBookingRoom, error) {
-	result := make([]models.CreateBookingRoom, len(rooms))
+func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]*models.CreateBookingRoom, error) {
+	result := make([]*models.CreateBookingRoom, len(rooms))
 
 	for i, r := range rooms {
 		roomID, err := uuid.Parse(r.RoomId)
@@ -23,31 +23,13 @@ func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]models.
 			return nil, consts.ErrInvalidPricePerNightID
 		}
 
-		result[i] = models.CreateBookingRoom{
+		result[i] = &models.CreateBookingRoom{
 			RoomID:        roomID,
-			Adults:        uint8(r.Adults),
-			Children:      uint8(r.Children),
+			Adults:        r.Adults,
+			Children:      r.Children,
 			PricePerNight: price,
 		}
 	}
 
 	return result, nil
-}
-
-func GetBookingRoomsRequestToDomain(req *bookingv1.GetBookingRoomsRequest) (uuid.UUID, error) {
-	bookingID, err := uuid.Parse(req.BookingId)
-	if err != nil {
-		return uuid.UUID{}, consts.ErrInvalidBookingID
-	}
-
-	return bookingID, nil
-}
-
-func GetBookingRoomRequestToDomain(req *bookingv1.GetBookingRoomRequest) (uuid.UUID, error) {
-	id, err := uuid.Parse(req.Id)
-	if err != nil {
-		return uuid.UUID{}, consts.ErrInvalidBookingRoomID
-	}
-
-	return id, nil
 }

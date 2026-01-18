@@ -13,25 +13,40 @@ const (
 		INSERT INTO booking_room (booking_id, room_id, adults, children, price_per_night)
 		SELECT booking_id, room_id, adults, children, price_per_night
 		FROM input
-		RETURNING id, booking_id, room_id, adults, children, price_per_night, created_at;`
+		RETURNING id, created_at;`
 
-	GetBookingRoomsInfoByBookingID = `
+	GetBookingRoomsByBookingID = `
 		SELECT
 			id::uuid,
 			booking_id::uuid,
 			room_id::uuid,
 			adults,
 			children,
-			price_per_night,
-			created_at
+			price_per_night
 		FROM booking_room
 		WHERE booking_id = ANY($1)
 		ORDER BY created_at;`
 
-	GetBookingRoomsFullInfoByBookingID = `
+	GetBookingRoomsWithLockByBookingID = `
 		SELECT
 			br.id::uuid as booking_room_id,
-			br.booking_id::uuid,
+			br.room_id::uuid,
+			br.adults,
+			br.children,
+			br.price_per_night,
+			br.created_at,
+			rl.id::uuid,
+			rl.is_active,
+			rl.expires_at,
+			rl.created_at
+		FROM booking_room br
+		LEFT JOIN room_lock rl ON rl.booking_id = br.booking_id AND rl.room_id = br.room_id
+		WHERE br.booking_id = ANY($1)
+		ORDER BY br.created_at;`
+
+	GetBookingRoomsWithLockDetailByBookingID = `
+		SELECT
+			br.id::uuid as booking_room_id,
 			br.room_id::uuid,
 			br.adults,
 			br.children,
@@ -44,20 +59,18 @@ const (
 			rl.created_at
 		FROM booking_room br
 		LEFT JOIN room_lock rl ON rl.booking_id = br.booking_id AND rl.room_id = br.room_id
-		WHERE br.booking_id = $1
+		WHERE br.booking_id = ANY($1)
 		ORDER BY br.created_at;`
 
-	GetBookingRoomFullInfoByID = `
+	GetBookingRoomWithLockByID = `
 		SELECT
 			br.id::uuid as booking_room_id,
-			br.booking_id::uuid,
 			br.room_id::uuid,
 			br.adults,
 			br.children,
 			br.price_per_night,
 			br.created_at,
 			rl.id::uuid,
-			rl.stay_range,
 			rl.is_active,
 			rl.expires_at,
 			rl.created_at

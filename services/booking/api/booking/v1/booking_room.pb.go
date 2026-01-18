@@ -21,7 +21,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type BookingRoomInfo struct {
+type BookingRoom struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	RoomId        string                 `protobuf:"bytes,2,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
@@ -32,20 +32,20 @@ type BookingRoomInfo struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BookingRoomInfo) Reset() {
-	*x = BookingRoomInfo{}
+func (x *BookingRoom) Reset() {
+	*x = BookingRoom{}
 	mi := &file_booking_v1_models_booking_room_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BookingRoomInfo) String() string {
+func (x *BookingRoom) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BookingRoomInfo) ProtoMessage() {}
+func (*BookingRoom) ProtoMessage() {}
 
-func (x *BookingRoomInfo) ProtoReflect() protoreflect.Message {
+func (x *BookingRoom) ProtoReflect() protoreflect.Message {
 	mi := &file_booking_v1_models_booking_room_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57,47 +57,47 @@ func (x *BookingRoomInfo) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BookingRoomInfo.ProtoReflect.Descriptor instead.
-func (*BookingRoomInfo) Descriptor() ([]byte, []int) {
+// Deprecated: Use BookingRoom.ProtoReflect.Descriptor instead.
+func (*BookingRoom) Descriptor() ([]byte, []int) {
 	return file_booking_v1_models_booking_room_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *BookingRoomInfo) GetId() string {
+func (x *BookingRoom) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *BookingRoomInfo) GetRoomId() string {
+func (x *BookingRoom) GetRoomId() string {
 	if x != nil {
 		return x.RoomId
 	}
 	return ""
 }
 
-func (x *BookingRoomInfo) GetAdults() uint32 {
+func (x *BookingRoom) GetAdults() uint32 {
 	if x != nil {
 		return x.Adults
 	}
 	return 0
 }
 
-func (x *BookingRoomInfo) GetChildren() uint32 {
+func (x *BookingRoom) GetChildren() uint32 {
 	if x != nil {
 		return x.Children
 	}
 	return 0
 }
 
-func (x *BookingRoomInfo) GetPricePerNight() string {
+func (x *BookingRoom) GetPricePerNight() string {
 	if x != nil {
 		return x.PricePerNight
 	}
 	return ""
 }
 
-type BookingRoomFullInfo struct {
+type BookingRoomWithLock struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	RoomId        string                 `protobuf:"bytes,2,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
@@ -109,20 +109,20 @@ type BookingRoomFullInfo struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *BookingRoomFullInfo) Reset() {
-	*x = BookingRoomFullInfo{}
+func (x *BookingRoomWithLock) Reset() {
+	*x = BookingRoomWithLock{}
 	mi := &file_booking_v1_models_booking_room_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *BookingRoomFullInfo) String() string {
+func (x *BookingRoomWithLock) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*BookingRoomFullInfo) ProtoMessage() {}
+func (*BookingRoomWithLock) ProtoMessage() {}
 
-func (x *BookingRoomFullInfo) ProtoReflect() protoreflect.Message {
+func (x *BookingRoomWithLock) ProtoReflect() protoreflect.Message {
 	mi := &file_booking_v1_models_booking_room_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -134,47 +134,47 @@ func (x *BookingRoomFullInfo) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BookingRoomFullInfo.ProtoReflect.Descriptor instead.
-func (*BookingRoomFullInfo) Descriptor() ([]byte, []int) {
+// Deprecated: Use BookingRoomWithLock.ProtoReflect.Descriptor instead.
+func (*BookingRoomWithLock) Descriptor() ([]byte, []int) {
 	return file_booking_v1_models_booking_room_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *BookingRoomFullInfo) GetId() string {
+func (x *BookingRoomWithLock) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *BookingRoomFullInfo) GetRoomId() string {
+func (x *BookingRoomWithLock) GetRoomId() string {
 	if x != nil {
 		return x.RoomId
 	}
 	return ""
 }
 
-func (x *BookingRoomFullInfo) GetAdults() uint32 {
+func (x *BookingRoomWithLock) GetAdults() uint32 {
 	if x != nil {
 		return x.Adults
 	}
 	return 0
 }
 
-func (x *BookingRoomFullInfo) GetChildren() uint32 {
+func (x *BookingRoomWithLock) GetChildren() uint32 {
 	if x != nil {
 		return x.Children
 	}
 	return 0
 }
 
-func (x *BookingRoomFullInfo) GetPricePerNight() string {
+func (x *BookingRoomWithLock) GetPricePerNight() string {
 	if x != nil {
 		return x.PricePerNight
 	}
 	return ""
 }
 
-func (x *BookingRoomFullInfo) GetRoomLock() *RoomLockShort {
+func (x *BookingRoomWithLock) GetRoomLock() *RoomLockShort {
 	if x != nil {
 		return x.RoomLock
 	}
@@ -186,14 +186,14 @@ var File_booking_v1_models_booking_room_proto protoreflect.FileDescriptor
 const file_booking_v1_models_booking_room_proto_rawDesc = "" +
 	"\n" +
 	"$booking/v1/models/booking_room.proto\x12\n" +
-	"booking.v1\x1a!booking/v1/models/room_lock.proto\"\x96\x01\n" +
-	"\x0fBookingRoomInfo\x12\x0e\n" +
+	"booking.v1\x1a!booking/v1/models/room_lock.proto\"\x92\x01\n" +
+	"\vBookingRoom\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\aroom_id\x18\x02 \x01(\tR\x06roomId\x12\x16\n" +
 	"\x06adults\x18\x03 \x01(\rR\x06adults\x12\x1a\n" +
 	"\bchildren\x18\x04 \x01(\rR\bchildren\x12&\n" +
 	"\x0fprice_per_night\x18\x05 \x01(\tR\rpricePerNight\"\xd2\x01\n" +
-	"\x13BookingRoomFullInfo\x12\x0e\n" +
+	"\x13BookingRoomWithLock\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\aroom_id\x18\x02 \x01(\tR\x06roomId\x12\x16\n" +
 	"\x06adults\x18\x03 \x01(\rR\x06adults\x12\x1a\n" +
@@ -215,12 +215,12 @@ func file_booking_v1_models_booking_room_proto_rawDescGZIP() []byte {
 
 var file_booking_v1_models_booking_room_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_booking_v1_models_booking_room_proto_goTypes = []any{
-	(*BookingRoomInfo)(nil),     // 0: booking.v1.BookingRoomInfo
-	(*BookingRoomFullInfo)(nil), // 1: booking.v1.BookingRoomFullInfo
+	(*BookingRoom)(nil),         // 0: booking.v1.BookingRoom
+	(*BookingRoomWithLock)(nil), // 1: booking.v1.BookingRoomWithLock
 	(*RoomLockShort)(nil),       // 2: booking.v1.RoomLockShort
 }
 var file_booking_v1_models_booking_room_proto_depIdxs = []int32{
-	2, // 0: booking.v1.BookingRoomFullInfo.room_lock:type_name -> booking.v1.RoomLockShort
+	2, // 0: booking.v1.BookingRoomWithLock.room_lock:type_name -> booking.v1.RoomLockShort
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

@@ -12,7 +12,7 @@ import (
 func CalculateFinalTotalAmount(
 	checkIn time.Time,
 	checkOut time.Time,
-	rooms []models.CreateBookingRoom,
+	rooms []*models.CreateBookingRoom,
 	expected decimal.Decimal,
 ) (decimal.Decimal, error) {
 

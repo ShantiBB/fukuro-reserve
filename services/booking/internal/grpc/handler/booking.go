@@ -30,14 +30,14 @@ func (h *Handler) CreateBooking(
 		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
-	created, err := h.svc.BookingCreate(ctx, *booking, rooms)
+	created, err := h.svc.BookingCreate(ctx, booking, rooms)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.DomainError(err)
 	}
 
 	return &bookingv1.CreateBookingResponse{
-		Booking: mapper.BookingToProto(&created),
+		Booking: mapper.BookingToProto(created),
 	}, nil
 }
 
@@ -88,6 +88,6 @@ func (h *Handler) GetBooking(
 	}
 
 	return &bookingv1.GetBookingResponse{
-		Booking: mapper.BookingToProto(&booking),
+		Booking: mapper.BookingToProto(booking),
 	}, nil
 }

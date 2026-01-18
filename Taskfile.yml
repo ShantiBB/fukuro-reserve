@@ -3,10 +3,9 @@ version: '3'
 tasks:
   run:
     desc: "Run (task run service=auth|hotel|booking)"
-    cmds:
-      - "go run services/{{.service}}/cmd/app/main.go"
+    cmd: "go run services/{{.service}}/cmd/app/main.go"
     env:
-      CONFIG_PATH: "{{.ROOT_DIR}}/services/{{.service}}/config/local.yaml"
+      CONFIG_PATH: "services/auth/config/local.yaml"
     requires:
       vars: [service]
 
@@ -52,7 +51,7 @@ tasks:
       - docker compose --env-file .env -f docker/postgres.yaml down
 
   goose:
-    dotenv: [".env"]
+    dotenv: [".env.dev"]
     desc: "Goose migrations (task goose service=auth|hotel|booking mode=status|up|down)"
     cmd: |
       goose -dir services/{{.service}}/migrations postgres \

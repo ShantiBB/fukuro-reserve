@@ -19,7 +19,7 @@ type CreateRoomLock struct {
 }
 
 type RoomLockActivity struct {
-	ExpiresAt time.Time
+	ExpiresAt *time.Time
 	IsActive  bool
 }
 

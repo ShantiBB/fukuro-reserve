@@ -148,13 +148,11 @@ func (s *Service) UpdateBookingStatus(
 		return err
 	}
 
-	var isActive bool
-	if status != models.BookingStatusCancelled {
-		isActive = true
-	}
-	roomLockStatus := &models.RoomLockActivity{
-		IsActive:  isActive,
-		ExpiresAt: time.Now(),
+	var roomLockStatus = &models.RoomLockActivity{}
+	t := time.Now()
+	if status == models.BookingStatusCancelled {
+		roomLockStatus.IsActive = true
+		roomLockStatus.ExpiresAt = &t
 	}
 
 	if err := s.repo.UpdateRoomLockActivityByID(ctx, nil, bookingID, roomLockStatus); err != nil {

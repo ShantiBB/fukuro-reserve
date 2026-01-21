@@ -25,7 +25,7 @@ const (
 		UPDATE room_lock
 		SET
 		  is_active = $2,
-		  expires_at = $3
+		  expires_at = COALESCE($3, expires_at)
 		WHERE booking_id = $1;`
 
 	DeleteRoomLockByID = `

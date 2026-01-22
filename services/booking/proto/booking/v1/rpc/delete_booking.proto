@@ -7,12 +7,12 @@ option go_package = "api/booking/v1;bookingv1";
 import "buf/validate/validate.proto";
 import "booking/v1/enums/booking_status.proto";
 
-message CancelBookingStatusRequest {
+message DeleteBookingRequest {
   string id = 1 [
     (buf.validate.field).string.uuid = true
   ];
 }
 
-message CancelBookingStatusResponse {
-  BookingStatus status = 1;
+message DeleteBookingResponse {
+  string message = 1;
 }

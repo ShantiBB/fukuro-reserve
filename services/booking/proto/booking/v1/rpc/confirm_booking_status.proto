@@ -8,7 +8,9 @@ import "buf/validate/validate.proto";
 import "booking/v1/enums/booking_status.proto";
 
 message ConfirmBookingStatusRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
 }
 
 message ConfirmBookingStatusResponse {

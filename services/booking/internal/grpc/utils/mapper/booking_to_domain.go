@@ -69,7 +69,7 @@ func BookingStatusToDomain(status bookingv1.BookingStatus) models.BookingStatus 
 	case bookingv1.BookingStatus_BOOKING_STATUS_CANCELLED:
 		s = models.BookingStatusCancelled
 	default:
-		return ""
+		s = models.BookingStatusUnspecified
 	}
 	return s
 }

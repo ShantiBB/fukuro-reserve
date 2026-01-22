@@ -24,17 +24,17 @@ const (
 )
 
 type CreateBookingRequest struct {
-	state               protoimpl.MessageState `protogen:"open.v1"`
-	UserId              int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	HotelId             string                 `protobuf:"bytes,2,opt,name=hotel_id,json=hotelId,proto3" json:"hotel_id,omitempty"`
-	CheckIn             *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=check_in,json=checkIn,proto3" json:"check_in,omitempty"`
-	CheckOut            *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=check_out,json=checkOut,proto3" json:"check_out,omitempty"`
-	GuestName           string                 `protobuf:"bytes,5,opt,name=guest_name,json=guestName,proto3" json:"guest_name,omitempty"`
-	GuestEmail          *string                `protobuf:"bytes,6,opt,name=guest_email,json=guestEmail,proto3,oneof" json:"guest_email,omitempty"`
-	GuestPhone          *string                `protobuf:"bytes,7,opt,name=guest_phone,json=guestPhone,proto3,oneof" json:"guest_phone,omitempty"`
-	Currency            string                 `protobuf:"bytes,8,opt,name=currency,proto3" json:"currency,omitempty"`
-	ExpectedTotalAmount string                 `protobuf:"bytes,9,opt,name=expected_total_amount,json=expectedTotalAmount,proto3" json:"expected_total_amount,omitempty"`
-	Rooms               []*CreateBookingRoom   `protobuf:"bytes,10,rep,name=rooms,proto3" json:"rooms,omitempty"`
+	state               protoimpl.MessageState      `protogen:"open.v1"`
+	UserId              int64                       `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	HotelId             string                      `protobuf:"bytes,2,opt,name=hotel_id,json=hotelId,proto3" json:"hotel_id,omitempty"`
+	CheckIn             *timestamppb.Timestamp      `protobuf:"bytes,3,opt,name=check_in,json=checkIn,proto3" json:"check_in,omitempty"`
+	CheckOut            *timestamppb.Timestamp      `protobuf:"bytes,4,opt,name=check_out,json=checkOut,proto3" json:"check_out,omitempty"`
+	GuestName           string                      `protobuf:"bytes,5,opt,name=guest_name,json=guestName,proto3" json:"guest_name,omitempty"`
+	GuestEmail          *string                     `protobuf:"bytes,6,opt,name=guest_email,json=guestEmail,proto3,oneof" json:"guest_email,omitempty"`
+	GuestPhone          *string                     `protobuf:"bytes,7,opt,name=guest_phone,json=guestPhone,proto3,oneof" json:"guest_phone,omitempty"`
+	Currency            string                      `protobuf:"bytes,8,opt,name=currency,proto3" json:"currency,omitempty"`
+	ExpectedTotalAmount string                      `protobuf:"bytes,9,opt,name=expected_total_amount,json=expectedTotalAmount,proto3" json:"expected_total_amount,omitempty"`
+	Rooms               []*CreateBookingRoomRequest `protobuf:"bytes,10,rep,name=rooms,proto3" json:"rooms,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -132,14 +132,14 @@ func (x *CreateBookingRequest) GetExpectedTotalAmount() string {
 	return ""
 }
 
-func (x *CreateBookingRequest) GetRooms() []*CreateBookingRoom {
+func (x *CreateBookingRequest) GetRooms() []*CreateBookingRoomRequest {
 	if x != nil {
 		return x.Rooms
 	}
 	return nil
 }
 
-type CreateBookingRoom struct {
+type CreateBookingRoomRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	RoomId        string                 `protobuf:"bytes,1,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
 	Adults        uint32                 `protobuf:"varint,2,opt,name=adults,proto3" json:"adults,omitempty"`
@@ -149,20 +149,20 @@ type CreateBookingRoom struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateBookingRoom) Reset() {
-	*x = CreateBookingRoom{}
+func (x *CreateBookingRoomRequest) Reset() {
+	*x = CreateBookingRoomRequest{}
 	mi := &file_booking_v1_rpc_create_booking_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateBookingRoom) String() string {
+func (x *CreateBookingRoomRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateBookingRoom) ProtoMessage() {}
+func (*CreateBookingRoomRequest) ProtoMessage() {}
 
-func (x *CreateBookingRoom) ProtoReflect() protoreflect.Message {
+func (x *CreateBookingRoomRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_booking_v1_rpc_create_booking_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -174,33 +174,33 @@ func (x *CreateBookingRoom) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateBookingRoom.ProtoReflect.Descriptor instead.
-func (*CreateBookingRoom) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateBookingRoomRequest.ProtoReflect.Descriptor instead.
+func (*CreateBookingRoomRequest) Descriptor() ([]byte, []int) {
 	return file_booking_v1_rpc_create_booking_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *CreateBookingRoom) GetRoomId() string {
+func (x *CreateBookingRoomRequest) GetRoomId() string {
 	if x != nil {
 		return x.RoomId
 	}
 	return ""
 }
 
-func (x *CreateBookingRoom) GetAdults() uint32 {
+func (x *CreateBookingRoomRequest) GetAdults() uint32 {
 	if x != nil {
 		return x.Adults
 	}
 	return 0
 }
 
-func (x *CreateBookingRoom) GetChildren() uint32 {
+func (x *CreateBookingRoomRequest) GetChildren() uint32 {
 	if x != nil {
 		return x.Children
 	}
 	return 0
 }
 
-func (x *CreateBookingRoom) GetPricePerNight() string {
+func (x *CreateBookingRoomRequest) GetPricePerNight() string {
 	if x != nil {
 		return x.PricePerNight
 	}
@@ -256,11 +256,11 @@ var File_booking_v1_rpc_create_booking_proto protoreflect.FileDescriptor
 const file_booking_v1_rpc_create_booking_proto_rawDesc = "" +
 	"\n" +
 	"#booking/v1/rpc/create_booking.proto\x12\n" +
-	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1fbooking/v1/models/booking.proto\"\xa8\x05\n" +
+	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1fbooking/v1/models/booking.proto\"\xb4\x05\n" +
 	"\x14CreateBookingRequest\x12 \n" +
 	"\auser_id\x18\x01 \x01(\x03B\a\xbaH\x04\"\x02 \x00R\x06userId\x12#\n" +
-	"\bhotel_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x12=\n" +
-	"\bcheck_in\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\acheckIn\x12?\n" +
+	"\bhotel_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x12B\n" +
+	"\bcheck_in\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\v\xbaH\b\xc8\x01\x01\xb2\x01\x02@\x01R\acheckIn\x12?\n" +
 	"\tcheck_out\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xbaH\x03\xc8\x01\x01R\bcheckOut\x12&\n" +
 	"\n" +
 	"guest_name\x18\x05 \x01(\tB\a\xbaH\x04r\x02\x10\x01R\tguestName\x12-\n" +
@@ -270,13 +270,13 @@ const file_booking_v1_rpc_create_booking_proto_rawDesc = "" +
 	"guestPhone\x88\x01\x01\x12-\n" +
 	"\bcurrency\x18\b \x01(\tB\x11\xbaH\x0er\f2\n" +
 	"^[A-Z]{3}$R\bcurrency\x12U\n" +
-	"\x15expected_total_amount\x18\t \x01(\tB!\xbaH\x1er\x1c\x10\x012\x18^[0-9]+(\\.[0-9]{1,18})?$R\x13expectedTotalAmount\x12=\n" +
+	"\x15expected_total_amount\x18\t \x01(\tB!\xbaH\x1er\x1c\x10\x012\x18^[0-9]+(\\.[0-9]{1,18})?$R\x13expectedTotalAmount\x12D\n" +
 	"\x05rooms\x18\n" +
-	" \x03(\v2\x1d.booking.v1.CreateBookingRoomB\b\xbaH\x05\x92\x01\x02\b\x01R\x05rooms:\\\xbaHY\x1aW\n" +
+	" \x03(\v2$.booking.v1.CreateBookingRoomRequestB\b\xbaH\x05\x92\x01\x02\b\x01R\x05rooms:\\\xbaHY\x1aW\n" +
 	"\x13booking.dates.order\x12 check_out must be after check_in\x1a\x1ethis.check_out > this.check_inB\x0e\n" +
 	"\f_guest_emailB\x0e\n" +
-	"\f_guest_phone\"\xc9\x01\n" +
-	"\x11CreateBookingRoom\x12!\n" +
+	"\f_guest_phone\"\xd0\x01\n" +
+	"\x18CreateBookingRoomRequest\x12!\n" +
 	"\aroom_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06roomId\x12!\n" +
 	"\x06adults\x18\x02 \x01(\rB\t\xbaH\x06*\x04\x18\x14(\x01R\x06adults\x12#\n" +
 	"\bchildren\x18\x03 \x01(\rB\a\xbaH\x04*\x02\x18\x14R\bchildren\x12I\n" +
@@ -298,16 +298,16 @@ func file_booking_v1_rpc_create_booking_proto_rawDescGZIP() []byte {
 
 var file_booking_v1_rpc_create_booking_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_booking_v1_rpc_create_booking_proto_goTypes = []any{
-	(*CreateBookingRequest)(nil),  // 0: booking.v1.CreateBookingRequest
-	(*CreateBookingRoom)(nil),     // 1: booking.v1.CreateBookingRoom
-	(*CreateBookingResponse)(nil), // 2: booking.v1.CreateBookingResponse
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
-	(*Booking)(nil),               // 4: booking.v1.Booking
+	(*CreateBookingRequest)(nil),     // 0: booking.v1.CreateBookingRequest
+	(*CreateBookingRoomRequest)(nil), // 1: booking.v1.CreateBookingRoomRequest
+	(*CreateBookingResponse)(nil),    // 2: booking.v1.CreateBookingResponse
+	(*timestamppb.Timestamp)(nil),    // 3: google.protobuf.Timestamp
+	(*Booking)(nil),                  // 4: booking.v1.Booking
 }
 var file_booking_v1_rpc_create_booking_proto_depIdxs = []int32{
 	3, // 0: booking.v1.CreateBookingRequest.check_in:type_name -> google.protobuf.Timestamp
 	3, // 1: booking.v1.CreateBookingRequest.check_out:type_name -> google.protobuf.Timestamp
-	1, // 2: booking.v1.CreateBookingRequest.rooms:type_name -> booking.v1.CreateBookingRoom
+	1, // 2: booking.v1.CreateBookingRequest.rooms:type_name -> booking.v1.CreateBookingRoomRequest
 	4, // 3: booking.v1.CreateBookingResponse.booking:type_name -> booking.v1.Booking
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type

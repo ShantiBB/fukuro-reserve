@@ -8,7 +8,9 @@ import "buf/validate/validate.proto";
 import "booking/v1/models/booking.proto";
 
 message GetBookingRequest {
-  string id = 1 [(buf.validate.field).string.uuid = true];
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
 }
 
 message GetBookingResponse {

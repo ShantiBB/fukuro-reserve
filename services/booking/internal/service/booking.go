@@ -155,33 +155,27 @@ func (s *Service) UpdateBookingStatus(
 		roomLockStatus.ExpiresAt = &t
 	}
 
-	if err := s.repo.UpdateRoomLockActivityByID(ctx, nil, bookingID, roomLockStatus); err != nil {
+	tx, err := s.repo.BeginTx(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = tx.Rollback(ctx) }()
+
+	if err = s.repo.UpdateRoomLockActivityByID(ctx, nil, bookingID, roomLockStatus); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(ctx); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-//func (s *Service) BookingUpdateByID(ctx context.Context, id uuid.UUID, b models.UpdateBooking) error {
-//	if err := s.repo.BookingUpdateByID(ctx, id, b); err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
-//
-//func (s *Service) BookingStatusUpdateByID(ctx context.Context, id uuid.UUID, b models.BookingStatusInfo) error {
-//	if err := s.repo.BookingStatusUpdateByID(ctx, id, b); err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
-//
-//func (s *Service) BookingDeleteByID(ctx context.Context, id uuid.UUID) error {
-//	if err := s.repo.BookingDeleteByID(ctx, id); err != nil {
-//		return err
-//	}
-//
-//	return nil
-//}
+func (s *Service) DeleteBookingByID(ctx context.Context, id uuid.UUID) error {
+	if err := s.repo.DeleteBookingByID(ctx, nil, id); err != nil {
+		return err
+	}
+
+	return nil
+}

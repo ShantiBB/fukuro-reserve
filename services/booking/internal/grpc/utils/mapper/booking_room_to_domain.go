@@ -9,7 +9,7 @@ import (
 	"booking/pkg/utils/consts"
 )
 
-func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoom) ([]*models.CreateBookingRoom, error) {
+func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoomRequest) ([]*models.CreateBookingRoom, error) {
 	result := make([]*models.CreateBookingRoom, len(rooms))
 
 	for i, r := range rooms {

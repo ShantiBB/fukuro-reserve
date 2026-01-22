@@ -140,3 +140,27 @@ func (h *Handler) CancelBookingStatus(
 		Status: mapper.BookingStatusToProto(models.BookingStatusCancelled),
 	}, nil
 }
+
+func (h *Handler) DeleteBooking(
+	ctx context.Context,
+	req *bookingv1.DeleteBookingRequest,
+) (*bookingv1.DeleteBookingResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
+	if err != nil {
+		return nil, errInvalidBookingID
+	}
+
+	err = h.svc.DeleteBookingByID(ctx, bookingId)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.DomainError(err)
+	}
+
+	return &bookingv1.DeleteBookingResponse{
+		Message: "success",
+	}, nil
+}

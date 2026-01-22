@@ -11,17 +11,32 @@ import "booking/v1/models/booking.proto";
 message CreateBookingRequest {
   int64 user_id = 1 [(buf.validate.field).int64.gt = 0];
   string hotel_id = 2 [(buf.validate.field).string.uuid = true];
-  google.protobuf.Timestamp check_in = 3 [(buf.validate.field).required = true];
-  google.protobuf.Timestamp check_out = 4 [(buf.validate.field).required = true];
-  string guest_name = 5 [(buf.validate.field).string.min_len = 1];
-  optional string guest_email = 6 [(buf.validate.field).string.email = true];
-  optional string guest_phone = 7 [(buf.validate.field).string = {min_len: 5, max_len: 32}];
-  string currency = 8 [(buf.validate.field).string.pattern = "^[A-Z]{3}$"];
+  google.protobuf.Timestamp check_in = 3 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).timestamp.gt_now = true
+  ];
+  google.protobuf.Timestamp check_out = 4 [
+    (buf.validate.field).required = true
+  ];
+  string guest_name = 5 [
+    (buf.validate.field).string.min_len = 1
+  ];
+  optional string guest_email = 6 [
+    (buf.validate.field).string.email = true
+  ];
+  optional string guest_phone = 7 [
+    (buf.validate.field).string = {min_len: 5, max_len: 32}
+  ];
+  string currency = 8 [
+    (buf.validate.field).string.pattern = "^[A-Z]{3}$"
+  ];
   string expected_total_amount = 9 [
     (buf.validate.field).string.min_len = 1,
     (buf.validate.field).string.pattern = "^[0-9]+(\\.[0-9]{1,18})?$"
   ];
-  repeated CreateBookingRoom rooms = 10 [(buf.validate.field).repeated.min_items = 1];
+  repeated CreateBookingRoomRequest rooms = 10 [
+    (buf.validate.field).repeated.min_items = 1
+  ];
   option (buf.validate.message).cel = {
     id: "booking.dates.order"
     message: "check_out must be after check_in"
@@ -29,10 +44,16 @@ message CreateBookingRequest {
   };
 }
 
-message CreateBookingRoom {
-  string room_id = 1 [(buf.validate.field).string.uuid = true];
-  uint32 adults = 2 [(buf.validate.field).uint32 = {gte: 1, lte: 20}];
-  uint32 children = 3 [(buf.validate.field).uint32.lte = 20];
+message CreateBookingRoomRequest {
+  string room_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  uint32 adults = 2 [
+    (buf.validate.field).uint32 = {gte: 1, lte: 20}
+  ];
+  uint32 children = 3 [
+    (buf.validate.field).uint32.lte = 20
+  ];
   string price_per_night = 4 [
     (buf.validate.field).string.min_len = 1,
     (buf.validate.field).string.pattern = "^[0-9]+(\\.[0-9]{1,18})?$"

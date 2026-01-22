@@ -19,6 +19,7 @@ type BookingService interface {
 	) (*models.BookingList, error)
 	GetBookingById(ctx context.Context, bookingID uuid.UUID) (*models.Booking, error)
 	UpdateBookingStatus(ctx context.Context, bookingID uuid.UUID, status models.BookingStatus) error
+	DeleteBookingByID(ctx context.Context, id uuid.UUID) error
 }
 
 type Service interface {

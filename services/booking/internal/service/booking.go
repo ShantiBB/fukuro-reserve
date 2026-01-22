@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"log/slog"
 	"time"
 
 	"booking/internal/repository/models"
@@ -23,17 +24,20 @@ func (s *Service) BookingCreate(
 	var err error
 	b.FinalTotalAmount, err = helper.CalculateTotalAmount(b.CheckIn, b.CheckOut, rooms, b.ExpectedTotalAmount)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed calculate total amount", "err", err)
 		return nil, err
 	}
 
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to begin transaction", "err", err)
 		return nil, err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 
 	newBooking, err := s.repo.CreateBooking(ctx, tx, b)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to create booking", "err", err)
 		return nil, err
 	}
 
@@ -43,6 +47,7 @@ func (s *Service) BookingCreate(
 
 	newRooms, err := s.repo.CreateBookingRooms(ctx, tx, newBooking.ID, rooms)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to create booking rooms", "err", err)
 		return nil, err
 	}
 
@@ -61,6 +66,7 @@ func (s *Service) BookingCreate(
 
 	newLocks, err := s.repo.CreateRoomLocks(ctx, tx, locks)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to create room locks", "err", err)
 		return nil, err
 	}
 
@@ -82,6 +88,7 @@ func (s *Service) BookingCreate(
 	newBooking.BookingRooms = newRooms
 
 	if err = tx.Commit(ctx); err != nil {
+		slog.ErrorContext(ctx, "failed to commit transaction", "err", err)
 		return nil, err
 	}
 
@@ -97,6 +104,7 @@ func (s *Service) GetBookings(
 	offset := (page - 1) * limit
 	bookingList, err := s.repo.GetBookingsByHotelInfo(ctx, nil, bookingRef, limit, offset)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to get bookings", "err", err)
 		return nil, err
 	}
 
@@ -107,6 +115,7 @@ func (s *Service) GetBookings(
 
 	allRooms, err := s.repo.GetBookingRoomsByBookingIDs(ctx, nil, bookingIDs)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to get booking rooms", "err", err)
 		return nil, err
 	}
 
@@ -125,11 +134,13 @@ func (s *Service) GetBookings(
 func (s *Service) GetBookingById(ctx context.Context, bookingID uuid.UUID) (*models.Booking, error) {
 	booking, err := s.repo.GetBookingByID(ctx, nil, bookingID)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to get booking by id", "err", err)
 		return nil, err
 	}
 
 	allRooms, err := s.repo.GetBookingRoomsWithLockByBookingIDs(ctx, nil, []uuid.UUID{booking.ID})
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to get booking rooms by booking id", "err", err)
 		return nil, err
 	}
 
@@ -143,6 +154,7 @@ func (s *Service) UpdateBookingStatus(
 	status models.BookingStatus,
 ) error {
 	if err := s.repo.UpdateBookingStatusByID(ctx, nil, bookingID, status); err != nil {
+		slog.ErrorContext(ctx, "failed to update booking status", "err", err)
 		return err
 	}
 
@@ -155,15 +167,18 @@ func (s *Service) UpdateBookingStatus(
 
 	tx, err := s.repo.BeginTx(ctx)
 	if err != nil {
+		slog.ErrorContext(ctx, "failed to begin transaction", "err", err)
 		return err
 	}
 	defer func() { _ = tx.Rollback(ctx) }()
 
-	if err = s.repo.UpdateRoomLockActivityByID(ctx, nil, bookingID, roomLockStatus); err != nil {
+	if err = s.repo.UpdateRoomLocksActivityByID(ctx, nil, bookingID, roomLockStatus); err != nil {
+		slog.ErrorContext(ctx, "failed to update room locks activity", "err", err)
 		return err
 	}
 
 	if err = tx.Commit(ctx); err != nil {
+		slog.ErrorContext(ctx, "failed to commit transaction", "err", err)
 		return err
 	}
 
@@ -172,6 +187,7 @@ func (s *Service) UpdateBookingStatus(
 
 func (s *Service) DeleteBookingByID(ctx context.Context, id uuid.UUID) error {
 	if err := s.repo.DeleteBookingByID(ctx, nil, id); err != nil {
+		slog.ErrorContext(ctx, "failed to delete booking by id", "err", err)
 		return err
 	}
 

@@ -68,7 +68,8 @@ const (
 	UpdateBookingStatusByID = `
 		UPDATE booking
 		SET status = $2
-		WHERE id = $1`
+		WHERE id = $1
+		RETURNING check_out`
 
 	DeleteBookingByID = `
 		DELETE FROM booking

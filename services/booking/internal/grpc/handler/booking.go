@@ -106,8 +106,7 @@ func (h *Handler) ConfirmBookingStatus(
 		return nil, errInvalidBookingID
 	}
 
-	err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed)
-	if err != nil {
+	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.DomainError(err)
 	}
@@ -130,8 +129,7 @@ func (h *Handler) CancelBookingStatus(
 		return nil, errInvalidBookingID
 	}
 
-	err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled)
-	if err != nil {
+	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.DomainError(err)
 	}
@@ -154,8 +152,7 @@ func (h *Handler) DeleteBooking(
 		return nil, errInvalidBookingID
 	}
 
-	err = h.svc.DeleteBookingByID(ctx, bookingId)
-	if err != nil {
+	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.DomainError(err)
 	}

@@ -3,10 +3,11 @@ package postgres
 import (
 	"context"
 	"errors"
+	"time"
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -180,18 +181,19 @@ func (r *Repository) UpdateBookingStatusByID(
 	tx pgx.Tx,
 	id uuid.UUID,
 	status models.BookingStatus,
-) error {
+) (time.Time, error) {
 	db := r.executor(tx)
 
-	row, err := db.Exec(ctx, query.UpdateBookingStatusByID, id, status)
+	var checkOut time.Time
+	err := db.QueryRow(ctx, query.UpdateBookingStatusByID, id, status).Scan(&checkOut)
 	if err != nil {
-		return err
-	}
-	if row.RowsAffected() == 0 {
-		return consts.ErrBookingNotFound
+		if errors.Is(err, pgx.ErrNoRows) {
+			return time.Time{}, consts.ErrBookingNotFound
+		}
+		return time.Time{}, err
 	}
 
-	return nil
+	return checkOut, nil
 }
 
 func (r *Repository) DeleteBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {

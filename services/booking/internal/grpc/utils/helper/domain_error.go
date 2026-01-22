@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 )
 
 var (

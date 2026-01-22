@@ -6,7 +6,7 @@ import (
 	"github.com/shopspring/decimal"
 
 	"booking/internal/repository/models"
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 )
 
 func CalculateTotalAmount(

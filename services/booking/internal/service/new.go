@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -20,7 +21,9 @@ type BookingRepository interface {
 	) (*models.BookingList, error)
 	GetBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (*models.Booking, error)
 	UpdateBookingGuestInfoByID(ctx context.Context, tx pgx.Tx, id uuid.UUID, b *models.UpdateBooking) error
-	UpdateBookingStatusByID(ctx context.Context, tx pgx.Tx, id uuid.UUID, status models.BookingStatus) error
+	UpdateBookingStatusByID(
+		ctx context.Context, tx pgx.Tx, id uuid.UUID, status models.BookingStatus,
+	) (time.Time, error)
 	DeleteBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 }
 
@@ -34,10 +37,6 @@ type BookingRoomRepository interface {
 	GetBookingRoomsWithLockByBookingIDs(
 		ctx context.Context, tx pgx.Tx, bookingIDs []uuid.UUID,
 	) ([]*models.BookingRoomWithLock, error)
-	UpdateBookingRoomGuestCountsByID(
-		ctx context.Context, tx pgx.Tx, id uuid.UUID, bRoom *models.BookingRoomGuestCounts,
-	) error
-	DeleteBookingRoomByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 }
 
 type RoomLockRepository interface {
@@ -45,7 +44,6 @@ type RoomLockRepository interface {
 	UpdateRoomLocksActivityByID(
 		ctx context.Context, tx pgx.Tx, id uuid.UUID, roomLock *models.RoomLockActivity,
 	) error
-	DeleteRoomLockByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
 }
 
 type Repository interface {

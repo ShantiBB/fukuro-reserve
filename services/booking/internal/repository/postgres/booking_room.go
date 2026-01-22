@@ -8,7 +8,7 @@ import (
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 )
 
 func (r *Repository) CreateBookingRooms(
@@ -157,37 +157,4 @@ func (r *Repository) GetBookingRoomsWithLockByBookingIDs(
 	}
 
 	return out, nil
-}
-
-func (r *Repository) UpdateBookingRoomGuestCountsByID(
-	ctx context.Context,
-	tx pgx.Tx,
-	id uuid.UUID,
-	bRoom *models.BookingRoomGuestCounts,
-) error {
-	db := r.executor(tx)
-
-	row, err := db.Exec(ctx, query.UpdateBookingRoomGuestCountsByID, id, bRoom.Adults, bRoom.Children)
-	if err != nil {
-		return err
-	}
-	if row.RowsAffected() == 0 {
-		return consts.ErrBookingRoomNotFound
-	}
-
-	return nil
-}
-
-func (r *Repository) DeleteBookingRoomByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
-	db := r.executor(tx)
-
-	row, err := db.Exec(ctx, query.DeleteBookingRoomByID, id)
-	if err != nil {
-		return err
-	}
-	if row.RowsAffected() == 0 {
-		return consts.ErrBookingRoomNotFound
-	}
-
-	return nil
 }

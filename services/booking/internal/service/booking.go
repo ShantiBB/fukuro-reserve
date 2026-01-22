@@ -7,7 +7,7 @@ import (
 
 	"booking/internal/repository/models"
 	"booking/internal/service/utils/helper"
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 
 	"github.com/google/uuid"
 )
@@ -153,16 +153,24 @@ func (s *Service) UpdateBookingStatus(
 	bookingID uuid.UUID,
 	status models.BookingStatus,
 ) error {
-	if err := s.repo.UpdateBookingStatusByID(ctx, nil, bookingID, status); err != nil {
+	checkOut, err := s.repo.UpdateBookingStatusByID(ctx, nil, bookingID, status)
+	if err != nil {
 		slog.ErrorContext(ctx, "failed to update booking status", "err", err)
 		return err
 	}
 
 	var roomLockStatus = &models.RoomLockActivity{}
-	t := time.Now()
-	if status == models.BookingStatusCancelled {
+
+	switch status {
+	case models.BookingStatusConfirmed:
+		roomLockStatus.IsActive = false
+		roomLockStatus.ExpiresAt = &checkOut
+	case models.BookingStatusCancelled:
+		now := time.Now()
 		roomLockStatus.IsActive = true
-		roomLockStatus.ExpiresAt = &t
+		roomLockStatus.ExpiresAt = &now
+	default:
+		return consts.ErrInvalidBookingStatus
 	}
 
 	tx, err := s.repo.BeginTx(ctx)

@@ -14,6 +14,7 @@ const (
 	MsgInvalidHotelID               = "invalid hotel ID"
 	MsgInvalidBookingID             = "invalid booking ID"
 	MsgInvalidBookingRoomID         = "invalid booking room ID"
+	MsgInvalidBookingStatus         = "invalid booking status"
 	MsgInvalidPricePerNightID       = "invalid price per night. example: 123.45"
 	MsgInvalidExpectedTotalAmountID = "invalid expected total amount. example: 123.45"
 	MsgInternalServer               = "internal server error"
@@ -31,6 +32,7 @@ var (
 	ErrInvalidHotelID               = errors.New(MsgInvalidHotelID)
 	ErrInvalidBookingID             = errors.New(MsgInvalidBookingID)
 	ErrInvalidBookingRoomID         = errors.New(MsgInvalidBookingRoomID)
+	ErrInvalidBookingStatus         = errors.New(MsgInvalidBookingStatus)
 	ErrInvalidPricePerNightID       = errors.New(MsgInvalidPricePerNightID)
 	ErrInvalidExpectedTotalAmountID = errors.New(MsgInvalidExpectedTotalAmountID)
 	ErrInternalServer               = errors.New(MsgInternalServer)

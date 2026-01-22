@@ -6,7 +6,7 @@ import (
 
 	bookingv1 "booking/api/booking/v1"
 	"booking/internal/repository/models"
-	"booking/pkg/lib/utils/consts"
+	"booking/internal/utils/consts"
 )
 
 func CreateBookingRoomsToDomain(rooms []*bookingv1.CreateBookingRoomRequest) ([]*models.CreateBookingRoom, error) {

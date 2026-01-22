@@ -3,7 +3,7 @@ package helper
 import (
 	"time"
 
-	"booking/pkg/utils/consts"
+	"booking/pkg/lib/utils/consts"
 )
 
 func Nights(checkIn, checkOut time.Time) (int, error) {

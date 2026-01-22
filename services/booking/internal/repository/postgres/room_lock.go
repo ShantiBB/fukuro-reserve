@@ -11,7 +11,7 @@ import (
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
-	"booking/pkg/utils/consts"
+	"booking/pkg/lib/utils/consts"
 )
 
 func (r *Repository) CreateRoomLocks(

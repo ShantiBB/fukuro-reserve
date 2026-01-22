@@ -6,13 +6,17 @@ import (
 
 	"booking/internal/repository/models"
 	"booking/internal/repository/postgres/query"
-	"booking/pkg/utils/consts"
+	"booking/pkg/lib/utils/consts"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 )
 
 func (r *Repository) CreateBooking(ctx context.Context, tx pgx.Tx, b *models.CreateBooking) (*models.Booking, error) {
+	if b == nil {
+		return nil, consts.ErrNilObject
+	}
+
 	db := r.executor(tx)
 
 	newBooking := b.ToRead()

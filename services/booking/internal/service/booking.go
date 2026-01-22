@@ -2,13 +2,11 @@ package service
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"time"
 
 	"booking/internal/repository/models"
 	"booking/internal/service/utils/helper"
-	"booking/pkg/utils/consts"
+	"booking/pkg/lib/utils/consts"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +17,7 @@ func (s *Service) BookingCreate(
 	rooms []*models.CreateBookingRoom,
 ) (*models.Booking, error) {
 	if b == nil {
-		return nil, errors.New("booking cannot be nil")
+		return nil, consts.ErrNilObject
 	}
 
 	var err error
@@ -132,7 +130,7 @@ func (s *Service) GetBookingById(ctx context.Context, bookingID uuid.UUID) (*mod
 
 	allRooms, err := s.repo.GetBookingRoomsWithLockByBookingIDs(ctx, nil, []uuid.UUID{booking.ID})
 	if err != nil {
-		return nil, fmt.Errorf("get booking rooms: %w", err)
+		return nil, err
 	}
 
 	booking.BookingRooms = allRooms

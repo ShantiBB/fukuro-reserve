@@ -3,6 +3,7 @@ package consts
 import "errors"
 
 const (
+	MsgNilObject                    = "object cannot be nil"
 	MsgBookingNotFound              = "booking not found"
 	MsgBookingRoomNotFound          = "booking room not found"
 	MsgRoomLockNotFound             = "room lock room not found"
@@ -19,6 +20,7 @@ const (
 )
 
 var (
+	ErrNilObject                    = errors.New(MsgNilObject)
 	ErrBookingNotFound              = errors.New(MsgBookingNotFound)
 	ErrBookingRoomNotFound          = errors.New(MsgBookingRoomNotFound)
 	ErrRoomLockNotFound             = errors.New(MsgRoomLockNotFound)

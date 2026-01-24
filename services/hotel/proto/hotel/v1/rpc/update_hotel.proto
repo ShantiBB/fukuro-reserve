@@ -7,7 +7,7 @@ option go_package = "api/hotel/v1;hotelv1";
 import "buf/validate/validate.proto";
 import "hotel/v1/models/hotel.proto";
 
-message CreateHotelLocationRequest {
+message UpdateHotelLocationRequest {
   float latitude = 1 [
     (buf.validate.field).float = {gte: -90, lte: 90}
   ];
@@ -16,29 +16,25 @@ message CreateHotelLocationRequest {
   ];
 }
 
-message CreateHotelRequest {
+message UpdateHotelRequest {
   string country_code = 1 [
     (buf.validate.field).string.pattern = "^[a-z]{2}$"
   ];
   string city_slug = 2 [
     (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
   ];
-
-  string title = 3 [
-    (buf.validate.field).required = true
-  ];
-  int64 owner_id = 4 [
-    (buf.validate.field).required = true
+  string slug = 3 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
   ];
   optional string description = 5;
   string address = 6 [
     (buf.validate.field).required = true
   ];
-  CreateHotelLocationRequest location = 7 [
+  UpdateHotelLocationRequest location = 7 [
     (buf.validate.field).required = true
   ];
 }
 
-message CreateHotelResponse {
-  Hotel hotel = 1;
+message UpdateHotelResponse {
+  UpdateHotel hotel = 1;
 }

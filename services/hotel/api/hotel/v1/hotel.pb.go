@@ -282,6 +282,110 @@ func (x *HotelShort) GetLocation() *Location {
 	return nil
 }
 
+type UpdateHotel struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Description   string                 `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
+	Address       string                 `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	Location      *Location              `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateHotel) Reset() {
+	*x = UpdateHotel{}
+	mi := &file_hotel_v1_models_hotel_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateHotel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateHotel) ProtoMessage() {}
+
+func (x *UpdateHotel) ProtoReflect() protoreflect.Message {
+	mi := &file_hotel_v1_models_hotel_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateHotel.ProtoReflect.Descriptor instead.
+func (*UpdateHotel) Descriptor() ([]byte, []int) {
+	return file_hotel_v1_models_hotel_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *UpdateHotel) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *UpdateHotel) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
+func (x *UpdateHotel) GetLocation() *Location {
+	if x != nil {
+		return x.Location
+	}
+	return nil
+}
+
+type UpdateHotelTitle struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateHotelTitle) Reset() {
+	*x = UpdateHotelTitle{}
+	mi := &file_hotel_v1_models_hotel_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateHotelTitle) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateHotelTitle) ProtoMessage() {}
+
+func (x *UpdateHotelTitle) ProtoReflect() protoreflect.Message {
+	mi := &file_hotel_v1_models_hotel_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateHotelTitle.ProtoReflect.Descriptor instead.
+func (*UpdateHotelTitle) Descriptor() ([]byte, []int) {
+	return file_hotel_v1_models_hotel_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateHotelTitle) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
 var File_hotel_v1_models_hotel_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_models_hotel_proto_rawDesc = "" +
@@ -314,7 +418,13 @@ const file_hotel_v1_models_hotel_proto_rawDesc = "" +
 	"\x06rating\x18\x05 \x01(\x02H\x00R\x06rating\x88\x01\x01\x12\x18\n" +
 	"\aaddress\x18\x06 \x01(\tR\aaddress\x12.\n" +
 	"\blocation\x18\a \x01(\v2\x12.hotel.v1.LocationR\blocationB\t\n" +
-	"\a_ratingB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"
+	"\a_rating\"y\n" +
+	"\vUpdateHotel\x12 \n" +
+	"\vdescription\x18\x01 \x01(\tR\vdescription\x12\x18\n" +
+	"\aaddress\x18\x02 \x01(\tR\aaddress\x12.\n" +
+	"\blocation\x18\x03 \x01(\v2\x12.hotel.v1.LocationR\blocation\"(\n" +
+	"\x10UpdateHotelTitle\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05titleB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"
 
 var (
 	file_hotel_v1_models_hotel_proto_rawDescOnce sync.Once
@@ -328,23 +438,26 @@ func file_hotel_v1_models_hotel_proto_rawDescGZIP() []byte {
 	return file_hotel_v1_models_hotel_proto_rawDescData
 }
 
-var file_hotel_v1_models_hotel_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_hotel_v1_models_hotel_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_hotel_v1_models_hotel_proto_goTypes = []any{
 	(*Location)(nil),              // 0: hotel.v1.Location
 	(*Hotel)(nil),                 // 1: hotel.v1.Hotel
 	(*HotelShort)(nil),            // 2: hotel.v1.HotelShort
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(*UpdateHotel)(nil),           // 3: hotel.v1.UpdateHotel
+	(*UpdateHotelTitle)(nil),      // 4: hotel.v1.UpdateHotelTitle
+	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
 var file_hotel_v1_models_hotel_proto_depIdxs = []int32{
 	0, // 0: hotel.v1.Hotel.location:type_name -> hotel.v1.Location
-	3, // 1: hotel.v1.Hotel.created_at:type_name -> google.protobuf.Timestamp
-	3, // 2: hotel.v1.Hotel.updated_at:type_name -> google.protobuf.Timestamp
+	5, // 1: hotel.v1.Hotel.created_at:type_name -> google.protobuf.Timestamp
+	5, // 2: hotel.v1.Hotel.updated_at:type_name -> google.protobuf.Timestamp
 	0, // 3: hotel.v1.HotelShort.location:type_name -> hotel.v1.Location
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 4: hotel.v1.UpdateHotel.location:type_name -> hotel.v1.Location
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_hotel_v1_models_hotel_proto_init() }
@@ -360,7 +473,7 @@ func file_hotel_v1_models_hotel_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_hotel_v1_models_hotel_proto_rawDesc), len(file_hotel_v1_models_hotel_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

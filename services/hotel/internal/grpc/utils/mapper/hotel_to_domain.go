@@ -5,10 +5,15 @@ import (
 	"hotel/internal/repository/models"
 )
 
-func locationRequestToDomain(req *hotelv1.CreateBookingLocationRequest) models.Location {
+type locationGetter interface {
+	GetLatitude() float32
+	GetLongitude() float32
+}
+
+func locationRequestToDomain[T locationGetter](req T) models.Location {
 	return models.Location{
-		Latitude:  req.Latitude,
-		Longitude: req.Longitude,
+		Latitude:  req.GetLatitude(),
+		Longitude: req.GetLongitude(),
 	}
 }
 
@@ -30,4 +35,12 @@ func GetHotelsRequestToDomain(req *hotelv1.GetHotelsRequest) (uint64, uint64, mo
 		CitySlug:    req.CitySlug,
 	}
 	return req.Page, req.Limit, hotelInfo
+}
+
+func UpdateHotelRequestToDomain(req *hotelv1.UpdateHotelRequest) models.UpdateHotel {
+	return models.UpdateHotel{
+		Description: req.Description,
+		Address:     req.Address,
+		Location:    locationRequestToDomain(req.Location),
+	}
 }

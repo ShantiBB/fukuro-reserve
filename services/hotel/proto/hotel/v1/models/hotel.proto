@@ -33,3 +33,13 @@ message HotelShort {
   string address = 6;
   Location location = 7;
 }
+
+message UpdateHotel {
+  string description = 1;
+  string address = 2;
+  Location location = 3;
+}
+
+message UpdateHotelTitle {
+  string title = 1;
+}

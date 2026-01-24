@@ -24,37 +24,47 @@ var File_hotel_v1_hotel_service_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_hotel_service_proto_rawDesc = "" +
 	"\n" +
-	"\x1chotel/v1/hotel_service.proto\x12\bhotel.v1\x1a\x1fhotel/v1/rpc/create_hotel.proto\x1a\x1dhotel/v1/rpc/get_hotels.proto\x1a\x1chotel/v1/rpc/get_hotel.proto\x1a\x1fhotel/v1/rpc/delete_hotel.proto2\xaf\x02\n" +
+	"\x1chotel/v1/hotel_service.proto\x12\bhotel.v1\x1a\x1fhotel/v1/rpc/create_hotel.proto\x1a\x1dhotel/v1/rpc/get_hotels.proto\x1a\x1chotel/v1/rpc/get_hotel.proto\x1a\x1fhotel/v1/rpc/update_hotel.proto\x1a%hotel/v1/rpc/update_hotel_title.proto\x1a\x1fhotel/v1/rpc/delete_hotel.proto2\xd6\x03\n" +
 	"\fHotelService\x12J\n" +
 	"\vCreateHotel\x12\x1c.hotel.v1.CreateHotelRequest\x1a\x1d.hotel.v1.CreateHotelResponse\x12D\n" +
 	"\tGetHotels\x12\x1a.hotel.v1.GetHotelsRequest\x1a\x1b.hotel.v1.GetHotelsResponse\x12A\n" +
 	"\bGetHotel\x12\x19.hotel.v1.GetHotelRequest\x1a\x1a.hotel.v1.GetHotelResponse\x12J\n" +
+	"\vUpdateHotel\x12\x1c.hotel.v1.UpdateHotelRequest\x1a\x1d.hotel.v1.UpdateHotelResponse\x12Y\n" +
+	"\x10UpdateHotelTitle\x12!.hotel.v1.UpdateHotelTitleRequest\x1a\".hotel.v1.UpdateHotelTitleResponse\x12J\n" +
 	"\vDeleteHotel\x12\x1c.hotel.v1.DeleteHotelRequest\x1a\x1d.hotel.v1.DeleteHotelResponseB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"
 
 var file_hotel_v1_hotel_service_proto_goTypes = []any{
-	(*CreateHotelRequest)(nil),  // 0: hotel.v1.CreateHotelRequest
-	(*GetHotelsRequest)(nil),    // 1: hotel.v1.GetHotelsRequest
-	(*GetHotelRequest)(nil),     // 2: hotel.v1.GetHotelRequest
-	(*DeleteHotelRequest)(nil),  // 3: hotel.v1.DeleteHotelRequest
-	(*CreateHotelResponse)(nil), // 4: hotel.v1.CreateHotelResponse
-	(*GetHotelsResponse)(nil),   // 5: hotel.v1.GetHotelsResponse
-	(*GetHotelResponse)(nil),    // 6: hotel.v1.GetHotelResponse
-	(*DeleteHotelResponse)(nil), // 7: hotel.v1.DeleteHotelResponse
+	(*CreateHotelRequest)(nil),       // 0: hotel.v1.CreateHotelRequest
+	(*GetHotelsRequest)(nil),         // 1: hotel.v1.GetHotelsRequest
+	(*GetHotelRequest)(nil),          // 2: hotel.v1.GetHotelRequest
+	(*UpdateHotelRequest)(nil),       // 3: hotel.v1.UpdateHotelRequest
+	(*UpdateHotelTitleRequest)(nil),  // 4: hotel.v1.UpdateHotelTitleRequest
+	(*DeleteHotelRequest)(nil),       // 5: hotel.v1.DeleteHotelRequest
+	(*CreateHotelResponse)(nil),      // 6: hotel.v1.CreateHotelResponse
+	(*GetHotelsResponse)(nil),        // 7: hotel.v1.GetHotelsResponse
+	(*GetHotelResponse)(nil),         // 8: hotel.v1.GetHotelResponse
+	(*UpdateHotelResponse)(nil),      // 9: hotel.v1.UpdateHotelResponse
+	(*UpdateHotelTitleResponse)(nil), // 10: hotel.v1.UpdateHotelTitleResponse
+	(*DeleteHotelResponse)(nil),      // 11: hotel.v1.DeleteHotelResponse
 }
 var file_hotel_v1_hotel_service_proto_depIdxs = []int32{
-	0, // 0: hotel.v1.HotelService.CreateHotel:input_type -> hotel.v1.CreateHotelRequest
-	1, // 1: hotel.v1.HotelService.GetHotels:input_type -> hotel.v1.GetHotelsRequest
-	2, // 2: hotel.v1.HotelService.GetHotel:input_type -> hotel.v1.GetHotelRequest
-	3, // 3: hotel.v1.HotelService.DeleteHotel:input_type -> hotel.v1.DeleteHotelRequest
-	4, // 4: hotel.v1.HotelService.CreateHotel:output_type -> hotel.v1.CreateHotelResponse
-	5, // 5: hotel.v1.HotelService.GetHotels:output_type -> hotel.v1.GetHotelsResponse
-	6, // 6: hotel.v1.HotelService.GetHotel:output_type -> hotel.v1.GetHotelResponse
-	7, // 7: hotel.v1.HotelService.DeleteHotel:output_type -> hotel.v1.DeleteHotelResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: hotel.v1.HotelService.CreateHotel:input_type -> hotel.v1.CreateHotelRequest
+	1,  // 1: hotel.v1.HotelService.GetHotels:input_type -> hotel.v1.GetHotelsRequest
+	2,  // 2: hotel.v1.HotelService.GetHotel:input_type -> hotel.v1.GetHotelRequest
+	3,  // 3: hotel.v1.HotelService.UpdateHotel:input_type -> hotel.v1.UpdateHotelRequest
+	4,  // 4: hotel.v1.HotelService.UpdateHotelTitle:input_type -> hotel.v1.UpdateHotelTitleRequest
+	5,  // 5: hotel.v1.HotelService.DeleteHotel:input_type -> hotel.v1.DeleteHotelRequest
+	6,  // 6: hotel.v1.HotelService.CreateHotel:output_type -> hotel.v1.CreateHotelResponse
+	7,  // 7: hotel.v1.HotelService.GetHotels:output_type -> hotel.v1.GetHotelsResponse
+	8,  // 8: hotel.v1.HotelService.GetHotel:output_type -> hotel.v1.GetHotelResponse
+	9,  // 9: hotel.v1.HotelService.UpdateHotel:output_type -> hotel.v1.UpdateHotelResponse
+	10, // 10: hotel.v1.HotelService.UpdateHotelTitle:output_type -> hotel.v1.UpdateHotelTitleResponse
+	11, // 11: hotel.v1.HotelService.DeleteHotel:output_type -> hotel.v1.DeleteHotelResponse
+	6,  // [6:12] is the sub-list for method output_type
+	0,  // [0:6] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_hotel_v1_hotel_service_proto_init() }
@@ -65,6 +75,8 @@ func file_hotel_v1_hotel_service_proto_init() {
 	file_hotel_v1_rpc_create_hotel_proto_init()
 	file_hotel_v1_rpc_get_hotels_proto_init()
 	file_hotel_v1_rpc_get_hotel_proto_init()
+	file_hotel_v1_rpc_update_hotel_proto_init()
+	file_hotel_v1_rpc_update_hotel_title_proto_init()
 	file_hotel_v1_rpc_delete_hotel_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -81,3 +81,51 @@ func (h *Handler) GetHotel(
 		Hotel: mapper.HotelResponseToProto(hotel),
 	}, nil
 }
+
+func (h *Handler) UpdateHotel(
+	ctx context.Context,
+	req *hotelv1.UpdateHotelRequest,
+) (*hotelv1.UpdateHotelResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	ref := models.HotelRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelSlug:   req.Slug,
+	}
+	hotel := mapper.UpdateHotelRequestToDomain(req)
+
+	if err := h.svc.UpdateHotelBySlug(ctx, ref, hotel); err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.DomainError(err)
+	}
+
+	return &hotelv1.UpdateHotelResponse{
+		Hotel: mapper.HotelUpdateResponseToProto(hotel),
+	}, nil
+}
+
+func (h *Handler) DeleteHotel(
+	ctx context.Context,
+	req *hotelv1.DeleteHotelRequest,
+) (*hotelv1.DeleteHotelResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	ref := models.HotelRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelSlug:   req.Slug,
+	}
+	if err := h.svc.DeleteHotelBySlug(ctx, ref); err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.DomainError(err)
+	}
+
+	return &hotelv1.DeleteHotelResponse{
+		Message: "success",
+	}, nil
+}

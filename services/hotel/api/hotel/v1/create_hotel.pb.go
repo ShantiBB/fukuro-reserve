@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CreateBookingLocationRequest struct {
+type CreateHotelLocationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Latitude      float32                `protobuf:"fixed32,1,opt,name=latitude,proto3" json:"latitude,omitempty"`
 	Longitude     float32                `protobuf:"fixed32,2,opt,name=longitude,proto3" json:"longitude,omitempty"`
@@ -30,20 +30,20 @@ type CreateBookingLocationRequest struct {
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateBookingLocationRequest) Reset() {
-	*x = CreateBookingLocationRequest{}
+func (x *CreateHotelLocationRequest) Reset() {
+	*x = CreateHotelLocationRequest{}
 	mi := &file_hotel_v1_rpc_create_hotel_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateBookingLocationRequest) String() string {
+func (x *CreateHotelLocationRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateBookingLocationRequest) ProtoMessage() {}
+func (*CreateHotelLocationRequest) ProtoMessage() {}
 
-func (x *CreateBookingLocationRequest) ProtoReflect() protoreflect.Message {
+func (x *CreateHotelLocationRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_hotel_v1_rpc_create_hotel_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,19 +55,19 @@ func (x *CreateBookingLocationRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateBookingLocationRequest.ProtoReflect.Descriptor instead.
-func (*CreateBookingLocationRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateHotelLocationRequest.ProtoReflect.Descriptor instead.
+func (*CreateHotelLocationRequest) Descriptor() ([]byte, []int) {
 	return file_hotel_v1_rpc_create_hotel_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateBookingLocationRequest) GetLatitude() float32 {
+func (x *CreateHotelLocationRequest) GetLatitude() float32 {
 	if x != nil {
 		return x.Latitude
 	}
 	return 0
 }
 
-func (x *CreateBookingLocationRequest) GetLongitude() float32 {
+func (x *CreateHotelLocationRequest) GetLongitude() float32 {
 	if x != nil {
 		return x.Longitude
 	}
@@ -75,14 +75,14 @@ func (x *CreateBookingLocationRequest) GetLongitude() float32 {
 }
 
 type CreateHotelRequest struct {
-	state         protoimpl.MessageState        `protogen:"open.v1"`
-	CountryCode   string                        `protobuf:"bytes,1,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
-	CitySlug      string                        `protobuf:"bytes,2,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
-	Title         string                        `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
-	OwnerId       int64                         `protobuf:"varint,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
-	Description   *string                       `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
-	Address       string                        `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
-	Location      *CreateBookingLocationRequest `protobuf:"bytes,7,opt,name=location,proto3" json:"location,omitempty"`
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	CountryCode   string                      `protobuf:"bytes,1,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                      `protobuf:"bytes,2,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
+	Title         string                      `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	OwnerId       int64                       `protobuf:"varint,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
+	Description   *string                     `protobuf:"bytes,5,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	Address       string                      `protobuf:"bytes,6,opt,name=address,proto3" json:"address,omitempty"`
+	Location      *CreateHotelLocationRequest `protobuf:"bytes,7,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -159,7 +159,7 @@ func (x *CreateHotelRequest) GetAddress() string {
 	return ""
 }
 
-func (x *CreateHotelRequest) GetLocation() *CreateBookingLocationRequest {
+func (x *CreateHotelRequest) GetLocation() *CreateHotelLocationRequest {
 	if x != nil {
 		return x.Location
 	}
@@ -214,14 +214,14 @@ var File_hotel_v1_rpc_create_hotel_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_rpc_create_hotel_proto_rawDesc = "" +
 	"\n" +
-	"\x1fhotel/v1/rpc/create_hotel.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bhotel/v1/models/hotel.proto\"z\n" +
-	"\x1cCreateBookingLocationRequest\x12+\n" +
+	"\x1fhotel/v1/rpc/create_hotel.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bhotel/v1/models/hotel.proto\"x\n" +
+	"\x1aCreateHotelLocationRequest\x12+\n" +
 	"\blatitude\x18\x01 \x01(\x02B\x0f\xbaH\f\n" +
 	"\n" +
 	"\x1d\x00\x00\xb4B-\x00\x00\xb4\xc2R\blatitude\x12-\n" +
 	"\tlongitude\x18\x02 \x01(\x02B\x0f\xbaH\f\n" +
 	"\n" +
-	"\x1d\x00\x004C-\x00\x004\xc3R\tlongitude\"\xee\x02\n" +
+	"\x1d\x00\x004C-\x00\x004\xc3R\tlongitude\"\xec\x02\n" +
 	"\x12CreateHotelRequest\x124\n" +
 	"\fcountry_code\x18\x01 \x01(\tB\x11\xbaH\x0er\f2\n" +
 	"^[a-z]{2}$R\vcountryCode\x12<\n" +
@@ -229,8 +229,8 @@ const file_hotel_v1_rpc_create_hotel_proto_rawDesc = "" +
 	"\x05title\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12!\n" +
 	"\bowner_id\x18\x04 \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\aownerId\x12%\n" +
 	"\vdescription\x18\x05 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
-	"\aaddress\x18\x06 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\aaddress\x12J\n" +
-	"\blocation\x18\a \x01(\v2&.hotel.v1.CreateBookingLocationRequestB\x06\xbaH\x03\xc8\x01\x01R\blocationB\x0e\n" +
+	"\aaddress\x18\x06 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\aaddress\x12H\n" +
+	"\blocation\x18\a \x01(\v2$.hotel.v1.CreateHotelLocationRequestB\x06\xbaH\x03\xc8\x01\x01R\blocationB\x0e\n" +
 	"\f_description\"<\n" +
 	"\x13CreateHotelResponse\x12%\n" +
 	"\x05hotel\x18\x01 \x01(\v2\x0f.hotel.v1.HotelR\x05hotelB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"
@@ -249,13 +249,13 @@ func file_hotel_v1_rpc_create_hotel_proto_rawDescGZIP() []byte {
 
 var file_hotel_v1_rpc_create_hotel_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_hotel_v1_rpc_create_hotel_proto_goTypes = []any{
-	(*CreateBookingLocationRequest)(nil), // 0: hotel.v1.CreateBookingLocationRequest
-	(*CreateHotelRequest)(nil),           // 1: hotel.v1.CreateHotelRequest
-	(*CreateHotelResponse)(nil),          // 2: hotel.v1.CreateHotelResponse
-	(*Hotel)(nil),                        // 3: hotel.v1.Hotel
+	(*CreateHotelLocationRequest)(nil), // 0: hotel.v1.CreateHotelLocationRequest
+	(*CreateHotelRequest)(nil),         // 1: hotel.v1.CreateHotelRequest
+	(*CreateHotelResponse)(nil),        // 2: hotel.v1.CreateHotelResponse
+	(*Hotel)(nil),                      // 3: hotel.v1.Hotel
 }
 var file_hotel_v1_rpc_create_hotel_proto_depIdxs = []int32{
-	0, // 0: hotel.v1.CreateHotelRequest.location:type_name -> hotel.v1.CreateBookingLocationRequest
+	0, // 0: hotel.v1.CreateHotelRequest.location:type_name -> hotel.v1.CreateHotelLocationRequest
 	3, // 1: hotel.v1.CreateHotelResponse.hotel:type_name -> hotel.v1.Hotel
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type

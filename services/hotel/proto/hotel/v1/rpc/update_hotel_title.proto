@@ -5,8 +5,9 @@ package hotel.v1;
 option go_package = "api/hotel/v1;hotelv1";
 
 import "buf/validate/validate.proto";
+import "hotel/v1/models/hotel.proto";
 
-message DeleteHotelRequest {
+message UpdateHotelTitleRequest {
   string country_code = 1 [
     (buf.validate.field).string.pattern = "^[a-z]{2}$"
   ];
@@ -16,8 +17,11 @@ message DeleteHotelRequest {
   string slug = 3 [
     (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
   ];
+  string title = 4 [
+    (buf.validate.field).required = true
+  ];
 }
 
-message DeleteHotelResponse {
-  string message = 1;
+message UpdateHotelTitleResponse {
+  UpdateHotelTitle hotel = 1;
 }

@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	errBookingNotFound = status.Error(codes.NotFound, consts.ErrHotelNotFound.Error())
-	errInternalServer  = status.Error(codes.Internal, consts.ErrInternalServer.Error())
+	errBookingNotFound = status.Error(codes.NotFound, consts.MsgHotelNotFound)
+	errInternalServer  = status.Error(codes.Internal, consts.MsgInternalServer)
 )
 
 func DomainError(err error) error {

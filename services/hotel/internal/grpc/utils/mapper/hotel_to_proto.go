@@ -41,6 +41,14 @@ func HotelShortResponseToProto(resp *models.HotelShort) *hotelv1.HotelShort {
 	}
 }
 
+func HotelUpdateResponseToProto(resp models.UpdateHotel) *hotelv1.UpdateHotel {
+	return &hotelv1.UpdateHotel{
+		Description: *resp.Description,
+		Address:     resp.Address,
+		Location:    locationResponseToProto(&resp.Location),
+	}
+}
+
 func HotelsResponseToProto(resp []*models.HotelShort) []*hotelv1.HotelShort {
 	hotels := make([]*hotelv1.HotelShort, len(resp))
 	for i, h := range resp {

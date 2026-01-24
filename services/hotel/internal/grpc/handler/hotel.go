@@ -4,9 +4,6 @@ import (
 	"context"
 	"log/slog"
 
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
 	hotelv1 "hotel/api/hotel/v1"
 	"hotel/internal/grpc/utils/helper"
 	"hotel/internal/grpc/utils/mapper"
@@ -17,7 +14,7 @@ func (h *Handler) CreateHotel(
 	req *hotelv1.CreateHotelRequest,
 ) (*hotelv1.CreateHotelResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	hotel := mapper.CreateHotelRequestToDomain(req)
@@ -37,7 +34,7 @@ func (h *Handler) GetHotels(
 	req *hotelv1.GetHotelsRequest,
 ) (*hotelv1.GetHotelsResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	page, limit, ref := mapper.GetHotelsRequestToDomain(req)
@@ -61,7 +58,7 @@ func (h *Handler) GetHotel(
 	req *hotelv1.GetHotelRequest,
 ) (*hotelv1.GetHotelResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	ref := mapper.GetHotelRefRequestToDomain(req)
@@ -81,7 +78,7 @@ func (h *Handler) UpdateHotel(
 	req *hotelv1.UpdateHotelRequest,
 ) (*hotelv1.UpdateHotelResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	ref := mapper.GetHotelRefRequestToDomain(req)
@@ -101,7 +98,7 @@ func (h *Handler) UpdateHotelTitle(
 	req *hotelv1.UpdateHotelTitleRequest,
 ) (*hotelv1.UpdateHotelTitleResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	ref := mapper.GetHotelRefRequestToDomain(req)
@@ -123,7 +120,7 @@ func (h *Handler) DeleteHotel(
 	req *hotelv1.DeleteHotelRequest,
 ) (*hotelv1.DeleteHotelResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	ref := mapper.GetHotelRefRequestToDomain(req)

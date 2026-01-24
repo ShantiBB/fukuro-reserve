@@ -11,6 +11,7 @@ import (
 	"booking/internal/grpc/utils/helper"
 	"booking/internal/grpc/utils/mapper"
 	"booking/internal/repository/models"
+	"booking/internal/utils/consts"
 )
 
 func (h *Handler) CreateBooking(
@@ -52,7 +53,7 @@ func (h *Handler) GetBookings(
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)
 	if err != nil {
-		return nil, errInvalidHotelID
+		return nil, consts.ErrInvalidHotelID
 	}
 
 	bookingList, err := h.svc.GetBookings(ctx, bookingRef, req.Page, req.Limit)
@@ -79,7 +80,7 @@ func (h *Handler) GetBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	booking, err := h.svc.GetBookingById(ctx, bookingId)
@@ -103,7 +104,7 @@ func (h *Handler) ConfirmBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
@@ -126,7 +127,7 @@ func (h *Handler) CancelBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
@@ -149,7 +150,7 @@ func (h *Handler) DeleteBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {

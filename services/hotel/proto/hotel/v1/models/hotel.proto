@@ -11,10 +11,21 @@ message Location {
   float longitude = 2;
 }
 
+message CreateHotel {
+  string id = 1;
+  string slug = 3;
+  string title = 2;
+  int64 owner_id = 4;
+  string description = 5;
+  string address = 7;
+  Location location = 8;
+  google.protobuf.Timestamp created_at = 9;
+  google.protobuf.Timestamp updated_at = 10;
+}
+
 message Hotel {
   string id = 1;
   string title = 2;
-  optional string slug = 3;
   int64 owner_id = 4;
   string description = 5;
   optional float rating = 6;

@@ -34,7 +34,7 @@ type RoomUpdate struct {
 }
 
 type RoomStatusUpdate struct {
-	Status string
+	Status RoomStatus
 }
 
 type Room struct {

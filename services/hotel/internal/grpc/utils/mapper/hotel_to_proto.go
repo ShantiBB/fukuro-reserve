@@ -14,10 +14,23 @@ func locationResponseToProto(l *models.Location) *hotelv1.Location {
 	}
 }
 
+func CreateHotelResponseToProto(resp *models.Hotel) *hotelv1.CreateHotel {
+	return &hotelv1.CreateHotel{
+		Id:          resp.ID.String(),
+		Slug:        resp.Slug,
+		Title:       resp.Title,
+		OwnerId:     resp.OwnerID,
+		Description: *resp.Description,
+		Address:     resp.Address,
+		Location:    locationResponseToProto(&resp.Location),
+		CreatedAt:   timestamppb.New(resp.CreatedAt),
+		UpdatedAt:   timestamppb.New(resp.UpdatedAt),
+	}
+}
+
 func HotelResponseToProto(resp *models.Hotel) *hotelv1.Hotel {
 	return &hotelv1.Hotel{
 		Id:          resp.ID.String(),
-		Slug:        resp.Slug,
 		Title:       resp.Title,
 		OwnerId:     resp.OwnerID,
 		Description: *resp.Description,

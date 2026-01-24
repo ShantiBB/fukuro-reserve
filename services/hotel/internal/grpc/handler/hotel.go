@@ -28,7 +28,7 @@ func (h *Handler) CreateHotel(
 	}
 
 	return &hotelv1.CreateHotelResponse{
-		Hotel: mapper.HotelResponseToProto(created),
+		Hotel: mapper.CreateHotelResponseToProto(created),
 	}, nil
 }
 

@@ -40,5 +40,5 @@ message CreateHotelRequest {
 }
 
 message CreateHotelResponse {
-  Hotel hotel = 1;
+  CreateHotel hotel = 1;
 }

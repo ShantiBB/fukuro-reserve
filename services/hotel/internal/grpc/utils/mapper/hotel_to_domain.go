@@ -1,11 +1,8 @@
 package mapper
 
 import (
-	"github.com/google/uuid"
-
 	hotelv1 "hotel/api/hotel/v1"
 	"hotel/internal/repository/models"
-	"hotel/pkg/lib/utils/consts"
 )
 
 func locationRequestToDomain(req *hotelv1.CreateBookingLocationRequest) models.Location {
@@ -33,13 +30,4 @@ func GetHotelsRequestToDomain(req *hotelv1.GetHotelsRequest) (uint64, uint64, mo
 		CitySlug:    req.CitySlug,
 	}
 	return req.Page, req.Limit, hotelInfo
-}
-
-func GetHotelRequestToDomain(idStr string) (uuid.UUID, error) {
-	id, err := uuid.Parse(idStr)
-	if err != nil {
-		return uuid.UUID{}, consts.ErrInvalidHotelID
-	}
-
-	return id, nil
 }

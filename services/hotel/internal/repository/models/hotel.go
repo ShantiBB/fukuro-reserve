@@ -61,8 +61,8 @@ type HotelList struct {
 	TotalCount uint64
 }
 
-func (h *CreateHotel) ToRead() Hotel {
-	return Hotel{
+func (h *CreateHotel) ToRead() *Hotel {
+	return &Hotel{
 		Title:       h.Title,
 		Slug:        h.Slug,
 		OwnerID:     h.OwnerID,

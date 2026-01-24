@@ -78,6 +78,7 @@ type Hotel struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Slug          string                 `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`
 	OwnerId       int64                  `protobuf:"varint,4,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
 	Description   string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
 	Rating        *float32               `protobuf:"fixed32,6,opt,name=rating,proto3,oneof" json:"rating,omitempty"`
@@ -129,6 +130,13 @@ func (x *Hotel) GetId() string {
 func (x *Hotel) GetTitle() string {
 	if x != nil {
 		return x.Title
+	}
+	return ""
+}
+
+func (x *Hotel) GetSlug() string {
+	if x != nil {
+		return x.Slug
 	}
 	return ""
 }
@@ -393,10 +401,11 @@ const file_hotel_v1_models_hotel_proto_rawDesc = "" +
 	"\x1bhotel/v1/models/hotel.proto\x12\bhotel.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"D\n" +
 	"\bLocation\x12\x1a\n" +
 	"\blatitude\x18\x01 \x01(\x02R\blatitude\x12\x1c\n" +
-	"\tlongitude\x18\x02 \x01(\x02R\tlongitude\"\xd2\x02\n" +
+	"\tlongitude\x18\x02 \x01(\x02R\tlongitude\"\xe6\x02\n" +
 	"\x05Hotel\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
-	"\x05title\x18\x02 \x01(\tR\x05title\x12\x19\n" +
+	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
+	"\x04slug\x18\x03 \x01(\tR\x04slug\x12\x19\n" +
 	"\bowner_id\x18\x04 \x01(\x03R\aownerId\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1b\n" +
 	"\x06rating\x18\x06 \x01(\x02H\x00R\x06rating\x88\x01\x01\x12\x18\n" +

@@ -14,6 +14,7 @@ message Location {
 message Hotel {
   string id = 1;
   string title = 2;
+  optional string slug = 3;
   int64 owner_id = 4;
   string description = 5;
   optional float rating = 6;

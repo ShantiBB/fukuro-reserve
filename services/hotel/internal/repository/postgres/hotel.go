@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (r *Repository) CreateHotel(ctx context.Context, h models.CreateHotel) (models.Hotel, error) {
+func (r *Repository) CreateHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error) {
 	newHotel := h.ToRead()
 	err := r.db.QueryRow(
 		ctx, query.CreateHotelQuery,
@@ -33,9 +33,9 @@ func (r *Repository) CreateHotel(ctx context.Context, h models.CreateHotel) (mod
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return models.Hotel{}, consts.ErrUniqueHotelField
+			return nil, consts.ErrUniqueHotelField
 		}
-		return models.Hotel{}, err
+		return nil, err
 	}
 
 	return newHotel, nil

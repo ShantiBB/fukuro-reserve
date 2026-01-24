@@ -17,6 +17,7 @@ func locationResponseToProto(l *models.Location) *hotelv1.Location {
 func HotelResponseToProto(resp *models.Hotel) *hotelv1.Hotel {
 	return &hotelv1.Hotel{
 		Id:          resp.ID.String(),
+		Slug:        resp.Slug,
 		Title:       resp.Title,
 		OwnerId:     resp.OwnerID,
 		Description: *resp.Description,

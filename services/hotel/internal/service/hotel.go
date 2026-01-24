@@ -11,12 +11,12 @@ import (
 func (s *Service) CreateHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error) {
 	h.Slug = slug.Make(h.Title)
 
-	newHotel, err := s.repo.CreateHotel(ctx, *h)
+	newHotel, err := s.repo.CreateHotel(ctx, h)
 	if err != nil {
 		return nil, err
 	}
 
-	return &newHotel, nil
+	return newHotel, nil
 }
 
 func (s *Service) GetHotels(

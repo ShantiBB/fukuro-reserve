@@ -9,7 +9,7 @@ import (
 )
 
 type HotelRepository interface {
-	CreateHotel(ctx context.Context, h models.CreateHotel) (models.Hotel, error)
+	CreateHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error)
 	GetHotels(
 		ctx context.Context, hotelRef models.HotelRef, sortField string, limit, offset uint64,
 	) (*models.HotelList, error)

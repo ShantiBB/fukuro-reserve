@@ -19,7 +19,7 @@ func (h *Handler) CreateBooking(
 	req *bookingv1.CreateBookingRequest,
 ) (*bookingv1.CreateBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	booking, err := mapper.CreateBookingRequestToDomain(req)
@@ -48,7 +48,7 @@ func (h *Handler) GetBookings(
 	req *bookingv1.GetBookingsRequest,
 ) (*bookingv1.GetBookingsResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)
@@ -75,7 +75,7 @@ func (h *Handler) GetBooking(
 	req *bookingv1.GetBookingRequest,
 ) (*bookingv1.GetBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
@@ -99,7 +99,7 @@ func (h *Handler) ConfirmBookingStatus(
 	req *bookingv1.ConfirmBookingStatusRequest,
 ) (*bookingv1.ConfirmBookingStatusResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
@@ -122,7 +122,7 @@ func (h *Handler) CancelBookingStatus(
 	req *bookingv1.CancelBookingStatusRequest,
 ) (*bookingv1.CancelBookingStatusResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
@@ -145,7 +145,7 @@ func (h *Handler) DeleteBooking(
 	req *bookingv1.DeleteBookingRequest,
 ) (*bookingv1.DeleteBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)

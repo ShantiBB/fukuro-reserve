@@ -100,7 +100,7 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 
 	rooms := make([]response.RoomShort, 0, len(roomList.Rooms))
 	for _, room := range roomList.Rooms {
-		rooms = append(rooms, mapper.RoomShortEntityToShortResponse(room))
+		rooms = append(rooms, mapper.RoomShortEntityToShortResponse(*room))
 	}
 
 	totalPageCount := (roomList.TotalCount + paginationParams.Limit - 1) / paginationParams.Limit

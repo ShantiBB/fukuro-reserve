@@ -24,7 +24,7 @@ func RoomCreateRequestToEntity(req request.RoomCreate) models.CreateRoom {
 func RoomUpdateRequestToEntity(req request.RoomUpdate) models.UpdateRoom {
 	return models.UpdateRoom{
 		Title:       *req.Title,
-		Description: req.Description,
+		Description: *req.Description,
 		RoomNumber:  *req.RoomNumber,
 		Type:        *req.Type,
 		Price:       *req.Price,
@@ -38,7 +38,7 @@ func RoomUpdateRequestToEntity(req request.RoomUpdate) models.UpdateRoom {
 
 func RoomStatusUpdateRequestToEntity(req request.RoomStatusUpdate) models.UpdateRoomStatus {
 	return models.UpdateRoomStatus{
-		Status: *req.Status,
+		Status: req.Status,
 	}
 }
 
@@ -79,7 +79,7 @@ func RoomShortEntityToShortResponse(req models.RoomShort) response.RoomShort {
 func RoomUpdateEntityToResponse(req models.UpdateRoom) response.RoomUpdate {
 	return response.RoomUpdate{
 		Title:       req.Title,
-		Description: req.Description,
+		Description: &req.Description,
 		RoomNumber:  req.RoomNumber,
 		Type:        req.Type,
 		Price:       req.Price,

@@ -54,7 +54,7 @@ type RoomUpdate struct {
 }
 
 type RoomStatusUpdate struct {
-	Status string `json:"status"`
+	Status models.RoomStatus `json:"status"`
 }
 
 type RoomList struct {

@@ -6,9 +6,11 @@ import (
 
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"google.golang.org/grpc"
+
+	"auth/internal/grpc/lib/interceptor"
 )
 
-func newGRPCServer(logger *slog.Logger) *grpc.Server {
+func newGRPCServer(logger *slog.Logger, accessSecret string) *grpc.Server {
 	opts := []logging.Option{
 		logging.WithLogOnEvents(logging.FinishCall),
 		logging.WithFieldsFromContext(
@@ -21,31 +23,11 @@ func newGRPCServer(logger *slog.Logger) *grpc.Server {
 
 	return grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
-			logging.UnaryServerInterceptor(interceptorLogger(logger), opts...),
+			logging.UnaryServerInterceptor(interceptor.Logger(logger), opts...),
 		),
 		grpc.ChainStreamInterceptor(
-			logging.StreamServerInterceptor(interceptorLogger(logger), opts...),
+			logging.StreamServerInterceptor(interceptor.Logger(logger), opts...),
 		),
-	)
-}
-
-func interceptorLogger(l *slog.Logger) logging.Logger {
-	return logging.LoggerFunc(
-		func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
-			filtered := make([]any, 0, len(fields))
-			for i := 0; i < len(fields); i += 2 {
-				if i+1 >= len(fields) {
-					break
-				}
-				key := fields[i].(string)
-
-				switch key {
-				case "grpc.service", "grpc.method", "grpc.code", "grpc.time_ms":
-					filtered = append(filtered, key, fields[i+1])
-				}
-			}
-
-			l.Log(ctx, slog.Level(lvl), msg, filtered...)
-		},
+		grpc.UnaryInterceptor(interceptor.AuthInterceptor(accessSecret)),
 	)
 }

@@ -5,8 +5,8 @@ import (
 	"log/slog"
 
 	userv1 "auth/api/user/v1"
-	"auth/internal/grpc/utils/helper"
-	"auth/internal/grpc/utils/mapper"
+	"auth/internal/grpc/lib/utils/helper"
+	"auth/internal/grpc/lib/utils/mapper"
 )
 
 func (h *Handler) RegisterUser(

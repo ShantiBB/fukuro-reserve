@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	helper2 "auth/internal/grpc/utils/helper"
+	helper2 "auth/internal/grpc/lib/utils/helper"
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"

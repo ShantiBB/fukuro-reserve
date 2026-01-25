@@ -30,7 +30,7 @@ func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 					return
 				}
 
-				claims, err := jwt.ParseToken(token, []byte(jwtSecret))
+				claims, err := jwt.ParseBearerToken(token, jwtSecret)
 				if err != nil {
 					helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.ErrForbidden))
 					return

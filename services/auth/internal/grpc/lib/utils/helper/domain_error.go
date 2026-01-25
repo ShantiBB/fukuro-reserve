@@ -18,9 +18,13 @@ type domainErr struct {
 var (
 	errUserNotFound        = domainErr{consts.MsgUserNotFound, codes.NotFound}
 	errUniqueUserField     = domainErr{consts.MsgUniqueUserField, codes.AlreadyExists}
+	errInvalidID           = domainErr{consts.MsgInvalidID, codes.InvalidArgument}
 	errPasswordHashing     = domainErr{consts.MsgPasswordHashing, codes.InvalidArgument}
 	errInvalidCredentials  = domainErr{consts.MsgInvalidCredentials, codes.PermissionDenied}
-	errInvalidRefreshToken = domainErr{consts.MsgInvalidRefreshToken, codes.PermissionDenied}
+	errInvalidBearer       = domainErr{consts.MsgInvalidBearer, codes.Unauthenticated}
+	errInvalidRefreshToken = domainErr{consts.MsgInvalidToken, codes.Unauthenticated}
+	errInvalidUnauthorized = domainErr{consts.MsgUnauthorized, codes.Unauthenticated}
+	errForbidden           = domainErr{consts.MsgForbidden, codes.PermissionDenied}
 	errInternalServer      = domainErr{consts.MsgInternalServer, codes.Internal}
 )
 
@@ -37,10 +41,18 @@ func HandleDomainErr(err error) error {
 		domErr = errUniqueUserField
 	case errors.Is(err, consts.ErrPasswordHashing):
 		domErr = errPasswordHashing
+	case errors.Is(err, consts.ErrInvalidID):
+		domErr = errInvalidID
 	case errors.Is(err, consts.ErrInvalidCredentials):
 		domErr = errInvalidCredentials
-	case errors.Is(err, consts.ErrInvalidRefreshToken):
+	case errors.Is(err, consts.ErrInvalidBearer):
+		domErr = errInvalidBearer
+	case errors.Is(err, consts.ErrInvalidToken):
 		domErr = errInvalidRefreshToken
+	case errors.Is(err, consts.ErrUnauthorized):
+		domErr = errInvalidUnauthorized
+	case errors.Is(err, consts.ErrForbidden):
+		domErr = errForbidden
 
 	default:
 		domErr = errInternalServer

@@ -2,7 +2,7 @@ package mapper
 
 import (
 	userv1 "auth/api/user/v1"
-	"auth/internal/grpc/utils/helper"
+	"auth/internal/grpc/lib/utils/helper"
 	"auth/internal/repository/models"
 	"auth/pkg/lib/utils/consts"
 )

@@ -45,7 +45,7 @@ func (app *App) MustLoadGRPC() {
 		panic(err.Error())
 	}
 
-	grpcServer := newGRPCServer(app.Logger)
+	grpcServer := newGRPCServer(app.Logger, app.Config.JWT.AccessSecret)
 
 	userv1.RegisterUserServiceServer(grpcServer, h)
 	userv1.RegisterTokenServiceServer(grpcServer, h)

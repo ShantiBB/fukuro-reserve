@@ -6,13 +6,13 @@ import (
 	"auth/pkg/lib/utils/consts"
 )
 
-func ParseToken(tokenStr string, secret []byte) (*Claims, error) {
+func ParseBearerToken(tokenStr string, secret string) (*Claims, error) {
 	tokenFunc := func(t *jwt.Token) (any, error) {
-		return secret, nil
+		return []byte(secret), nil
 	}
 	token, err := jwt.ParseWithClaims(tokenStr, &Claims{}, tokenFunc)
 	if err != nil {
-		return nil, consts.ErrInvalidRefreshToken
+		return nil, consts.ErrInvalidToken
 	}
 
 	claims, ok := token.Claims.(*Claims)
@@ -23,6 +23,6 @@ func ParseToken(tokenStr string, secret []byte) (*Claims, error) {
 	return claims, nil
 }
 
-func GetClaimsRefreshToken(refreshSecret, tokenStr string) (*Claims, error) {
-	return ParseToken(tokenStr, []byte(refreshSecret))
+func GetClaimsRefreshToken(tokenStr, refreshSecret string) (*Claims, error) {
+	return ParseBearerToken(tokenStr, refreshSecret)
 }

@@ -222,7 +222,7 @@ func TestRefreshToken(t *testing.T) {
 			requestBody:    unit.RefreshReq,
 			mockSetup:      unit.MockRefreshInvalidToken,
 			expectedStatus: http.StatusUnauthorized,
-			respCheckers:   unit.CheckMessageError(consts.ErrInvalidRefreshToken),
+			respCheckers:   unit.CheckMessageError(consts.ErrInvalidToken),
 		},
 		{
 			name:           "Internal server error during tokenCreds refresh",

@@ -57,7 +57,7 @@ var (
 
 	MockRefreshInvalidToken = func(m *mocks.MockService) {
 		m.On("RefreshToken", mock.Anything, mock.Anything).
-			Return(nil, consts.ErrInvalidRefreshToken)
+			Return(nil, consts.ErrInvalidToken)
 	}
 
 	MockRefreshServerError = func(m *mocks.MockService) {

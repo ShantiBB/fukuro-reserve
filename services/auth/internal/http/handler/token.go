@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	helper2 "auth/internal/grpc/utils/helper"
+	helper2 "auth/internal/grpc/lib/utils/helper"
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"
@@ -127,7 +127,7 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	token := &jwt.Token{Refresh: req.RefreshToken}
 	tokens, err := h.svc.RefreshToken(token)
 	errHandler := &helper.ErrorHandler{
-		Unauthorized: consts.ErrInvalidRefreshToken,
+		Unauthorized: consts.ErrInvalidToken,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return

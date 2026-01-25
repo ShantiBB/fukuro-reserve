@@ -35,7 +35,7 @@ func (h *Handler) CreateBooking(
 	created, err := h.svc.BookingCreate(ctx, booking, rooms)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.CreateBookingResponse{
@@ -59,7 +59,7 @@ func (h *Handler) GetBookings(
 	bookingList, err := h.svc.GetBookings(ctx, bookingRef, req.Page, req.Limit)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.GetBookingsResponse{
@@ -86,7 +86,7 @@ func (h *Handler) GetBooking(
 	booking, err := h.svc.GetBookingById(ctx, bookingId)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.GetBookingResponse{
@@ -109,7 +109,7 @@ func (h *Handler) ConfirmBookingStatus(
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.ConfirmBookingStatusResponse{
@@ -132,7 +132,7 @@ func (h *Handler) CancelBookingStatus(
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.CancelBookingStatusResponse{
@@ -155,7 +155,7 @@ func (h *Handler) DeleteBooking(
 
 	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.DeleteBookingResponse{

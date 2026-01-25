@@ -33,5 +33,5 @@ type RoomUpdate struct {
 }
 
 type RoomStatusUpdate struct {
-	Status *string `json:"status" validate:"required,room_status"`
+	Status models.RoomStatus `json:"status" validate:"required,room_status"`
 }

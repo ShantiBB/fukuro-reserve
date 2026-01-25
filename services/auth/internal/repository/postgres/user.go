@@ -8,100 +8,107 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 
 	"auth/internal/repository/models"
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
-func (r *Repository) UserCreate(ctx context.Context, u models.UserCreate) (*models.User, error) {
+func (r *Repository) InsertUser(ctx context.Context, u *models.CreateUser) (*models.User, error) {
 	newUser := u.ToUserRead()
-	err := r.db.QueryRow(ctx, UserCreate, u.Email, u.Password).
+	err := r.db.QueryRow(ctx, InsertUser, u.Email, u.Username, u.Password).
 		Scan(&newUser.ID, &newUser.Role, &newUser.IsActive, &newUser.CreatedAt, &newUser.UpdatedAt)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return nil, consts.UniqueUserField
+			return nil, consts.ErrUniqueUserField
 		}
 		return nil, err
 	}
 
-	return &newUser, nil
+	return newUser, nil
 }
 
-func (r *Repository) UserGetAll(ctx context.Context, limit, offset uint64) (*models.UserList, error) {
-	var userList models.UserList
-
-	rows, err := r.db.Query(ctx, UserGetAll, limit, offset)
+func (r *Repository) SelectUsers(ctx context.Context, limit, offset uint64) (*models.UserList, error) {
+	rows, err := r.db.Query(ctx, SelectUsers, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 
+	values := make([]models.UserShort, limit)
 	var u models.UserShort
+	var totalCount, idx uint64
 	for rows.Next() {
-		if err = rows.
-			Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.IsActive); err != nil {
+		err = rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.IsActive, &totalCount)
+		if err != nil {
 			return nil, err
 		}
 
-		userList.Users = append(userList.Users, u)
+		values[idx] = u
+		idx++
 	}
 
-	if err = r.db.QueryRow(ctx, UserGetCountRows).Scan(&userList.TotalCount); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
+	values = values[:idx]
 
-	return &userList, nil
+	userList := &models.UserList{
+		Users:      make([]*models.UserShort, len(values)),
+		TotalCount: totalCount,
+	}
+	for i := range values {
+		userList.Users[i] = &values[i]
+	}
+
+	return userList, nil
 }
 
-func (r *Repository) UserGetByID(ctx context.Context, id int64) (*models.User, error) {
-	u := models.User{ID: id}
-	if err := r.db.QueryRow(ctx, UserGetByID, id).Scan(
+func (r *Repository) SelectUserByID(ctx context.Context, id int64) (*models.User, error) {
+	u := &models.User{ID: id}
+	if err := r.db.QueryRow(ctx, SelectUserByID, id).Scan(
 		&u.Username, &u.Email, &u.Role, &u.IsActive, &u.CreatedAt, &u.UpdatedAt,
 	); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, consts.UserNotFound
+			return nil, consts.ErrUserNotFound
 		}
 		return nil, err
 	}
 
-	return &u, nil
+	return u, nil
 }
 
-func (r *Repository) UserGetCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error) {
-	u := models.UserCredentials{Email: email}
-	err := r.db.QueryRow(ctx, UserGetCredentialsByEmail, email).Scan(
+func (r *Repository) SelectUserCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error) {
+	u := &models.UserCredentials{Email: email}
+	err := r.db.QueryRow(ctx, SelectUserCredentialsByEmail, email).Scan(
 		&u.ID, &u.Role, &u.Password,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, consts.UserNotFound
+			return nil, consts.ErrUserNotFound
 		}
 		return nil, err
 	}
 
-	return &u, nil
+	return u, nil
 }
 
-func (r *Repository) UserUpdateByID(ctx context.Context, u *models.User) error {
-	rows, err := r.db.Exec(
-		ctx, UserUpdate, u.Username, u.Email, u.ID,
-	)
+func (r *Repository) UpdateUserByID(ctx context.Context, u *models.UpdateUser) error {
+	rows, err := r.db.Exec(ctx, UpdateUser, u.ID, u.Username, u.Email)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return consts.UniqueUserField
+			return consts.ErrUniqueUserField
 		}
 		return err
 	}
 
-	rowsAffected := rows.RowsAffected()
-	if rowsAffected == 0 {
-		return consts.UserNotFound
+	if rows.RowsAffected() == 0 {
+		return consts.ErrUserNotFound
 	}
 
 	return nil
 }
 
-func (r *Repository) UserUpdateRoleStatus(ctx context.Context, id int64, role string) error {
-	row, err := r.db.Exec(ctx, UserUpdateRoleStatus, role, id)
+func (r *Repository) UpdateUserRoleStatus(ctx context.Context, id int64, role models.UserRole) error {
+	row, err := r.db.Exec(ctx, UpdateUserRoleStatus, id, role)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -112,34 +119,34 @@ func (r *Repository) UserUpdateRoleStatus(ctx context.Context, id int64, role st
 		return err
 	}
 
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.UserNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrUserNotFound
 	}
 
 	return nil
 }
 
-func (r *Repository) UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error {
-	row, err := r.db.Exec(ctx, UserUpdateActiveStatus, status, id)
+func (r *Repository) UpdateUserActiveStatus(ctx context.Context, id int64, status bool) error {
+	row, err := r.db.Exec(ctx, UpdateUserActiveStatus, id, status)
 	if err != nil {
 		return err
 	}
 
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.UserNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrUserNotFound
 	}
 
 	return nil
 }
 
-func (r *Repository) UserDeleteByID(ctx context.Context, id int64) error {
-	row, err := r.db.Exec(ctx, UserDelete, id)
+func (r *Repository) DeleteUserByID(ctx context.Context, id int64) error {
+	row, err := r.db.Exec(ctx, DeleteUser, id)
 	if err != nil {
 		return err
 	}
 
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.UserNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrUserNotFound
 	}
 
 	return nil

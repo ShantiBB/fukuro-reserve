@@ -6,8 +6,8 @@ import (
 	"hotel/internal/repository/models"
 )
 
-func RoomCreateRequestToEntity(req request.RoomCreate) models.RoomCreate {
-	return models.RoomCreate{
+func RoomCreateRequestToEntity(req request.RoomCreate) models.CreateRoom {
+	return models.CreateRoom{
 		Title:       *req.Title,
 		Description: req.Description,
 		RoomNumber:  *req.RoomNumber,
@@ -21,10 +21,10 @@ func RoomCreateRequestToEntity(req request.RoomCreate) models.RoomCreate {
 	}
 }
 
-func RoomUpdateRequestToEntity(req request.RoomUpdate) models.RoomUpdate {
-	return models.RoomUpdate{
+func RoomUpdateRequestToEntity(req request.RoomUpdate) models.UpdateRoom {
+	return models.UpdateRoom{
 		Title:       *req.Title,
-		Description: req.Description,
+		Description: *req.Description,
 		RoomNumber:  *req.RoomNumber,
 		Type:        *req.Type,
 		Price:       *req.Price,
@@ -36,9 +36,9 @@ func RoomUpdateRequestToEntity(req request.RoomUpdate) models.RoomUpdate {
 	}
 }
 
-func RoomStatusUpdateRequestToEntity(req request.RoomStatusUpdate) models.RoomStatusUpdate {
-	return models.RoomStatusUpdate{
-		Status: *req.Status,
+func RoomStatusUpdateRequestToEntity(req request.RoomStatusUpdate) models.UpdateRoomStatus {
+	return models.UpdateRoomStatus{
+		Status: req.Status,
 	}
 }
 
@@ -76,10 +76,10 @@ func RoomShortEntityToShortResponse(req models.RoomShort) response.RoomShort {
 	}
 }
 
-func RoomUpdateEntityToResponse(req models.RoomUpdate) response.RoomUpdate {
+func RoomUpdateEntityToResponse(req models.UpdateRoom) response.RoomUpdate {
 	return response.RoomUpdate{
 		Title:       req.Title,
-		Description: req.Description,
+		Description: &req.Description,
 		RoomNumber:  req.RoomNumber,
 		Type:        req.Type,
 		Price:       req.Price,
@@ -91,7 +91,7 @@ func RoomUpdateEntityToResponse(req models.RoomUpdate) response.RoomUpdate {
 	}
 }
 
-func RoomStatusUpdateEntityToResponse(req models.RoomStatusUpdate) response.RoomStatusUpdate {
+func RoomStatusUpdateEntityToResponse(req models.UpdateRoomStatus) response.RoomStatusUpdate {
 	return response.RoomStatusUpdate{
 		Status: req.Status,
 	}

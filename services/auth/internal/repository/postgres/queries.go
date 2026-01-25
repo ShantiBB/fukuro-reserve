@@ -1,45 +1,48 @@
 package postgres
 
 const (
-	UserCreate = `
-    INSERT INTO users (email, password)
-    VALUES ($1, $2)
+	InsertUser = `
+    INSERT INTO users (email, username, password)
+    VALUES ($1, $2, $3)
     RETURNING id, role, is_active, created_at, updated_at`
 
-	UserGetByID = `
+	SelectUserByID = `
     SELECT username, email, role, is_active, created_at, updated_at
     FROM users 
     WHERE id = $1`
 
-	UserGetCredentialsByEmail = `
+	SelectUserCredentialsByEmail = `
     SELECT id, role, password
     FROM users 
     WHERE email = $1`
 
-	UserGetAll = `
-    SELECT id, username, email, role, is_active
+	SelectUsers = `
+    SELECT id, 
+           username, 
+           email, 
+           role, 
+           is_active, 
+           COUNT(*) OVER() as total_count
     FROM users
-    ORDER BY id
+    ORDER BY username
     LIMIT $1 OFFSET $2;`
 
-	UserUpdate = `
+	UpdateUser = `
     UPDATE users
-    SET username = $1, email = $2, updated_at = CURRENT_TIMESTAMP
-    WHERE id = $3`
-
-	UserUpdateRoleStatus = `
-    UPDATE users
-    SET role = $1, updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2`
-
-	UserUpdateActiveStatus = `
-    UPDATE users
-    SET is_active = $1, updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2`
-
-	UserDelete = `
-    DELETE FROM users
+    SET username = $2, email = $3, updated_at = CURRENT_TIMESTAMP
     WHERE id = $1`
 
-	UserGetCountRows = `SELECT COUNT(*) FROM users;`
+	UpdateUserRoleStatus = `
+    UPDATE users
+    SET role = $2, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1`
+
+	UpdateUserActiveStatus = `
+    UPDATE users
+    SET is_active = $2, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $1`
+
+	DeleteUser = `
+    DELETE FROM users
+    WHERE id = $1`
 )

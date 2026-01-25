@@ -22,20 +22,20 @@ func (_m *MockRepository) EXPECT() *MockRepository_Expecter {
 	return &MockRepository_Expecter{mock: &_m.Mock}
 }
 
-// UserCreate provides a mock function with given fields: ctx, user
-func (_m *MockRepository) UserCreate(ctx context.Context, user models.UserCreate) (*models.User, error) {
+// CreateUser provides a mock function with given fields: ctx, user
+func (_m *MockRepository) InsertUser(ctx context.Context, user models.CreateUser) (*models.User, error) {
 	ret := _m.Called(ctx, user)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserCreate")
+		panic("no return value specified for InsertUser")
 	}
 
 	var r0 *models.User
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, models.UserCreate) (*models.User, error)); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.CreateUser) (*models.User, error)); ok {
 		return rf(ctx, user)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, models.UserCreate) *models.User); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, models.CreateUser) *models.User); ok {
 		r0 = rf(ctx, user)
 	} else {
 		if ret.Get(0) != nil {
@@ -43,7 +43,7 @@ func (_m *MockRepository) UserCreate(ctx context.Context, user models.UserCreate
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, models.UserCreate) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, models.CreateUser) error); ok {
 		r1 = rf(ctx, user)
 	} else {
 		r1 = ret.Error(1)
@@ -52,21 +52,21 @@ func (_m *MockRepository) UserCreate(ctx context.Context, user models.UserCreate
 	return r0, r1
 }
 
-// MockRepository_UserCreate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserCreate'
+// MockRepository_UserCreate_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'InsertUser'
 type MockRepository_UserCreate_Call struct {
 	*mock.Call
 }
 
 // UserCreate is a helper method to define mock.On call
 //   - ctx context.Context
-//   - user models.UserCreate
+//   - user models.CreateUser
 func (_e *MockRepository_Expecter) UserCreate(ctx interface{}, user interface{}) *MockRepository_UserCreate_Call {
-	return &MockRepository_UserCreate_Call{Call: _e.mock.On("UserCreate", ctx, user)}
+	return &MockRepository_UserCreate_Call{Call: _e.mock.On("InsertUser", ctx, user)}
 }
 
-func (_c *MockRepository_UserCreate_Call) Run(run func(ctx context.Context, user models.UserCreate)) *MockRepository_UserCreate_Call {
+func (_c *MockRepository_UserCreate_Call) Run(run func(ctx context.Context, user models.CreateUser)) *MockRepository_UserCreate_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(models.UserCreate))
+		run(args[0].(context.Context), args[1].(models.CreateUser))
 	})
 	return _c
 }
@@ -76,17 +76,17 @@ func (_c *MockRepository_UserCreate_Call) Return(_a0 *models.User, _a1 error) *M
 	return _c
 }
 
-func (_c *MockRepository_UserCreate_Call) RunAndReturn(run func(context.Context, models.UserCreate) (*models.User, error)) *MockRepository_UserCreate_Call {
+func (_c *MockRepository_UserCreate_Call) RunAndReturn(run func(context.Context, models.CreateUser) (*models.User, error)) *MockRepository_UserCreate_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // UserDeleteByID provides a mock function with given fields: ctx, id
-func (_m *MockRepository) UserDeleteByID(ctx context.Context, id int64) error {
+func (_m *MockRepository) DeleteUserByID(ctx context.Context, id int64) error {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserDeleteByID")
+		panic("no return value specified for DeleteUserByID")
 	}
 
 	var r0 error
@@ -99,7 +99,7 @@ func (_m *MockRepository) UserDeleteByID(ctx context.Context, id int64) error {
 	return r0
 }
 
-// MockRepository_UserDeleteByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserDeleteByID'
+// MockRepository_UserDeleteByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'DeleteUserByID'
 type MockRepository_UserDeleteByID_Call struct {
 	*mock.Call
 }
@@ -108,7 +108,7 @@ type MockRepository_UserDeleteByID_Call struct {
 //   - ctx context.Context
 //   - id int64
 func (_e *MockRepository_Expecter) UserDeleteByID(ctx interface{}, id interface{}) *MockRepository_UserDeleteByID_Call {
-	return &MockRepository_UserDeleteByID_Call{Call: _e.mock.On("UserDeleteByID", ctx, id)}
+	return &MockRepository_UserDeleteByID_Call{Call: _e.mock.On("DeleteUserByID", ctx, id)}
 }
 
 func (_c *MockRepository_UserDeleteByID_Call) Run(run func(ctx context.Context, id int64)) *MockRepository_UserDeleteByID_Call {
@@ -129,11 +129,11 @@ func (_c *MockRepository_UserDeleteByID_Call) RunAndReturn(run func(context.Cont
 }
 
 // UserGetAll provides a mock function with given fields: ctx, limit, offset
-func (_m *MockRepository) UserGetAll(ctx context.Context, limit uint64, offset uint64) (*models.UserList, error) {
+func (_m *MockRepository) SelectUsers(ctx context.Context, limit uint64, offset uint64) (*models.UserList, error) {
 	ret := _m.Called(ctx, limit, offset)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserGetAll")
+		panic("no return value specified for SelectUsers")
 	}
 
 	var r0 *models.UserList
@@ -158,7 +158,7 @@ func (_m *MockRepository) UserGetAll(ctx context.Context, limit uint64, offset u
 	return r0, r1
 }
 
-// MockRepository_UserGetAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserGetAll'
+// MockRepository_UserGetAll_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectUsers'
 type MockRepository_UserGetAll_Call struct {
 	*mock.Call
 }
@@ -168,7 +168,7 @@ type MockRepository_UserGetAll_Call struct {
 //   - limit uint64
 //   - offset uint64
 func (_e *MockRepository_Expecter) UserGetAll(ctx interface{}, limit interface{}, offset interface{}) *MockRepository_UserGetAll_Call {
-	return &MockRepository_UserGetAll_Call{Call: _e.mock.On("UserGetAll", ctx, limit, offset)}
+	return &MockRepository_UserGetAll_Call{Call: _e.mock.On("SelectUsers", ctx, limit, offset)}
 }
 
 func (_c *MockRepository_UserGetAll_Call) Run(run func(ctx context.Context, limit uint64, offset uint64)) *MockRepository_UserGetAll_Call {
@@ -189,11 +189,11 @@ func (_c *MockRepository_UserGetAll_Call) RunAndReturn(run func(context.Context,
 }
 
 // UserGetByID provides a mock function with given fields: ctx, id
-func (_m *MockRepository) UserGetByID(ctx context.Context, id int64) (*models.User, error) {
+func (_m *MockRepository) SelectUserByID(ctx context.Context, id int64) (*models.User, error) {
 	ret := _m.Called(ctx, id)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserGetByID")
+		panic("no return value specified for SelectUserByID")
 	}
 
 	var r0 *models.User
@@ -218,7 +218,7 @@ func (_m *MockRepository) UserGetByID(ctx context.Context, id int64) (*models.Us
 	return r0, r1
 }
 
-// MockRepository_UserGetByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserGetByID'
+// MockRepository_UserGetByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectUserByID'
 type MockRepository_UserGetByID_Call struct {
 	*mock.Call
 }
@@ -227,7 +227,7 @@ type MockRepository_UserGetByID_Call struct {
 //   - ctx context.Context
 //   - id int64
 func (_e *MockRepository_Expecter) UserGetByID(ctx interface{}, id interface{}) *MockRepository_UserGetByID_Call {
-	return &MockRepository_UserGetByID_Call{Call: _e.mock.On("UserGetByID", ctx, id)}
+	return &MockRepository_UserGetByID_Call{Call: _e.mock.On("SelectUserByID", ctx, id)}
 }
 
 func (_c *MockRepository_UserGetByID_Call) Run(run func(ctx context.Context, id int64)) *MockRepository_UserGetByID_Call {
@@ -248,11 +248,11 @@ func (_c *MockRepository_UserGetByID_Call) RunAndReturn(run func(context.Context
 }
 
 // UserGetCredentialsByEmail provides a mock function with given fields: ctx, email
-func (_m *MockRepository) UserGetCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error) {
+func (_m *MockRepository) SelectUserCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error) {
 	ret := _m.Called(ctx, email)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserGetCredentialsByEmail")
+		panic("no return value specified for SelectUserCredentialsByEmail")
 	}
 
 	var r0 *models.UserCredentials
@@ -277,7 +277,7 @@ func (_m *MockRepository) UserGetCredentialsByEmail(ctx context.Context, email s
 	return r0, r1
 }
 
-// MockRepository_UserGetCredentialsByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserGetCredentialsByEmail'
+// MockRepository_UserGetCredentialsByEmail_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'SelectUserCredentialsByEmail'
 type MockRepository_UserGetCredentialsByEmail_Call struct {
 	*mock.Call
 }
@@ -286,7 +286,7 @@ type MockRepository_UserGetCredentialsByEmail_Call struct {
 //   - ctx context.Context
 //   - email string
 func (_e *MockRepository_Expecter) UserGetCredentialsByEmail(ctx interface{}, email interface{}) *MockRepository_UserGetCredentialsByEmail_Call {
-	return &MockRepository_UserGetCredentialsByEmail_Call{Call: _e.mock.On("UserGetCredentialsByEmail", ctx, email)}
+	return &MockRepository_UserGetCredentialsByEmail_Call{Call: _e.mock.On("SelectUserCredentialsByEmail", ctx, email)}
 }
 
 func (_c *MockRepository_UserGetCredentialsByEmail_Call) Run(run func(ctx context.Context, email string)) *MockRepository_UserGetCredentialsByEmail_Call {
@@ -307,11 +307,11 @@ func (_c *MockRepository_UserGetCredentialsByEmail_Call) RunAndReturn(run func(c
 }
 
 // UserUpdateActiveStatus provides a mock function with given fields: ctx, id, status
-func (_m *MockRepository) UserUpdateActiveStatus(ctx context.Context, id int64, status bool) error {
+func (_m *MockRepository) UpdateUserActiveStatus(ctx context.Context, id int64, status bool) error {
 	ret := _m.Called(ctx, id, status)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserUpdateActiveStatus")
+		panic("no return value specified for UpdateUserActiveStatus")
 	}
 
 	var r0 error
@@ -324,7 +324,7 @@ func (_m *MockRepository) UserUpdateActiveStatus(ctx context.Context, id int64, 
 	return r0
 }
 
-// MockRepository_UserUpdateActiveStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserUpdateActiveStatus'
+// MockRepository_UserUpdateActiveStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUserActiveStatus'
 type MockRepository_UserUpdateActiveStatus_Call struct {
 	*mock.Call
 }
@@ -334,7 +334,7 @@ type MockRepository_UserUpdateActiveStatus_Call struct {
 //   - id int64
 //   - status bool
 func (_e *MockRepository_Expecter) UserUpdateActiveStatus(ctx interface{}, id interface{}, status interface{}) *MockRepository_UserUpdateActiveStatus_Call {
-	return &MockRepository_UserUpdateActiveStatus_Call{Call: _e.mock.On("UserUpdateActiveStatus", ctx, id, status)}
+	return &MockRepository_UserUpdateActiveStatus_Call{Call: _e.mock.On("UpdateUserActiveStatus", ctx, id, status)}
 }
 
 func (_c *MockRepository_UserUpdateActiveStatus_Call) Run(run func(ctx context.Context, id int64, status bool)) *MockRepository_UserUpdateActiveStatus_Call {
@@ -355,11 +355,11 @@ func (_c *MockRepository_UserUpdateActiveStatus_Call) RunAndReturn(run func(cont
 }
 
 // UserUpdateByID provides a mock function with given fields: ctx, user
-func (_m *MockRepository) UserUpdateByID(ctx context.Context, user *models.User) error {
+func (_m *MockRepository) UpdateUserByID(ctx context.Context, user *models.User) error {
 	ret := _m.Called(ctx, user)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserUpdateByID")
+		panic("no return value specified for UpdateUserByID")
 	}
 
 	var r0 error
@@ -372,7 +372,7 @@ func (_m *MockRepository) UserUpdateByID(ctx context.Context, user *models.User)
 	return r0
 }
 
-// MockRepository_UserUpdateByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserUpdateByID'
+// MockRepository_UserUpdateByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUserByID'
 type MockRepository_UserUpdateByID_Call struct {
 	*mock.Call
 }
@@ -381,7 +381,7 @@ type MockRepository_UserUpdateByID_Call struct {
 //   - ctx context.Context
 //   - user *models.User
 func (_e *MockRepository_Expecter) UserUpdateByID(ctx interface{}, user interface{}) *MockRepository_UserUpdateByID_Call {
-	return &MockRepository_UserUpdateByID_Call{Call: _e.mock.On("UserUpdateByID", ctx, user)}
+	return &MockRepository_UserUpdateByID_Call{Call: _e.mock.On("UpdateUserByID", ctx, user)}
 }
 
 func (_c *MockRepository_UserUpdateByID_Call) Run(run func(ctx context.Context, user *models.User)) *MockRepository_UserUpdateByID_Call {
@@ -402,11 +402,11 @@ func (_c *MockRepository_UserUpdateByID_Call) RunAndReturn(run func(context.Cont
 }
 
 // UserUpdateRoleStatus provides a mock function with given fields: ctx, id, role
-func (_m *MockRepository) UserUpdateRoleStatus(ctx context.Context, id int64, role string) error {
+func (_m *MockRepository) UpdateUserRoleStatus(ctx context.Context, id int64, role string) error {
 	ret := _m.Called(ctx, id, role)
 
 	if len(ret) == 0 {
-		panic("no return value specified for UserUpdateRoleStatus")
+		panic("no return value specified for UpdateUserRoleStatus")
 	}
 
 	var r0 error
@@ -419,7 +419,7 @@ func (_m *MockRepository) UserUpdateRoleStatus(ctx context.Context, id int64, ro
 	return r0
 }
 
-// MockRepository_UserUpdateRoleStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UserUpdateRoleStatus'
+// MockRepository_UserUpdateRoleStatus_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'UpdateUserRoleStatus'
 type MockRepository_UserUpdateRoleStatus_Call struct {
 	*mock.Call
 }
@@ -429,7 +429,7 @@ type MockRepository_UserUpdateRoleStatus_Call struct {
 //   - id int64
 //   - role string
 func (_e *MockRepository_Expecter) UserUpdateRoleStatus(ctx interface{}, id interface{}, role interface{}) *MockRepository_UserUpdateRoleStatus_Call {
-	return &MockRepository_UserUpdateRoleStatus_Call{Call: _e.mock.On("UserUpdateRoleStatus", ctx, id, role)}
+	return &MockRepository_UserUpdateRoleStatus_Call{Call: _e.mock.On("UpdateUserRoleStatus", ctx, id, role)}
 }
 
 func (_c *MockRepository_UserUpdateRoleStatus_Call) Run(run func(ctx context.Context, id int64, role string)) *MockRepository_UserUpdateRoleStatus_Call {

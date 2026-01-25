@@ -7,7 +7,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"hotel/internal/repository/models"
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 )
 
 func CustomValidationError(err validator.FieldError) string {

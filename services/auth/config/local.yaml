@@ -1,3 +1,6 @@
+env: "local" # local, dev, prod
+log_level: "DEBUG" # DEBUG, INFO, WARN, ERROR
+
 server:
   host: "localhost"
   port: 8081
@@ -12,4 +15,4 @@ jwt:
   access_secret: "b97f56e9cf04a5f51da1bc7ab16d5ccaac5f490a76b445c0b6514a4e34806ea4"
   refresh_secret: "a60a9cecff4eded7ce49665e1c164577ba7f18a22c97c33c9cbfba5f0ff58057"
   access_ttl: 24h
-  refresh_ttl: 168h
+  refresh_ttl: 24h

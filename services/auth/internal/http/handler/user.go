@@ -4,18 +4,18 @@ import (
 	"context"
 	"net/http"
 
+	helper2 "auth/internal/grpc/lib/utils/helper"
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"
 	"auth/internal/http/utils/pagination"
 	"auth/internal/http/utils/validation"
 	"auth/internal/repository/models"
-	"auth/pkg/utils/consts"
-	"auth/pkg/utils/password"
+	consts2 "auth/pkg/lib/utils/consts"
 )
 
 type UserService interface {
-	UserCreate(ctx context.Context, user models.UserCreate) (*models.User, error)
+	UserCreate(ctx context.Context, user models.CreateUser) (*models.User, error)
 	UserGetByID(ctx context.Context, id int64) (*models.User, error)
 	UserGetAll(ctx context.Context, page, limit uint64) (*models.UserList, error)
 	UserUpdateByID(ctx context.Context, user *models.User) (*models.User, error)
@@ -31,7 +31,7 @@ type UserService interface {
 //	@Tags			users
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Param			request	body		request.InsertUser	true	"User data"
 //	@Success		201		{object}	response.User
 //	@Failure		400		{object}	response.ErrorSchema
 //	@Failure		401		{object}	response.ErrorSchema
@@ -47,9 +47,9 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashPassword, err := password.HashPassword(req.Password)
+	hashPassword, err := helper2.HashPassword(req.Password)
 	errHandler := &helper.ErrorHandler{
-		BadRequest: consts.PasswordHashing,
+		BadRequest: consts2.ErrPasswordHashing,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -58,7 +58,7 @@ func (h *Handler) UserCreate(w http.ResponseWriter, r *http.Request) {
 	newUser := h.UserCreateRequestToEntity(&req, hashPassword)
 	createdUser, err := h.svc.UserCreate(ctx, *newUser)
 	errHandler = &helper.ErrorHandler{
-		Conflict: consts.UniqueUserField,
+		Conflict: consts2.ErrUniqueUserField,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -87,7 +87,7 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
 	errHandler := &helper.ErrorHandler{
-		BadRequest: consts.InvalidQueryParam,
+		BadRequest: consts2.ErrInvalidQueryParam,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -101,7 +101,7 @@ func (h *Handler) UserGetAll(w http.ResponseWriter, r *http.Request) {
 
 	users := make([]response.UserShort, 0, len(userList.Users))
 	for _, user := range userList.Users {
-		userResponse := h.UserShortEntityToResponse(&user)
+		userResponse := h.UserShortEntityToResponse(user)
 		users = append(users, *userResponse)
 	}
 
@@ -144,7 +144,7 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.svc.UserGetByID(ctx, id)
 	errHandler := &helper.ErrorHandler{
-		NotFound: consts.UserNotFound,
+		NotFound: consts2.ErrUserNotFound,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -162,7 +162,7 @@ func (h *Handler) UserGetByID(w http.ResponseWriter, r *http.Request) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		int					true	"User ID"
-//	@Param			request	body		request.UserUpdate	true	"User data"
+//	@Param			request	body		request.UpdateUser	true	"User data"
 //	@Success		200		{object}	response.User
 //	@Failure		400		{object}	response.ErrorSchema
 //	@Failure		401		{object}	response.ErrorSchema
@@ -187,8 +187,8 @@ func (h *Handler) UserUpdateByID(w http.ResponseWriter, r *http.Request) {
 	user := h.UserUpdateRequestToEntity(&req, id)
 	userToUpdate, err := h.svc.UserUpdateByID(ctx, user)
 	errHandler := &helper.ErrorHandler{
-		NotFound: consts.UserNotFound,
-		Conflict: consts.UniqueUserField,
+		NotFound: consts2.ErrUserNotFound,
+		Conflict: consts2.ErrUniqueUserField,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -229,15 +229,15 @@ func (h *Handler) UserUpdateRoleStatus(w http.ResponseWriter, r *http.Request) {
 
 	err := h.svc.UserUpdateRoleStatus(ctx, id, req.Role)
 	errHandler := &helper.ErrorHandler{
-		NotFound: consts.UserNotFound,
-		Conflict: consts.ErrInvalidRole,
+		NotFound: consts2.ErrUserNotFound,
+		Conflict: consts2.ErrInvalidRole,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	roleStatus := response.UserRoleStatus{
-		Message: consts.UserRoleUpdateSuccess,
+		Message: consts2.UserRoleUpdateSuccess,
 		Role:    req.Role,
 	}
 	helper.SendSuccess(w, r, http.StatusOK, roleStatus)
@@ -274,14 +274,14 @@ func (h *Handler) UserUpdateActiveStatus(w http.ResponseWriter, r *http.Request)
 
 	err := h.svc.UserUpdateActiveStatus(ctx, id, *req.IsActive)
 	errHandler := &helper.ErrorHandler{
-		NotFound: consts.UserNotFound,
+		NotFound: consts2.ErrUserNotFound,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
 	activeStatus := response.UserActiveStatus{
-		Message:  consts.UserActiveUpdateSuccess,
+		Message:  consts2.UserActiveUpdateSuccess,
 		IsActive: *req.IsActive,
 	}
 	helper.SendSuccess(w, r, http.StatusOK, activeStatus)
@@ -312,7 +312,7 @@ func (h *Handler) UserDeleteByID(w http.ResponseWriter, r *http.Request) {
 
 	err := h.svc.UserDeleteByID(ctx, id)
 	errHandler := &helper.ErrorHandler{
-		NotFound: consts.UserNotFound,
+		NotFound: consts2.ErrUserNotFound,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return

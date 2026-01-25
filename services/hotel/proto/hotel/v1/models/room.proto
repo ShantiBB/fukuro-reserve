@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "google/protobuf/timestamp.proto";
+import "hotel/v1/enums/room_status.proto";
+import "hotel/v1/enums/room_type.proto";
+
+message Room {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+  string room_number = 4;
+  RoomStatus status = 5;
+  RoomType type = 6;
+  string price = 7;
+  int64 capacity = 8;
+  float area_sqm = 9;
+  int64 floor = 10;
+  repeated string amenities = 11;
+  repeated string images = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+}
+
+message RoomShort {
+  string id = 1;
+  string title = 2;
+  string room_number = 3;
+  RoomStatus status = 4;
+  RoomType type = 5;
+  string price = 6;
+  int64 capacity = 7;
+  float area_sqm = 8;
+  repeated string amenities = 9;
+  repeated string images = 10;
+}
+
+message UpdateRoom {
+  string title = 1;
+  string room_number = 2;
+  RoomType type = 3;
+  string description = 4;
+  string price = 5;
+  int64 capacity = 6;
+  float area_sqm = 7;
+  int64 floor = 8;
+  repeated string amenities = 9;
+  repeated string images = 10;
+}

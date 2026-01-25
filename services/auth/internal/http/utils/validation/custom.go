@@ -3,18 +3,18 @@ package validation
 import (
 	"github.com/go-playground/validator/v10"
 
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 func CustomValidationError(err validator.FieldError) string {
 	switch err.Tag() {
 	case "required":
-		return consts.FieldRequired.Error()
+		return consts.ErrFieldRequired.Error()
 	case "email":
-		return consts.InvalidEmail.Error()
+		return consts.ErrInvalidEmail.Error()
 	case "min":
-		return consts.InvalidPassword.Error()
+		return consts.ErrInvalidPassword.Error()
 	default:
-		return consts.InternalServer.Error()
+		return consts.ErrInternalServer.Error()
 	}
 }

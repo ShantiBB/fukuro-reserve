@@ -24,7 +24,7 @@ type Repository struct {
 	pool *pgxpool.Pool
 }
 
-func NewRepository(cfgApp *config.Config) (*Repository, error) {
+func New(cfgApp *config.Config) (*Repository, error) {
 	url := fmt.Sprintf(
 		"postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		cfgApp.Postgres.User,

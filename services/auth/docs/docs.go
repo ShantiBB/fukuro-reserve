@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserCreate"
+                            "$ref": "#/definitions/request.InsertUser"
                         }
                     }
                 ],
@@ -132,7 +132,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserCreate"
+                            "$ref": "#/definitions/request.InsertUser"
                         }
                     }
                 ],
@@ -243,7 +243,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.UserCreate"
+                            "$ref": "#/definitions/request.InsertUser"
                         }
                     }
                 ],
@@ -642,7 +642,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.UserCreate": {
+        "request.InsertUser": {
             "type": "object",
             "required": [
                 "email",

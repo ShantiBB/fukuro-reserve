@@ -4,31 +4,32 @@ import (
 	"time"
 
 	"auth/internal/http/utils/pagination"
+	"auth/internal/repository/models"
 )
 
 type User struct {
-	ID        int64     `json:"id"`
-	Username  *string   `json:"username"`
-	Email     string    `json:"email"`
-	Role      string    `json:"role"`
-	IsActive  bool      `json:"is_active"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
+	Username  *string         `json:"username"`
+	Email     string          `json:"email"`
+	Role      models.UserRole `json:"role"`
+	ID        int64           `json:"id"`
+	IsActive  bool            `json:"is_active"`
 }
 
 type UserShort struct {
-	ID       int64   `json:"id"`
-	Username *string `json:"username"`
-	Email    string  `json:"email"`
-	Role     string  `json:"role"`
-	IsActive bool    `json:"is_active"`
+	Username *string         `json:"username"`
+	Email    string          `json:"email"`
+	Role     models.UserRole `json:"role"`
+	ID       int64           `json:"id"`
+	IsActive bool            `json:"is_active"`
 }
 
 type UserList struct {
+	Links           pagination.Links `json:"links"`
 	Users           []UserShort      `json:"users"`
 	CurrentPage     uint64           `json:"current_page"`
 	Limit           uint64           `json:"limit"`
-	Links           pagination.Links `json:"links"`
 	TotalPageCount  uint64           `json:"total_page_count"`
 	TotalUsersCount uint64           `json:"total_users_count"`
 }

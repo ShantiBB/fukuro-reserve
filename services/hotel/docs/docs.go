@@ -124,7 +124,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.HotelCreate"
+                            "$ref": "#/definitions/request.InsertHotel"
                         }
                     }
                 ],
@@ -512,7 +512,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.RoomCreate"
+                            "$ref": "#/definitions/request.CreateRoom"
                         }
                     }
                 ],
@@ -1026,7 +1026,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.HotelCreate": {
+        "request.InsertHotel": {
             "type": "object",
             "required": [
                 "address",
@@ -1110,7 +1110,7 @@ const docTemplate = `{
                 }
             }
         },
-        "request.RoomCreate": {
+        "request.CreateRoom": {
             "type": "object",
             "required": [
                 "area_sqm",

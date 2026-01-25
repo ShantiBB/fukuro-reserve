@@ -5,7 +5,7 @@ import (
 
 	"auth/internal/http/dto/request"
 	"auth/internal/repository/models"
-	"auth/pkg/utils/jwt"
+	"auth/pkg/lib/utils/jwt"
 )
 
 var (
@@ -26,7 +26,7 @@ var (
 	}
 
 	usernameShortMock = "test-user-short"
-	UserShortMock     = models.UserShort{
+	UserShortMock     = &models.UserShort{
 		ID:       2,
 		Email:    "testshort@example.com",
 		Username: &usernameShortMock,

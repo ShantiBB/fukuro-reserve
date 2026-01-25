@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"auth/internal/http/dto/response"
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 type ErrorHandler struct {
@@ -44,7 +44,7 @@ func (h *ErrorHandler) Handle(w http.ResponseWriter, r *http.Request, err error)
 		return err
 	}
 
-	errMsg := response.ErrorResp(consts.InternalServer)
+	errMsg := response.ErrorResp(consts.ErrInternalServer)
 	SendError(w, r, http.StatusInternalServerError, errMsg)
 	return err
 }

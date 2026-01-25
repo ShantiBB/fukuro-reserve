@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"auth/internal/http/dto/response"
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 type ResponseChecker func(*testing.T, *httptest.ResponseRecorder)
@@ -67,7 +67,7 @@ var (
 			err := json.Unmarshal(w.Body.Bytes(), &resp)
 			assert.NoError(t, err)
 			for _, field := range fields {
-				assert.Equal(t, consts.FieldRequired.Error(), resp.Errors[field])
+				assert.Equal(t, consts.ErrFieldRequired.Error(), resp.Errors[field])
 			}
 		}
 	}

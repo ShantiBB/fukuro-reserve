@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 )
 
 type ErrorSchema struct {
@@ -58,13 +58,15 @@ func CheckErrors(v any, customErr func(validator.FieldError) string) *ValidateEr
 		panic(consts.ValidationUnregister + err.Error())
 	}
 
-	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
-		name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
-		if name == "-" || name == "" {
-			return fld.Name
-		}
-		return name
-	})
+	validate.RegisterTagNameFunc(
+		func(fld reflect.StructField) string {
+			name := strings.SplitN(fld.Tag.Get("json"), ",", 2)[0]
+			if name == "-" || name == "" {
+				return fld.Name
+			}
+			return name
+		},
+	)
 
 	if err := validate.Struct(v); err != nil {
 		var validateErr validator.ValidationErrors

@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 func ParsePaginationQuery(r *http.Request) (Query, error) {
@@ -21,17 +21,17 @@ func ParsePaginationQuery(r *http.Request) (Query, error) {
 	}
 
 	if page == "0" || limit == "0" {
-		return Query{}, consts.InvalidQueryParam
+		return Query{}, consts.ErrInvalidQueryParam
 	}
 
 	pageUInt, err := strconv.ParseUint(page, 10, 32)
 	if err != nil {
-		return Query{}, consts.InvalidQueryParam
+		return Query{}, consts.ErrInvalidQueryParam
 	}
 
 	limitUInt, err := strconv.ParseUint(limit, 10, 32)
 	if err != nil {
-		return Query{}, consts.InvalidQueryParam
+		return Query{}, consts.ErrInvalidQueryParam
 	}
 
 	return Query{
@@ -55,28 +55,36 @@ func parseFullURL(r *http.Request, query map[string]string) string {
 }
 
 func BuildPaginationLinks(r *http.Request, p Query, totalPages uint64) Links {
-	firstPage := parseFullURL(r, map[string]string{
-		"page":  "1",
-		"limit": strconv.FormatUint(p.Limit, 10),
-	})
-	lastPage := parseFullURL(r, map[string]string{
-		"page":  strconv.FormatUint(totalPages, 10),
-		"limit": strconv.FormatUint(p.Limit, 10),
-	})
+	firstPage := parseFullURL(
+		r, map[string]string{
+			"page":  "1",
+			"limit": strconv.FormatUint(p.Limit, 10),
+		},
+	)
+	lastPage := parseFullURL(
+		r, map[string]string{
+			"page":  strconv.FormatUint(totalPages, 10),
+			"limit": strconv.FormatUint(p.Limit, 10),
+		},
+	)
 
 	var prevPage, nextPage *string
 	if p.Page > 1 {
-		prev := parseFullURL(r, map[string]string{
-			"page":  strconv.FormatUint(p.Page-1, 10),
-			"limit": strconv.FormatUint(p.Limit, 10),
-		})
+		prev := parseFullURL(
+			r, map[string]string{
+				"page":  strconv.FormatUint(p.Page-1, 10),
+				"limit": strconv.FormatUint(p.Limit, 10),
+			},
+		)
 		prevPage = &prev
 	}
 	if p.Page < totalPages {
-		next := parseFullURL(r, map[string]string{
-			"page":  strconv.FormatUint(p.Page+1, 10),
-			"limit": strconv.FormatUint(p.Limit, 10),
-		})
+		next := parseFullURL(
+			r, map[string]string{
+				"page":  strconv.FormatUint(p.Page+1, 10),
+				"limit": strconv.FormatUint(p.Limit, 10),
+			},
+		)
 		nextPage = &next
 	}
 

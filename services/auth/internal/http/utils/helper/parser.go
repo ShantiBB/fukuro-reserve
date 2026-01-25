@@ -9,7 +9,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	"auth/internal/http/utils/validation"
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 func ParseJSON(
@@ -18,14 +18,14 @@ func ParseJSON(
 	customErr func(validator.FieldError) string,
 ) error {
 	if err := render.DecodeJSON(r.Body, v); err != nil {
-		errMsg := validation.ErrorResp(consts.InvalidJSON)
+		errMsg := validation.ErrorResp(consts.ErrInvalidJSON)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return err
 	}
 
 	if errMsg := validation.CheckErrors(v, customErr); errMsg != nil {
 		SendError(w, r, http.StatusBadRequest, errMsg)
-		return consts.InvalidJSON
+		return consts.ErrInvalidJSON
 	}
 
 	return nil
@@ -35,7 +35,7 @@ func ParseID(w http.ResponseWriter, r *http.Request) int64 {
 	paramID := chi.URLParam(r, "id")
 	id, err := strconv.ParseInt(paramID, 10, 64)
 	if err != nil {
-		errMsg := validation.ErrorResp(consts.InvalidID)
+		errMsg := validation.ErrorResp(consts.ErrInvalidID)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return 0
 	}

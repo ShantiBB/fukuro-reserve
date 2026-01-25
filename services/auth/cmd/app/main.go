@@ -8,6 +8,7 @@ import (
 
 	"auth/internal/app/auth"
 	"auth/internal/config"
+	"auth/pkg/lib/logger"
 )
 
 //	@title			Swagger Auth API
@@ -35,6 +36,10 @@ func main() {
 		panic("failed to load config: " + err.Error())
 	}
 
-	authApp := auth.App{Config: cfg}
-	authApp.MustLoad()
+	log := logger.New(cfg.Env, cfg.LogLevel)
+	authApp := auth.App{
+		Config: cfg,
+		Logger: log,
+	}
+	authApp.MustLoadGRPC()
 }

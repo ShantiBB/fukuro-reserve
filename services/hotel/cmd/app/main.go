@@ -4,10 +4,11 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/joho/godotenv"
+	"github.com/ilyakaznacheev/cleanenv"
 
 	"hotel/internal/app/hotel"
 	"hotel/internal/config"
+	"hotel/pkg/lib/logger"
 )
 
 //	@title			Swagger Hotel API
@@ -22,8 +23,8 @@ import (
 // @name						Authorization
 // @description				Type "Bearer" followed by a space and JWT token.
 func main() {
-	if err := godotenv.Load(); err != nil {
-		slog.Warn("failed load env", "error", err)
+	if err := cleanenv.ReadConfig(".env", &struct{}{}); err != nil {
+		slog.Warn("failed to load env", "error", err)
 	}
 
 	configPath := os.Getenv("CONFIG_PATH")
@@ -36,6 +37,10 @@ func main() {
 		panic("failed to load config: " + err.Error())
 	}
 
-	hotelApp := hotel.App{Config: cfg}
-	hotelApp.MustLoad()
+	log := logger.New(cfg.Env, cfg.LogLevel)
+	hotelApp := hotel.App{
+		Config: cfg,
+		Logger: log,
+	}
+	hotelApp.MustLoadGRPC()
 }

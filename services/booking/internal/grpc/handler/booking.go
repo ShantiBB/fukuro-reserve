@@ -11,6 +11,7 @@ import (
 	"booking/internal/grpc/utils/helper"
 	"booking/internal/grpc/utils/mapper"
 	"booking/internal/repository/models"
+	"booking/internal/utils/consts"
 )
 
 func (h *Handler) CreateBooking(
@@ -18,7 +19,7 @@ func (h *Handler) CreateBooking(
 	req *bookingv1.CreateBookingRequest,
 ) (*bookingv1.CreateBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	booking, err := mapper.CreateBookingRequestToDomain(req)
@@ -34,7 +35,7 @@ func (h *Handler) CreateBooking(
 	created, err := h.svc.BookingCreate(ctx, booking, rooms)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.CreateBookingResponse{
@@ -47,18 +48,18 @@ func (h *Handler) GetBookings(
 	req *bookingv1.GetBookingsRequest,
 ) (*bookingv1.GetBookingsResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)
 	if err != nil {
-		return nil, errInvalidHotelID
+		return nil, consts.ErrInvalidHotelID
 	}
 
 	bookingList, err := h.svc.GetBookings(ctx, bookingRef, req.Page, req.Limit)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.GetBookingsResponse{
@@ -74,18 +75,18 @@ func (h *Handler) GetBooking(
 	req *bookingv1.GetBookingRequest,
 ) (*bookingv1.GetBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	booking, err := h.svc.GetBookingById(ctx, bookingId)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.GetBookingResponse{
@@ -98,17 +99,17 @@ func (h *Handler) ConfirmBookingStatus(
 	req *bookingv1.ConfirmBookingStatusRequest,
 ) (*bookingv1.ConfirmBookingStatusResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.ConfirmBookingStatusResponse{
@@ -121,17 +122,17 @@ func (h *Handler) CancelBookingStatus(
 	req *bookingv1.CancelBookingStatusRequest,
 ) (*bookingv1.CancelBookingStatusResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.CancelBookingStatusResponse{
@@ -144,17 +145,17 @@ func (h *Handler) DeleteBooking(
 	req *bookingv1.DeleteBookingRequest,
 ) (*bookingv1.DeleteBookingResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleValidationErr(err)
 	}
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, errInvalidBookingID
+		return nil, consts.ErrInvalidBookingID
 	}
 
 	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
-		return nil, helper.DomainError(err)
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	return &bookingv1.DeleteBookingResponse{

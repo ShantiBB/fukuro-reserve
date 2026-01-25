@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "api/user/v1;userv1";
+
+import "buf/validate/validate.proto";
+import "user/v1/models/user.proto";
+
+message CreateUserRequest {
+  string email = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.email = true,
+    (buf.validate.field).string.min_len = 5,
+    (buf.validate.field).string.max_len = 100
+  ];
+  optional string username = 2 [
+    (buf.validate.field).string.max_len = 100
+  ];
+  string password = 3 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).string.min_len = 8,
+    (buf.validate.field).string.max_len = 100
+  ];
+}
+
+message CreateUserResponse {
+  User user = 1;
+}

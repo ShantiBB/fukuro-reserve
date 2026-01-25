@@ -8,125 +8,65 @@ import (
 	"github.com/gosimple/slug"
 )
 
-type HotelRepository interface {
-	HotelCreate(
-		ctx context.Context,
-		hotelRef models.HotelRef,
-		h models.HotelCreate,
-	) (models.Hotel, error)
-	HotelGetAll(
-		ctx context.Context,
-		hotelRef models.HotelRef,
-		sortField string,
-		limit uint64,
-		offset uint64,
-	) (models.HotelList, error)
-	HotelGetBySlug(ctx context.Context, hotelRef models.HotelRef) (models.Hotel, error)
-	HotelUpdateBySlug(ctx context.Context, hotelRef models.HotelRef, h models.HotelUpdate) error
-	HotelTitleUpdateBySlug(
-		ctx context.Context,
-		hotelRef models.HotelRef,
-		h models.HotelTitleUpdate,
-	) error
-	HotelDeleteBySlug(ctx context.Context, hotelRef models.HotelRef) error
-}
+func (s *Service) CreateHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error) {
+	h.HotelSlug = slug.Make(h.Title)
 
-func (s *Service) HotelCreate(
-	ctx context.Context,
-	hotel models.HotelRef,
-	h models.HotelCreate,
-) (models.Hotel, error) {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-	}
-	h.Slug = slug.Make(h.Title)
-
-	newHotel, err := s.repo.HotelCreate(ctx, hotelRef, h)
+	newHotel, err := s.repo.InsertHotel(ctx, h)
 	if err != nil {
-		return models.Hotel{}, err
+		return nil, err
 	}
 
 	return newHotel, nil
 }
 
-func (s *Service) HotelGetAll(
+func (s *Service) GetHotels(
 	ctx context.Context,
-	hotel models.HotelRef,
-	sortField string,
+	ref models.HotelRef,
+	sort string,
 	page uint64,
 	limit uint64,
-) (models.HotelList, error) {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-	}
+) (*models.HotelList, error) {
 	offset := (page - 1) * limit
-
-	hotelList, err := s.repo.HotelGetAll(ctx, hotelRef, sortField, limit, offset)
+	hotelList, err := s.repo.SelectHotels(ctx, ref, sort, limit, offset)
 	if err != nil {
-		return models.HotelList{}, err
+		return nil, err
 	}
 
 	return hotelList, nil
 }
 
-func (s *Service) HotelGetBySlug(ctx context.Context, hotel models.HotelRef) (models.Hotel, error) {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-		HotelSlug:   hotel.HotelSlug,
-	}
-
-	h, err := s.repo.HotelGetBySlug(ctx, hotelRef)
+func (s *Service) GetHotelBySlug(ctx context.Context, ref models.HotelRef) (*models.Hotel, error) {
+	h, err := s.repo.SelectHotelBySlug(ctx, ref)
 	if err != nil {
-		return models.Hotel{}, err
+		return nil, err
 	}
 
 	return h, nil
 }
 
-func (s *Service) HotelUpdateBySlug(ctx context.Context, hotel models.HotelRef, h models.HotelUpdate) error {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-		HotelSlug:   hotel.HotelSlug,
-	}
-
-	if err := s.repo.HotelUpdateBySlug(ctx, hotelRef, h); err != nil {
+func (s *Service) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotel) error {
+	if err := s.repo.UpdateHotelBySlug(ctx, ref, h); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *Service) HotelTitleUpdateBySlug(
+func (s *Service) UpdateHotelTitleBySlug(
 	ctx context.Context,
-	hotel models.HotelRef,
-	h models.HotelTitleUpdate,
-) (models.HotelTitleUpdate, error) {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-		HotelSlug:   hotel.HotelSlug,
-	}
-	h.Slug = slug.Make(h.Title)
-
-	if err := s.repo.HotelTitleUpdateBySlug(ctx, hotelRef, h); err != nil {
-		return models.HotelTitleUpdate{}, err
+	ref models.HotelRef,
+	h models.UpdateHotelTitle,
+) (models.UpdateHotelTitle, error) {
+	h.HotelSlug = slug.Make(h.Title)
+	if err := s.repo.UpdateHotelTitleBySlug(ctx, ref, h); err != nil {
+		return models.UpdateHotelTitle{}, err
 	}
 
 	return h, nil
 }
 
-func (s *Service) HotelDeleteBySlug(ctx context.Context, hotel models.HotelRef) error {
-	hotelRef := models.HotelRef{
-		CountryCode: hotel.CountryCode,
-		CitySlug:    hotel.CitySlug,
-		HotelSlug:   hotel.HotelSlug,
-	}
-
-	if err := s.repo.HotelDeleteBySlug(ctx, hotelRef); err != nil {
+func (s *Service) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error {
+	if err := s.repo.DeleteHotelBySlug(ctx, ref); err != nil {
 		return err
 	}
 

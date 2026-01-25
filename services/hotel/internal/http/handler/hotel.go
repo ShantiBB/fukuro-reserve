@@ -12,17 +12,21 @@ import (
 	"hotel/internal/http/utils/pagination"
 	"hotel/internal/http/utils/validation"
 	"hotel/internal/repository/models"
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 
 	"github.com/go-chi/chi/v5"
 )
 
 type HotelService interface {
-	HotelCreate(ctx context.Context, hotel models.HotelRef, h models.HotelCreate) (models.Hotel, error)
+	HotelCreate(ctx context.Context, hotel models.HotelRef, h models.CreateHotel) (models.Hotel, error)
 	HotelGetBySlug(ctx context.Context, hotel models.HotelRef) (models.Hotel, error)
-	HotelGetAll(ctx context.Context, hotel models.HotelRef, sortField string, page, limit uint64) (models.HotelList, error)
-	HotelUpdateBySlug(ctx context.Context, hotel models.HotelRef, h models.HotelUpdate) error
-	HotelTitleUpdateBySlug(ctx context.Context, hotel models.HotelRef, h models.HotelTitleUpdate) (models.HotelTitleUpdate, error)
+	HotelGetAll(ctx context.Context, hotel models.HotelRef, sortField string, page, limit uint64) (
+		models.HotelList, error,
+	)
+	HotelUpdateBySlug(ctx context.Context, hotel models.HotelRef, h models.UpdateHotel) error
+	HotelTitleUpdateBySlug(
+		ctx context.Context, hotel models.HotelRef, h models.UpdateHotelTitle,
+	) (models.UpdateHotelTitle, error)
 	HotelDeleteBySlug(ctx context.Context, hotel models.HotelRef) error
 }
 
@@ -53,7 +57,7 @@ func (h *Handler) HotelCreate(w http.ResponseWriter, r *http.Request) {
 
 	newHotel := mapper.HotelCreateRequestToEntity(req)
 	createdHotel, err := h.svc.HotelCreate(ctx, hotelRef, newHotel)
-	errHandler := &helper.ErrorHandler{Conflict: consts.UniqueHotelField}
+	errHandler := &helper.ErrorHandler{Conflict: consts.ErrUniqueHotelField}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -84,7 +88,7 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 	sortField := chi.URLParam(r, "sort")
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
-	errHandler := &helper.ErrorHandler{BadRequest: consts.InvalidQueryParam}
+	errHandler := &helper.ErrorHandler{BadRequest: consts.ErrInvalidQueryParam}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -97,7 +101,7 @@ func (h *Handler) HotelGetAll(w http.ResponseWriter, r *http.Request) {
 
 	hotels := make([]response.HotelShort, 0, len(hotelList.Hotels))
 	for _, hotel := range hotelList.Hotels {
-		hotelResponse := mapper.HotelShortEntityToShortResponse(hotel)
+		hotelResponse := mapper.HotelShortEntityToShortResponse(*hotel)
 		hotels = append(hotels, hotelResponse)
 	}
 
@@ -137,7 +141,7 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 	hotelRef := middleware.GetHotelRef(ctx)
 
 	hotel, err := h.svc.HotelGetBySlug(ctx, hotelRef)
-	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrHotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -156,8 +160,8 @@ func (h *Handler) HotelGetBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Param			country_code	path		string	true	"Country Code"
 //	@Param			city_slug    	path		string	true	"City HotelSlug"
 //	@Param			hotel_slug	    path		string	true	"Hotel slug"
-//	@Param          request         body        request.HotelUpdate  true  "Hotel data"
-//	@Success		200	{object}	            response.HotelUpdate
+//	@Param          request         body        request.UpdateHotel  true  "Hotel data"
+//	@Success		200	{object}	            response.UpdateHotel
 //	@Failure		400	{object}	            response.ErrorSchema
 //	@Failure		401	{object}	            response.ErrorSchema
 //	@Failure		404	{object}	            response.ErrorSchema
@@ -175,7 +179,7 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 
 	hotelUpdate := mapper.HotelUpdateRequestToEntity(req)
 	err := h.svc.HotelUpdateBySlug(ctx, hotelRef, hotelUpdate)
-	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrHotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -194,8 +198,8 @@ func (h *Handler) HotelUpdateBySlug(w http.ResponseWriter, r *http.Request) {
 //	@Param			country_code	path		string	true	"Country Code"
 //	@Param			city_slug    	path		string	true	"City HotelSlug"
 //	@Param			hotel_slug	    path		string	true	"Hotel slug"
-//	@Param          request         body        request.HotelTitleUpdate  true  "Hotel data"
-//	@Success		200	{object}	            response.HotelTitleUpdate
+//	@Param          request         body        request.UpdateHotelTitle  true  "Hotel data"
+//	@Success		200	{object}	            response.UpdateHotelTitle
 //	@Failure		400	{object}	            response.ErrorSchema
 //	@Failure		401	{object}	            response.ErrorSchema
 //	@Failure		404	{object}	            response.ErrorSchema
@@ -212,7 +216,7 @@ func (h *Handler) HotelTitleUpdateBySlug(w http.ResponseWriter, r *http.Request)
 	}
 
 	hotelUpdated, err := h.svc.HotelTitleUpdateBySlug(ctx, hotelRef, mapper.HotelTitleUpdateRequestToEntity(req))
-	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrHotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -243,7 +247,7 @@ func (h *Handler) HotelDeleteBySlug(w http.ResponseWriter, r *http.Request) {
 	hotelRef := middleware.GetHotelRef(ctx)
 
 	err := h.svc.HotelDeleteBySlug(ctx, hotelRef)
-	errHandler := &helper.ErrorHandler{NotFound: consts.HotelNotFound}
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrHotelNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}

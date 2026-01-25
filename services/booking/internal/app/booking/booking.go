@@ -27,7 +27,7 @@ type App struct {
 func (app *App) MustLoadGRPC() {
 	slog.SetDefault(app.Logger)
 
-	repo, err := postgres.NewRepository(app.Config)
+	repo, err := postgres.New(app.Config)
 	if err != nil {
 		panic(err.Error())
 	}

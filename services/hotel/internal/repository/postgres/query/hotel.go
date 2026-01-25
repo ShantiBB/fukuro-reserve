@@ -1,7 +1,7 @@
 package query
 
 const (
-	HotelCreateQuery = `
+	CreateHotelQuery = `
 		INSERT INTO hotel (country_code, 
 						   city_slug, 
 						   title, 
@@ -13,7 +13,7 @@ const (
 		VALUES ($1, $2, $3, $4, $5, $6, $7, ST_SetSRID(ST_MakePoint($8, $9), 4326)::geography)
 		RETURNING id, created_at, updated_at`
 
-	HotelGetBySlug = `
+	GetHotelBySlug = `
 		SELECT id,
 			   title, 
 			   owner_id, 
@@ -27,7 +27,7 @@ const (
 		FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3`
 
-	HotelGetAll = `
+	GetHotels = `
 		SELECT id,
 			   title,
 			   slug,
@@ -35,7 +35,8 @@ const (
 			   address, 
 			   rating,
 			   longitude,
-			   latitude
+			   latitude,
+			   COUNT(*) OVER() as total_count
 		FROM hotel
 		WHERE country_code = $1 AND city_slug = $2
 		ORDER BY
@@ -43,7 +44,7 @@ const (
 			CASE WHEN $3 = 'rating' THEN rating END DESC
 		LIMIT $4 OFFSET $5;`
 
-	HotelUpdateBySlug = `
+	UpdateHotelBySlug = `
 		UPDATE hotel
 		SET
 		  description = $1,
@@ -53,7 +54,7 @@ const (
 		WHERE country_code = $5 AND city_slug = $6 AND slug = $7
 		RETURNING id, slug;`
 
-	HotelTitleUpdateBySlug = `
+	UpdateHotelTitleBySlug = `
 		UPDATE hotel
 		SET
 		  title = $1,
@@ -62,16 +63,11 @@ const (
 		WHERE country_code = $3 AND city_slug = $4 AND slug = $5
 		RETURNING id, slug;`
 
-	HotelDeleteBySlug = `
+	DeleteHotelBySlug = `
 		DELETE FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3;`
 
-	HotelGetCountRows = `
-		SELECT COUNT(*)
-		FROM hotel
-		WHERE country_code = $1 AND city_slug = $2;`
-
-	HotelUpdateRating = `
+	UpdateHotelRating = `
 		UPDATE hotel 
 		SET rating = $1,
 			updated_at = CURRENT_TIMESTAMP

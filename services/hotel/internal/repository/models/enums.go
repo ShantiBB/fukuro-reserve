@@ -4,17 +4,19 @@ type RoomType string
 type RoomStatus string
 
 const (
-	RoomTypeSingle       RoomType = "single"
-	RoomTypeDouble       RoomType = "double"
-	RoomTypeSuite        RoomType = "suite"
-	RoomTypeDeluxe       RoomType = "deluxe"
-	RoomTypeFamily       RoomType = "family"
-	RoomTypePresidential RoomType = "presidential"
+	RoomTypeUnspecified  RoomType = "ROOM_TYPE_UNSPECIFIED"
+	RoomTypeSingle       RoomType = "ROOM_TYPE_SINGLE"
+	RoomTypeDouble       RoomType = "ROOM_TYPE_DOUBLE"
+	RoomTypeSuite        RoomType = "ROOM_TYPE_SUITE"
+	RoomTypeDeluxe       RoomType = "ROOM_TYPE_DELUXE"
+	RoomTypeFamily       RoomType = "ROOM_TYPE_FAMILY"
+	RoomTypePresidential RoomType = "ROOM_TYPE_PRESIDENTIAL"
 
-	RoomStatusAvailable   RoomStatus = "available"
-	RoomStatusOccupied    RoomStatus = "occupied"
-	RoomStatusMaintenance RoomStatus = "maintenance"
-	RoomStatusCleaning    RoomStatus = "cleaning"
+	RoomStatusUnspecified RoomStatus = "ROOM_STATUS_UNSPECIFIED"
+	RoomStatusAvailable   RoomStatus = "ROOM_STATUS_AVAILABLE"
+	RoomStatusOccupied    RoomStatus = "ROOM_STATUS_OCCUPIED"
+	RoomStatusMaintenance RoomStatus = "ROOM_STATUS_MAINTENANCE"
+	RoomStatusCleaning    RoomStatus = "ROOM_STATUS_CLEANING"
 )
 
 var RoomTypeValues = []RoomType{

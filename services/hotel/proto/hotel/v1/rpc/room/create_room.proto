@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "buf/validate/validate.proto";
+import "hotel/v1/enums/room_type.proto";
+import "hotel/v1/models/room.proto";
+
+message CreateRoomRequest {
+  string country_code = 1 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 2 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+  string hotel_slug = 3 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+  string title = 4 [
+    (buf.validate.field).required = true
+  ];
+  optional string description = 5;
+  string room_number = 6 [
+    (buf.validate.field).required = true
+  ];
+  RoomType type = 7 [
+    (buf.validate.field).required = true
+  ];
+  float price = 8 [
+    (buf.validate.field).required = true
+  ];
+  int64 capacity = 9 [
+    (buf.validate.field).required = true
+  ];
+  float area_sqm = 10 [
+    (buf.validate.field).required = true
+  ];
+  int64 floor = 11 [
+    (buf.validate.field).required = true
+  ];
+  repeated string amenities = 12;
+  repeated string images = 13;
+}
+
+message CreateRoomResponse {
+  Room room = 1;
+}

@@ -12,18 +12,20 @@ import (
 	"hotel/internal/http/utils/pagination"
 	"hotel/internal/http/utils/validation"
 	"hotel/internal/repository/models"
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 
 	"github.com/google/uuid"
 )
 
 type RoomService interface {
-	RoomCreate(ctx context.Context, hotel models.HotelRef, room models.RoomCreate) (models.Room, error)
-	RoomGetByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) (models.Room, error)
-	RoomGetAll(ctx context.Context, hotel models.HotelRef, limit, offset uint64) (models.RoomList, error)
-	RoomUpdateByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID, room models.RoomUpdate) error
-	RoomStatusUpdateByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID, room models.RoomStatusUpdate) error
-	RoomDeleteByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) error
+	CreateRoom(ctx context.Context, hotel models.HotelRef, room models.CreateRoom) (models.Room, error)
+	GetRoomByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) (models.Room, error)
+	GetRooms(ctx context.Context, hotel models.HotelRef, limit, offset uint64) (models.RoomList, error)
+	UpdateRoomByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID, room models.UpdateRoom) error
+	UpdateRoomStatusByID(
+		ctx context.Context, hotel models.HotelRef, roomID uuid.UUID, room models.UpdateRoomStatus,
+	) error
+	DeleteRoomByID(ctx context.Context, hotel models.HotelRef, roomID uuid.UUID) error
 }
 
 // RoomCreate   godoc
@@ -52,8 +54,8 @@ func (h *Handler) RoomCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdRoom, err := h.svc.RoomCreate(ctx, hotelRef, mapper.RoomCreateRequestToEntity(req))
-	errHandler := &helper.ErrorHandler{Conflict: consts.UniqueRoomField}
+	createdRoom, err := h.svc.CreateRoom(ctx, hotelRef, mapper.RoomCreateRequestToEntity(req))
+	errHandler := &helper.ErrorHandler{Conflict: consts.ErrUniqueRoomField}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -85,12 +87,12 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 
 	paginationParams, err := pagination.ParsePaginationQuery(r)
 	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidQueryParam)
+		errMsg := response.ErrorResp(consts.ErrInvalidQueryParam)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
-	roomList, err := h.svc.RoomGetAll(ctx, hotelRef, paginationParams.Page, paginationParams.Limit)
+	roomList, err := h.svc.GetRooms(ctx, hotelRef, paginationParams.Page, paginationParams.Limit)
 	errHandler := &helper.ErrorHandler{}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -98,7 +100,7 @@ func (h *Handler) RoomGetAll(w http.ResponseWriter, r *http.Request) {
 
 	rooms := make([]response.RoomShort, 0, len(roomList.Rooms))
 	for _, room := range roomList.Rooms {
-		rooms = append(rooms, mapper.RoomShortEntityToShortResponse(room))
+		rooms = append(rooms, mapper.RoomShortEntityToShortResponse(*room))
 	}
 
 	totalPageCount := (roomList.TotalCount + paginationParams.Limit - 1) / paginationParams.Limit
@@ -139,13 +141,13 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
+		errMsg := response.ErrorResp(consts.ErrInvalidHotelID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
-	room, err := h.svc.RoomGetByID(ctx, hotelRef, id)
-	errHandler := &helper.ErrorHandler{NotFound: consts.RoomNotFound}
+	room, err := h.svc.GetRoomByID(ctx, hotelRef, id)
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrRoomNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -165,8 +167,8 @@ func (h *Handler) RoomGetByID(w http.ResponseWriter, r *http.Request) {
 //	@Param		    city_slug       path		string	true	"City HotelSlug"
 //	@Param		    hotel_slug      path		string	true	"Hotel slug"
 //	@Param			id	path		string	true	"Room ID"
-//	@Param          request  body   request.RoomUpdate  true  "Room data"
-//	@Success		200	{object}	response.RoomUpdate
+//	@Param          request  body   request.UpdateRoom  true  "Room data"
+//	@Success		200	{object}	response.UpdateRoom
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
@@ -178,7 +180,7 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	hotelRef := middleware.GetHotelRef(ctx)
 
 	id, err := helper.ParseUUIDParam(r, "id")
-	errHandler := &helper.ErrorHandler{BadRequest: consts.InvalidID}
+	errHandler := &helper.ErrorHandler{BadRequest: consts.ErrInvalidHotelID}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -189,8 +191,8 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roomUpdate := mapper.RoomUpdateRequestToEntity(req)
-	err = h.svc.RoomUpdateByID(ctx, hotelRef, id, roomUpdate)
-	errHandler = &helper.ErrorHandler{NotFound: consts.RoomNotFound}
+	err = h.svc.UpdateRoomByID(ctx, hotelRef, id, roomUpdate)
+	errHandler = &helper.ErrorHandler{NotFound: consts.ErrRoomNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -210,8 +212,8 @@ func (h *Handler) RoomUpdateByID(w http.ResponseWriter, r *http.Request) {
 //	@Param		    city_slug       path		string	true	"City HotelSlug"
 //	@Param		    hotel_slug      path		string	true	"Hotel slug"
 //	@Param			id	path		string	true	"Room ID"
-//	@Param          request  body   request.RoomStatusUpdate  true  "Room data"
-//	@Success		200	{object}	response.RoomStatusUpdate
+//	@Param          request  body   request.UpdateRoomStatus  true  "Room data"
+//	@Success		200	{object}	response.UpdateRoomStatus
 //	@Failure		400	{object}	response.ErrorSchema
 //	@Failure		401	{object}	response.ErrorSchema
 //	@Failure		404	{object}	response.ErrorSchema
@@ -224,7 +226,7 @@ func (h *Handler) RoomStatusUpdateByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
+		errMsg := response.ErrorResp(consts.ErrInvalidHotelID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
@@ -235,8 +237,8 @@ func (h *Handler) RoomStatusUpdateByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	roomUpdate := mapper.RoomStatusUpdateRequestToEntity(req)
-	err = h.svc.RoomStatusUpdateByID(ctx, hotelRef, id, roomUpdate)
-	errHandler := &helper.ErrorHandler{NotFound: consts.RoomNotFound}
+	err = h.svc.UpdateRoomStatusByID(ctx, hotelRef, id, roomUpdate)
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrRoomNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
@@ -269,13 +271,13 @@ func (h *Handler) RoomDeleteByID(w http.ResponseWriter, r *http.Request) {
 
 	id, err := helper.ParseUUIDParam(r, "id")
 	if err != nil {
-		errMsg := response.ErrorResp(consts.InvalidID)
+		errMsg := response.ErrorResp(consts.ErrInvalidHotelID)
 		helper.SendError(w, r, http.StatusBadRequest, errMsg)
 		return
 	}
 
-	err = h.svc.RoomDeleteByID(ctx, hotelRef, id)
-	errHandler := &helper.ErrorHandler{NotFound: consts.RoomNotFound}
+	err = h.svc.DeleteRoomByID(ctx, hotelRef, id)
+	errHandler := &helper.ErrorHandler{NotFound: consts.ErrRoomNotFound}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}

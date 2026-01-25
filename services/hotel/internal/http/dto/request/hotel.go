@@ -1,8 +1,8 @@
 package request
 
 type Location struct {
-	Latitude  *float64 `json:"latitude" validate:"required,gte=-90,lte=90"`
-	Longitude *float64 `json:"longitude" validate:"required,gte=-180,lte=180"`
+	Latitude  *float32 `json:"latitude" validate:"required,gte=-90,lte=90"`
+	Longitude *float32 `json:"longitude" validate:"required,gte=-180,lte=180"`
 }
 
 type HotelCreate struct {

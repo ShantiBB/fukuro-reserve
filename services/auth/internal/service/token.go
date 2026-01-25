@@ -5,46 +5,41 @@ import (
 	"errors"
 	"log/slog"
 
+	"auth/internal/grpc/lib/utils/helper"
 	"auth/internal/repository/models"
-	"auth/pkg/utils/consts"
-	"auth/pkg/utils/jwt"
-	"auth/pkg/utils/password"
+	"auth/pkg/lib/utils/consts"
+	"auth/pkg/lib/utils/jwt"
 )
 
-func (s *Service) RegisterByEmail(ctx context.Context, email, password string) (*jwt.Token, error) {
-	newUser := models.UserCreate{
-		Email:    email,
-		Password: password,
-	}
-
-	user, err := s.repo.UserCreate(ctx, newUser)
+func (s *Service) RegisterByEmail(ctx context.Context, user *models.CreateUser) (*jwt.Token, error) {
+	created, err := s.repo.InsertUser(ctx, user)
 	if err != nil {
 		slog.Error("failed create user", "err:", err.Error())
 		return nil, err
 	}
 
-	return jwt.GenerateAllTokens(user.ID, user.Role, s.tokenCreds)
+	return jwt.GenerateAllTokens(created.ID, created.Role, s.tokenCreds)
 }
 
-func (s *Service) LoginByEmail(ctx context.Context, email, pass string) (*jwt.Token, error) {
-	user, err := s.repo.UserGetCredentialsByEmail(ctx, email)
+func (s *Service) LoginByEmail(ctx context.Context, user *models.CreateUser) (*jwt.Token, error) {
+	userCred, err := s.repo.SelectUserCredentialsByEmail(ctx, user.Email)
 	if err != nil {
 		slog.Error("failed login user", "err:", err.Error())
 		return nil, err
 	}
 
-	if !password.VerifyPassword(pass, user.Password) {
-		return nil, consts.InvalidCredentials
+	if !helper.VerifyPassword(user.Password, userCred.Password) {
+		return nil, consts.ErrInvalidCredentials
 	}
 
-	return jwt.GenerateAllTokens(user.ID, user.Role, s.tokenCreds)
+	return jwt.GenerateAllTokens(userCred.ID, userCred.Role, s.tokenCreds)
 }
 
 func (s *Service) RefreshToken(token *jwt.Token) (*jwt.Token, error) {
-	claims, err := jwt.GetClaimsRefreshToken(s.tokenCreds.RefreshSecret, token.Refresh)
+	claims, err := jwt.GetClaimsRefreshToken(token.Refresh, s.tokenCreds.RefreshSecret)
 	if err != nil {
-		if errors.Is(err, consts.InvalidRefreshToken) {
-			return nil, consts.InvalidRefreshToken
+		if errors.Is(err, consts.ErrInvalidToken) {
+			return nil, consts.ErrInvalidToken
 		}
 		return nil, err
 	}

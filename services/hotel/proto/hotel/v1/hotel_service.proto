@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "hotel/v1/rpc/hotel/create_hotel.proto";
+import "hotel/v1/rpc/room/create_room.proto";
+import "hotel/v1/rpc/hotel/get_hotels.proto";
+import "hotel/v1/rpc/room/get_rooms.proto";
+import "hotel/v1/rpc/hotel/get_hotel.proto";
+import "hotel/v1/rpc/room/get_room.proto";
+import "hotel/v1/rpc/hotel/update_hotel.proto";
+import "hotel/v1/rpc/room/update_room.proto";
+import "hotel/v1/rpc/room/update_room_status.proto";
+import "hotel/v1/rpc/hotel/delete_hotel.proto";
+import "hotel/v1/rpc/room/delete_room.proto";
+import "hotel/v1/rpc/hotel/update_hotel_title.proto";
+
+
+service HotelService {
+  rpc CreateHotel(CreateHotelRequest) returns (CreateHotelResponse);
+  rpc GetHotels(GetHotelsRequest) returns (GetHotelsResponse);
+  rpc GetHotel(GetHotelRequest) returns (GetHotelResponse);
+  rpc UpdateHotel(UpdateHotelRequest) returns (UpdateHotelResponse);
+  rpc UpdateHotelTitle(UpdateHotelTitleRequest) returns (UpdateHotelTitleResponse);
+  rpc DeleteHotel(DeleteHotelRequest) returns (DeleteHotelResponse);
+}
+
+service RoomService {
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+  rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse);
+  rpc GetRoom(GetRoomRequest) returns (GetRoomResponse);
+  rpc UpdateRoom(UpdateRoomRequest) returns (UpdateRoomResponse);
+  rpc UpdateRoomStatus(UpdateRoomStatusRequest) returns (UpdateRoomStatusResponse);
+  rpc DeleteRoom(DeleteRoomRequest) returns (DeleteRoomResponse);
+}

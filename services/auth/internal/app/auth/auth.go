@@ -3,44 +3,70 @@ package auth
 import (
 	"fmt"
 	"log/slog"
-	"net/http"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/go-chi/chi/v5"
+	"buf.build/go/protovalidate"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
+	userv1 "auth/api/user/v1"
 	"auth/internal/config"
-	"auth/internal/http/handler"
-	"auth/internal/http/router"
+	"auth/internal/grpc/handler"
 	"auth/internal/repository/postgres"
 	"auth/internal/service"
-	"auth/pkg/utils/jwt"
+	"auth/pkg/lib/utils/jwt"
 )
 
 type App struct {
 	Config *config.Config
+	Logger *slog.Logger
 }
 
-func (app *App) MustLoad() {
-	tokenCredentials := jwt.TokenCredentials{
-		AccessSecret:  app.Config.JWT.AccessSecret,
-		RefreshSecret: app.Config.JWT.RefreshSecret,
-		AccessTTL:     app.Config.JWT.AccessTTL,
-		RefreshTTL:    app.Config.JWT.RefreshTTL,
-	}
+func (app *App) MustLoadGRPC() {
+	slog.SetDefault(app.Logger)
 
-	repo, err := postgres.NewRepository(app.Config)
+	repo := postgres.New(app.Config)
+
+	tokenCredentials := jwt.GetTokenCredentials(app.Config)
+	svc := service.New(repo, tokenCredentials)
+
+	validator, err := protovalidate.New()
+	if err != nil {
+		panic(err.Error())
+	}
+	h := handler.New(svc, validator)
+
+	addr := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	svc := service.New(repo, &tokenCredentials)
-	h := handler.New(svc)
+	grpcServer := newGRPCServer(app.Logger, app.Config.JWT.AccessSecret)
 
-	r := chi.NewRouter()
-	router.New(r, h, app.Config.JWT.AccessSecret)
+	userv1.RegisterUserServiceServer(grpcServer, h)
+	userv1.RegisterTokenServiceServer(grpcServer, h)
+	reflection.Register(grpcServer)
 
-	server := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
-	slog.Info("Starting server", "address", server)
-	if err = http.ListenAndServe(server, r); err != nil {
-		panic(err.Error())
-	}
+	go func() {
+		slog.Info("Starting gRPC server", "address", addr)
+		if err = grpcServer.Serve(lis); err != nil {
+			slog.Error("Failed to serve", "error", err)
+		}
+	}()
+
+	app.gracefulShutdown(grpcServer)
+}
+
+func (app *App) gracefulShutdown(grpcServer *grpc.Server) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	slog.Info("Shutting down gRPC server")
+	grpcServer.GracefulStop()
+	slog.Info("gRPC server stopped")
 }

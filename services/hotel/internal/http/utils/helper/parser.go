@@ -12,7 +12,7 @@ import (
 	"hotel/internal/http/utils/mapper"
 	"hotel/internal/http/utils/validation"
 	"hotel/internal/repository/models"
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 )
 
 func ParseJSON(
@@ -21,14 +21,14 @@ func ParseJSON(
 	customErr func(validator.FieldError) string,
 ) error {
 	if err := render.DecodeJSON(r.Body, v); err != nil {
-		errMsg := validation.ErrorResp(consts.InvalidJSON)
+		errMsg := validation.ErrorResp(consts.ErrInvalidJSON)
 		SendError(w, r, http.StatusBadRequest, errMsg)
 		return err
 	}
 
 	if errMsg := validation.CheckErrors(v, customErr); errMsg != nil {
 		SendError(w, r, http.StatusBadRequest, errMsg)
-		return consts.InvalidJSON
+		return consts.ErrInvalidJSON
 	}
 
 	return nil
@@ -52,7 +52,7 @@ func ParseUUIDParam(r *http.Request, paramName string) (uuid.UUID, error) {
 	paramID := chi.URLParam(r, paramName)
 	id, err := uuid.Parse(paramID)
 	if err != nil {
-		return uuid.Nil, consts.InvalidID
+		return uuid.Nil, consts.ErrInvalidHotelID
 	}
 	return id, nil
 }

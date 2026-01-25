@@ -5,13 +5,13 @@ import (
 	"errors"
 	"net/http"
 
+	helper2 "auth/internal/grpc/lib/utils/helper"
 	"auth/internal/http/dto/request"
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"
 	"auth/internal/http/utils/validation"
-	"auth/pkg/utils/consts"
-	"auth/pkg/utils/jwt"
-	"auth/pkg/utils/password"
+	"auth/pkg/lib/utils/consts"
+	"auth/pkg/lib/utils/jwt"
 )
 
 const BearerType = "Bearer"
@@ -29,7 +29,7 @@ type TokenService interface {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Param			request	body		request.InsertUser	true	"User data"
 //	@Success		201		{object}	response.Token
 //	@Failure		400		{object}	response.ErrorSchema
 //	@Failure		409		{object}	response.ErrorSchema
@@ -42,9 +42,9 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashPassword, err := password.HashPassword(req.Password)
+	hashPassword, err := helper2.HashPassword(req.Password)
 	errHandler := &helper.ErrorHandler{
-		BadRequest: consts.PasswordHashing,
+		BadRequest: consts.ErrPasswordHashing,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -52,7 +52,7 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 
 	tokens, err := h.svc.RegisterByEmail(ctx, req.Email, hashPassword)
 	errHandler = &helper.ErrorHandler{
-		Conflict: consts.UniqueUserField,
+		Conflict: consts.ErrUniqueUserField,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
@@ -73,7 +73,7 @@ func (h *Handler) RegisterByEmail(w http.ResponseWriter, r *http.Request) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			request	body		request.UserCreate	true	"User data"
+//	@Param			request	body		request.InsertUser	true	"User data"
 //	@Success		200		{object}	response.Token
 //	@Failure		401		{object}	response.ErrorSchema
 //	@Failure		500		{object}	response.ErrorSchema
@@ -87,21 +87,23 @@ func (h *Handler) LoginByEmail(w http.ResponseWriter, r *http.Request) {
 
 	tokens, err := h.svc.LoginByEmail(ctx, req.Email, req.Password)
 	if err != nil {
-		if errors.Is(err, consts.InvalidCredentials) || errors.Is(err, consts.UserNotFound) {
-			errMsg := response.ErrorResp(consts.InvalidCredentials)
+		if errors.Is(err, consts.ErrInvalidCredentials) || errors.Is(err, consts.ErrUserNotFound) {
+			errMsg := response.ErrorResp(consts.ErrInvalidCredentials)
 			helper.SendError(w, r, http.StatusUnauthorized, errMsg)
 			return
 		}
-		errMsg := response.ErrorResp(consts.InternalServer)
+		errMsg := response.ErrorResp(consts.ErrInternalServer)
 		helper.SendError(w, r, http.StatusInternalServerError, errMsg)
 		return
 	}
 
-	helper.SendSuccess(w, r, http.StatusOK, response.Token{
-		Access:    tokens.Access,
-		Refresh:   tokens.Refresh,
-		TokenType: BearerType,
-	})
+	helper.SendSuccess(
+		w, r, http.StatusOK, response.Token{
+			Access:    tokens.Access,
+			Refresh:   tokens.Refresh,
+			TokenType: BearerType,
+		},
+	)
 }
 
 // RefreshToken    godoc
@@ -125,15 +127,17 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	token := &jwt.Token{Refresh: req.RefreshToken}
 	tokens, err := h.svc.RefreshToken(token)
 	errHandler := &helper.ErrorHandler{
-		Unauthorized: consts.InvalidRefreshToken,
+		Unauthorized: consts.ErrInvalidToken,
 	}
 	if err = errHandler.Handle(w, r, err); err != nil {
 		return
 	}
 
-	helper.SendSuccess(w, r, http.StatusOK, response.Token{
-		Access:    tokens.Access,
-		Refresh:   tokens.Refresh,
-		TokenType: BearerType,
-	})
+	helper.SendSuccess(
+		w, r, http.StatusOK, response.Token{
+			Access:    tokens.Access,
+			Refresh:   tokens.Refresh,
+			TokenType: BearerType,
+		},
+	)
 }

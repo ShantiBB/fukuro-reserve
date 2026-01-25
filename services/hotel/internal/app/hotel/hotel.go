@@ -3,36 +3,67 @@ package hotel
 import (
 	"fmt"
 	"log/slog"
-	"net/http"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
 
-	"github.com/go-chi/chi/v5"
+	"buf.build/go/protovalidate"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 
+	hotelv1 "hotel/api/hotel/v1"
 	"hotel/internal/config"
-	"hotel/internal/http/handler"
-	"hotel/internal/http/router"
+	"hotel/internal/grpc/handler"
 	"hotel/internal/repository/postgres"
 	"hotel/internal/service"
 )
 
 type App struct {
 	Config *config.Config
+	Logger *slog.Logger
 }
 
-func (app *App) MustLoad() {
-	repo, err := postgres.NewRepository(app.Config)
+func (app *App) MustLoadGRPC() {
+	slog.SetDefault(app.Logger)
+
+	repo := postgres.New(app.Config)
+	svc := service.New(repo)
+
+	validator, err := protovalidate.New()
+	if err != nil {
+		panic(err.Error())
+	}
+	h := handler.New(svc, validator)
+
+	addr := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
+	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	svc := service.New(repo)
-	h := handler.New(svc)
+	grpcServer := newGRPCServer(app.Logger)
 
-	r := chi.NewRouter()
-	router.New(r, h)
+	hotelv1.RegisterHotelServiceServer(grpcServer, h)
+	hotelv1.RegisterRoomServiceServer(grpcServer, h)
+	reflection.Register(grpcServer)
 
-	server := fmt.Sprintf("%s:%d", app.Config.Server.Host, app.Config.Server.Port)
-	slog.Info("Starting server", "address", server)
-	if err = http.ListenAndServe(server, r); err != nil {
-		panic(err.Error())
-	}
+	go func() {
+		slog.Info("Starting gRPC server", "address", addr)
+		if err = grpcServer.Serve(lis); err != nil {
+			slog.Error("Failed to serve", "error", err)
+		}
+	}()
+
+	app.gracefulShutdown(grpcServer)
+}
+
+func (app *App) gracefulShutdown(grpcServer *grpc.Server) {
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
+	slog.Info("Shutting down gRPC server")
+	grpcServer.GracefulStop()
+	slog.Info("gRPC server stopped")
 }

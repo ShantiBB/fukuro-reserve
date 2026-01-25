@@ -6,103 +6,109 @@ import (
 
 	"hotel/internal/repository/models"
 	"hotel/internal/repository/postgres/query"
-	"hotel/pkg/utils/consts"
+	"hotel/pkg/lib/utils/consts"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (r *Repository) HotelCreate(
-	ctx context.Context,
-	hotelRef models.HotelRef,
-	h models.HotelCreate,
-) (models.Hotel, error) {
+func (r *Repository) InsertHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error) {
 	newHotel := h.ToRead()
-	insertArgs := []any{
-		hotelRef.CountryCode,
-		hotelRef.CitySlug,
+	err := r.db.QueryRow(
+		ctx, query.CreateHotelQuery,
+		h.CountryCode,
+		h.CitySlug,
 		h.Title,
-		h.Slug,
+		h.HotelSlug,
 		h.OwnerID,
 		h.Description,
 		h.Address,
 		h.Location.Longitude,
 		h.Location.Latitude,
-	}
-	scanArgs := []any{
+	).Scan(
 		&newHotel.ID,
 		&newHotel.CreatedAt,
 		&newHotel.UpdatedAt,
-	}
-
-	if err := r.db.QueryRow(ctx, query.HotelCreateQuery, insertArgs...).Scan(scanArgs...); err != nil {
+	)
+	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return models.Hotel{}, consts.UniqueHotelField
+			return nil, consts.ErrUniqueHotelField
 		}
-		return models.Hotel{}, err
+		return nil, err
 	}
 
 	return newHotel, nil
 }
 
-func (r *Repository) HotelGetAll(
+func (r *Repository) SelectHotels(
 	ctx context.Context,
-	hotelRef models.HotelRef,
+	ref models.HotelRef,
 	sortField string,
 	limit uint64,
 	offset uint64,
-) (models.HotelList, error) {
-	var hotelList models.HotelList
-	selectArgs := []any{
-		hotelRef.CountryCode,
-		hotelRef.CitySlug,
+) (*models.HotelList, error) {
+	rows, err := r.db.Query(
+		ctx,
+		query.GetHotels,
+		ref.CountryCode,
+		ref.CitySlug,
 		sortField,
 		limit,
 		offset,
-	}
-
-	rows, err := r.db.Query(ctx, query.HotelGetAll, selectArgs...)
+	)
 	if err != nil {
-		return models.HotelList{}, err
+		return nil, err
 	}
+	defer rows.Close()
 
+	values := make([]models.HotelShort, limit)
 	var h models.HotelShort
+	var totalCount, idx uint64
 	for rows.Next() {
 		err = rows.Scan(
 			&h.ID,
 			&h.Title,
-			&h.Slug,
+			&h.HotelSlug,
 			&h.OwnerID,
 			&h.Address,
 			&h.Rating,
 			&h.Location.Longitude,
 			&h.Location.Latitude,
+			&totalCount,
 		)
 		if err != nil {
-			return models.HotelList{}, err
+			return nil, err
 		}
 
-		hotelList.Hotels = append(hotelList.Hotels, h)
+		values[idx] = h
+		idx++
 	}
 
-	if err = r.db.
-		QueryRow(ctx, query.HotelGetCountRows, hotelRef.CountryCode, hotelRef.CitySlug).
-		Scan(&hotelList.TotalCount); err != nil {
-		return models.HotelList{}, err
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	values = values[:idx]
+
+	hotelList := &models.HotelList{
+		Hotels:     make([]*models.HotelShort, len(values)),
+		TotalCount: totalCount,
+	}
+	for i := range values {
+		hotelList.Hotels[i] = &values[i]
 	}
 
 	return hotelList, nil
 }
 
-func (r *Repository) HotelGetBySlug(ctx context.Context, hotelRef models.HotelRef) (models.Hotel, error) {
+func (r *Repository) SelectHotelBySlug(ctx context.Context, ref models.HotelRef) (*models.Hotel, error) {
 	var h models.Hotel
-	insertArgs := []any{
-		hotelRef.CountryCode,
-		hotelRef.CitySlug,
-		hotelRef.HotelSlug,
-	}
-	scanArgs := []any{
+	err := r.db.QueryRow(
+		ctx, query.GetHotelBySlug,
+		ref.CountryCode,
+		ref.CitySlug,
+		ref.HotelSlug,
+	).Scan(
 		&h.ID,
 		&h.Title,
 		&h.OwnerID,
@@ -113,79 +119,76 @@ func (r *Repository) HotelGetBySlug(ctx context.Context, hotelRef models.HotelRe
 		&h.Rating,
 		&h.CreatedAt,
 		&h.UpdatedAt,
-	}
-
-	if err := r.db.QueryRow(ctx, query.HotelGetBySlug, insertArgs...).Scan(scanArgs...); err != nil {
+	)
+	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Hotel{}, consts.HotelNotFound
+			return nil, consts.ErrHotelNotFound
 		}
-		return models.Hotel{}, err
+		return nil, err
 	}
 
-	return h, nil
+	return &h, nil
 }
 
-func (r *Repository) HotelUpdateBySlug(ctx context.Context, hotelRef models.HotelRef, h models.HotelUpdate) error {
-	updateArgs := []any{
+func (r *Repository) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotel) error {
+	row, err := r.db.Exec(
+		ctx, query.UpdateHotelBySlug,
 		h.Description,
 		h.Address,
 		h.Location.Longitude,
 		h.Location.Latitude,
-		hotelRef.CountryCode,
-		hotelRef.CitySlug,
-		hotelRef.HotelSlug,
-	}
-
-	row, err := r.db.Exec(ctx, query.HotelUpdateBySlug, updateArgs...)
+		ref.CountryCode,
+		ref.CitySlug,
+		ref.HotelSlug,
+	)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return consts.UniqueHotelField
+			return consts.ErrUniqueHotelField
 		}
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.HotelNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
 	}
 
 	return nil
 }
 
-func (r *Repository) HotelTitleUpdateBySlug(
+func (r *Repository) UpdateHotelTitleBySlug(
 	ctx context.Context,
-	hotelRef models.HotelRef,
-	h models.HotelTitleUpdate,
+	ref models.HotelRef,
+	h models.UpdateHotelTitle,
 ) error {
-	updateArgs := []any{
+	row, err := r.db.Exec(
+		ctx, query.UpdateHotelTitleBySlug,
 		h.Title,
-		h.Slug,
-		hotelRef.CountryCode,
-		hotelRef.CitySlug,
-		hotelRef.HotelSlug,
-	}
-
-	row, err := r.db.Exec(ctx, query.HotelTitleUpdateBySlug, updateArgs...)
+		h.HotelSlug,
+		ref.CountryCode,
+		ref.CitySlug,
+		ref.HotelSlug,
+	)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return consts.UniqueHotelField
+			return consts.ErrUniqueHotelField
 		}
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.HotelNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
 	}
 
 	return nil
 }
 
-func (r *Repository) HotelDeleteBySlug(ctx context.Context, hotelRef models.HotelRef) error {
-	row, err := r.db.Exec(ctx, query.HotelDeleteBySlug, hotelRef.CountryCode, hotelRef.CitySlug, hotelRef.HotelSlug)
+func (r *Repository) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error {
+	row, err := r.db.Exec(ctx, query.DeleteHotelBySlug, ref.CountryCode, ref.CitySlug, ref.HotelSlug)
 	if err != nil {
 		return err
 	}
-	if rowAffected := row.RowsAffected(); rowAffected == 0 {
-		return consts.HotelNotFound
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
 	}
 
 	return nil

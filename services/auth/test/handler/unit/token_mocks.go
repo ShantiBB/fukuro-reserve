@@ -4,7 +4,7 @@ import (
 	"github.com/stretchr/testify/mock"
 
 	"auth/internal/mocks"
-	"auth/pkg/utils/consts"
+	"auth/pkg/lib/utils/consts"
 )
 
 // RegisterByEmail mocks
@@ -16,12 +16,12 @@ var (
 
 	MockRegisterConflict = func(m *mocks.MockService) {
 		m.On("RegisterByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, consts.UniqueUserField)
+			Return(nil, consts.ErrUniqueUserField)
 	}
 
 	MockRegisterServerError = func(m *mocks.MockService) {
 		m.On("RegisterByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, consts.InternalServer)
+			Return(nil, consts.ErrInternalServer)
 	}
 )
 
@@ -34,17 +34,17 @@ var (
 
 	MockLoginInvalidCredentials = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, consts.InvalidCredentials)
+			Return(nil, consts.ErrInvalidCredentials)
 	}
 
 	MockLoginUserNotFound = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, consts.UserNotFound)
+			Return(nil, consts.ErrUserNotFound)
 	}
 
 	MockLoginServerError = func(m *mocks.MockService) {
 		m.On("LoginByEmail", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-			Return(nil, consts.InternalServer)
+			Return(nil, consts.ErrInternalServer)
 	}
 )
 
@@ -57,11 +57,11 @@ var (
 
 	MockRefreshInvalidToken = func(m *mocks.MockService) {
 		m.On("RefreshToken", mock.Anything, mock.Anything).
-			Return(nil, consts.InvalidRefreshToken)
+			Return(nil, consts.ErrInvalidToken)
 	}
 
 	MockRefreshServerError = func(m *mocks.MockService) {
 		m.On("RefreshToken", mock.Anything, mock.Anything).
-			Return(nil, consts.InternalServer)
+			Return(nil, consts.ErrInternalServer)
 	}
 )

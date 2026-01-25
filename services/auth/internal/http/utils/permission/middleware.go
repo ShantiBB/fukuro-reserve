@@ -10,39 +10,41 @@ import (
 
 	"auth/internal/http/dto/response"
 	"auth/internal/http/utils/helper"
-	"auth/pkg/utils/consts"
-	jwt2 "auth/pkg/utils/jwt"
+	"auth/pkg/lib/utils/consts"
+	"auth/pkg/lib/utils/jwt"
 )
 
 type contextKey string
-type Check func(r *http.Request, claims *jwt2.Claims) bool
+type Check func(r *http.Request, claims *jwt.Claims) bool
 
 const ClaimsKey contextKey = "claims"
 
 func AuthRequire(jwtSecret string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			bearerToken := r.Header.Get("Authorization")
-			token, ok := strings.CutPrefix(bearerToken, "Bearer ")
-			if !ok {
-				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.Unauthorized))
-				return
-			}
+		return http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				bearerToken := r.Header.Get("Authorization")
+				token, ok := strings.CutPrefix(bearerToken, "Bearer ")
+				if !ok {
+					helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.ErrUnauthorized))
+					return
+				}
 
-			claims, err := jwt2.ParseToken(token, []byte(jwtSecret))
-			if err != nil {
-				helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.Forbidden))
-				return
-			}
+				claims, err := jwt.ParseBearerToken(token, jwtSecret)
+				if err != nil {
+					helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.ErrForbidden))
+					return
+				}
 
-			ctx := context.WithValue(r.Context(), ClaimsKey, claims)
-			next.ServeHTTP(w, r.WithContext(ctx))
-		})
+				ctx := context.WithValue(r.Context(), ClaimsKey, claims)
+				next.ServeHTTP(w, r.WithContext(ctx))
+			},
+		)
 	}
 }
 
-func GetClaims(ctx context.Context) *jwt2.Claims {
-	claims, ok := ctx.Value(ClaimsKey).(*jwt2.Claims)
+func GetClaims(ctx context.Context) *jwt.Claims {
+	claims, ok := ctx.Value(ClaimsKey).(*jwt.Claims)
 	if !ok {
 		return nil
 	}
@@ -51,26 +53,28 @@ func GetClaims(ctx context.Context) *jwt2.Claims {
 
 func RequireRoles(checks ...Check) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			claims := GetClaims(r.Context())
-			if claims == nil {
-				helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.Unauthorized))
-				return
-			}
-
-			for _, check := range checks {
-				if check(r, claims) {
-					next.ServeHTTP(w, r)
+		return http.HandlerFunc(
+			func(w http.ResponseWriter, r *http.Request) {
+				claims := GetClaims(r.Context())
+				if claims == nil {
+					helper.SendError(w, r, http.StatusUnauthorized, response.ErrorResp(consts.ErrUnauthorized))
 					return
 				}
-			}
 
-			helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.Forbidden))
-		})
+				for _, check := range checks {
+					if check(r, claims) {
+						next.ServeHTTP(w, r)
+						return
+					}
+				}
+
+				helper.SendError(w, r, http.StatusForbidden, response.ErrorResp(consts.ErrForbidden))
+			},
+		)
 	}
 }
 
-func IsOwner(r *http.Request, claims *jwt2.Claims) bool {
+func IsOwner(r *http.Request, claims *jwt.Claims) bool {
 	userID := chi.URLParam(r, "id")
 	targetUserID, err := strconv.ParseInt(userID, 10, 64)
 	if err != nil {
@@ -79,10 +83,10 @@ func IsOwner(r *http.Request, claims *jwt2.Claims) bool {
 	return claims.Sub == targetUserID
 }
 
-func IsAdmin(_ *http.Request, claims *jwt2.Claims) bool {
+func IsAdmin(_ *http.Request, claims *jwt.Claims) bool {
 	return claims.Role == RoleAdmin
 }
 
-func IsModerator(_ *http.Request, claims *jwt2.Claims) bool {
+func IsModerator(_ *http.Request, claims *jwt.Claims) bool {
 	return claims.Role == RoleModerator
 }

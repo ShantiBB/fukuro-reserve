@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "buf/validate/validate.proto";
+import "hotel/v1/models/room.proto";
+
+message GetRoomRequest {
+  string id = 4 [
+    (buf.validate.field).string.uuid = true
+  ];
+}
+
+message GetRoomResponse {
+  Room room = 1;
+}

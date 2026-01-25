@@ -9,20 +9,20 @@ import (
 )
 
 type Location struct {
-	Latitude  float64 `json:"latitude"`
-	Longitude float64 `json:"longitude"`
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
 }
 
 type HotelCreate struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	Slug        string    `json:"slug"`
-	OwnerID     int64     `json:"owner_id"`
-	Description *string   `json:"description"`
-	Address     string    `json:"address"`
-	Location    Location  `json:"location"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Description *string   `json:"description"`
+	Title       string    `json:"title"`
+	Slug        string    `json:"slug"`
+	Address     string    `json:"address"`
+	OwnerID     int64     `json:"owner_id"`
+	Location    Location  `json:"location"`
+	ID          uuid.UUID `json:"id"`
 }
 
 type HotelUpdate struct {
@@ -37,32 +37,32 @@ type HotelTitleUpdate struct {
 }
 
 type HotelShort struct {
-	ID       uuid.UUID `json:"id"`
+	Rating   *float32  `json:"rating"`
 	Title    string    `json:"title"`
 	Slug     string    `json:"slug"`
-	OwnerID  int64     `json:"owner_id"`
 	Address  string    `json:"address"`
-	Rating   *float32  `json:"rating"`
+	OwnerID  int64     `json:"owner_id"`
 	Location Location  `json:"location"`
+	ID       uuid.UUID `json:"id"`
 }
 
 type Hotel struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	OwnerID     int64     `json:"owner_id"`
-	Description *string   `json:"description"`
-	Address     string    `json:"address"`
-	Rating      *float32  `json:"rating"`
-	Location    Location  `json:"location"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Description *string   `json:"description"`
+	Rating      *float32  `json:"rating"`
+	Title       string    `json:"title"`
+	Address     string    `json:"address"`
+	OwnerID     int64     `json:"owner_id"`
+	Location    Location  `json:"location"`
+	ID          uuid.UUID `json:"id"`
 }
 
 type HotelList struct {
+	Links            pagination.Links `json:"links"`
 	Hotels           []HotelShort     `json:"hotels"`
 	CurrentPage      uint64           `json:"current_page"`
 	Limit            uint64           `json:"limit"`
-	Links            pagination.Links `json:"links"`
 	TotalPageCount   uint64           `json:"total_page_count"`
 	TotalHotelsCount uint64           `json:"total_rooms_count"`
 }

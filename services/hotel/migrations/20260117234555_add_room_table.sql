@@ -1,7 +1,17 @@
 -- +goose Up
 -- +goose StatementBegin
-CREATE TYPE room_type AS ENUM ('single', 'double', 'suite', 'deluxe', 'family', 'presidential');
-CREATE TYPE room_status AS ENUM ('available', 'occupied', 'maintenance', 'cleaning');
+CREATE TYPE room_type AS ENUM ('ROOM_TYPE_UNSPECIFIED',
+                               'ROOM_TYPE_SINGLE',
+                               'ROOM_TYPE_DOUBLE',
+                               'ROOM_TYPE_SUITE',
+                               'ROOM_TYPE_DELUXE',
+                               'ROOM_TYPE_FAMILY',
+                               'ROOM_TYPE_PRESIDENTIAL');
+
+CREATE TYPE room_status AS ENUM ('ROOM_STATUS_AVAILABLE',
+                                 'ROOM_STATUS_OCCUPIED',
+                                 'ROOM_STATUS_MAINTENANCE',
+                                 'ROOM_STATUS_CLEANING');
 
 CREATE TABLE IF NOT EXISTS room (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -10,7 +20,7 @@ CREATE TABLE IF NOT EXISTS room (
     title VARCHAR(100) NOT NULL,
     description TEXT,
     type room_type NOT NULL,
-    status room_status NOT NULL DEFAULT 'available',
+    status room_status NOT NULL DEFAULT 'ROOM_STATUS_AVAILABLE',
     price NUMERIC(10,2) NOT NULL CHECK (price > 0),
     capacity INT NOT NULL CHECK (capacity > 0 AND capacity <= 10),
     area_sqm NUMERIC(6,2) NOT NULL,
@@ -25,7 +35,7 @@ CREATE TABLE IF NOT EXISTS room (
 
 CREATE INDEX rooms_hotel_id_idx ON room (hotel_id);
 CREATE INDEX rooms_type_idx ON room (type);
-CREATE INDEX rooms_status_idx ON room (status) WHERE status = 'available';
+CREATE INDEX rooms_status_idx ON room (status) WHERE status = 'ROOM_STATUS_AVAILABLE';
 CREATE INDEX rooms_price_idx ON room (price);
 
 CREATE TRIGGER update_rooms_updated_at

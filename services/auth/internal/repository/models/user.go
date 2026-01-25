@@ -2,50 +2,56 @@ package models
 
 import "time"
 
-type UserCreate struct {
+type CreateUser struct {
 	Username *string
 	Email    string
 	Password string
 }
 
+type UpdateUser struct {
+	Username string
+	Email    string
+	ID       int64
+}
+
 type User struct {
-	ID        int64
-	Username  *string
-	Email     string
-	Role      string
-	IsActive  bool
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	Username  *string
+	Email     string
+	Role      UserRole
+	ID        int64
+	IsActive  bool
 }
 
 type UserShort struct {
-	ID       int64
 	Username *string
 	Email    string
-	Role     string
+	Role     UserRole
+	ID       int64
 	IsActive bool
 }
 
 type UserList struct {
-	Users      []UserShort
+	Users      []*UserShort
 	TotalCount uint64
 }
 
-type UserUpdatePassword struct {
-	ID          int64
+type UpdateUserPassword struct {
 	Password    string
 	NewPassword string
+	ID          int64
 }
 
 type UserCredentials struct {
-	ID       int64
 	Email    string
-	Role     string
+	Role     UserRole
 	Password string
+	ID       int64
 }
 
-func (u UserCreate) ToUserRead() User {
-	return User{
+func (u CreateUser) ToUserRead() *User {
+	return &User{
 		Username: u.Username,
 		Email:    u.Email,
 	}

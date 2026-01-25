@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package user.v1;
+
+option go_package = "api/user/v1;userv1";
+
+import "buf/validate/validate.proto";
+import "google/protobuf/wrappers.proto";
+
+message UpdateUserActivityRequest {
+  int64 id = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).int64.gte = 1
+  ];
+  google.protobuf.BoolValue is_active = 2 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message UpdateUserActivityResponse {
+  bool isActive = 1;
+}

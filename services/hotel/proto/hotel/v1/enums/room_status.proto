@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+enum RoomStatus {
+  ROOM_STATUS_UNSPECIFIED = 0;
+  ROOM_STATUS_AVAILABLE = 1;
+  ROOM_STATUS_OCCUPIED = 2;
+  ROOM_STATUS_MAINTENANCE = 3;
+  ROOM_STATUS_CLEANING = 4;
+}

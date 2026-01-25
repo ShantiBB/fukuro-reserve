@@ -20,11 +20,11 @@ import (
 
 func TestUserCreate(t *testing.T) {
 	cases := []struct {
-		name           string
 		requestBody    any
 		mockSetup      func(*mocks.MockService)
-		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
+		name           string
+		expectedStatus int
 	}{
 		{
 			name:           "Successful user creation",
@@ -104,10 +104,10 @@ func TestUserCreate(t *testing.T) {
 
 func TestUserGetAll(t *testing.T) {
 	cases := []struct {
-		name           string
 		mockSetup      func(*mocks.MockService)
-		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
+		name           string
+		expectedStatus int
 	}{
 		{
 			name:           "Successful retrieving users",
@@ -146,11 +146,11 @@ func TestUserGetAll(t *testing.T) {
 
 func TestUserGetByID(t *testing.T) {
 	cases := []struct {
-		name           string
 		mockSetup      func(*mocks.MockService)
+		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
+		name           string
 		userID         string
 		expectedStatus int
-		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
 	}{
 		{
 			name:           "Successful retrieving user",

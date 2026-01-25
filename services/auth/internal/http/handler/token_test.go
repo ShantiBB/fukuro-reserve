@@ -18,11 +18,11 @@ import (
 
 func TestRegisterByEmail(t *testing.T) {
 	cases := []struct {
-		name           string
 		requestBody    any
 		mockSetup      func(*mocks.MockService)
-		expectedStatus int
 		respCheckers   unit.ResponseChecker
+		name           string
+		expectedStatus int
 	}{
 		{
 			name:           "Successful registration",
@@ -103,11 +103,11 @@ func TestRegisterByEmail(t *testing.T) {
 
 func TestLoginByEmail(t *testing.T) {
 	cases := []struct {
-		name           string
 		requestBody    any
 		mockSetup      func(*mocks.MockService)
-		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
+		name           string
+		expectedStatus int
 	}{
 		{
 			name:           "Successful login",
@@ -190,11 +190,11 @@ func TestLoginByEmail(t *testing.T) {
 
 func TestRefreshToken(t *testing.T) {
 	cases := []struct {
-		name           string
 		requestBody    any
 		mockSetup      func(*mocks.MockService)
-		expectedStatus int
 		respCheckers   func(*testing.T, *httptest.ResponseRecorder)
+		name           string
+		expectedStatus int
 	}{
 		{
 			name:           "Successful tokenCreds refresh",

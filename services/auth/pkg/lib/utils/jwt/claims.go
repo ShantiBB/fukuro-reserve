@@ -10,9 +10,9 @@ import (
 )
 
 type Claims struct {
-	Sub  int64
-	Role models.UserRole
 	jwt.RegisteredClaims
+	Role models.UserRole
+	Sub  int64
 }
 
 type Token struct {

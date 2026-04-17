@@ -37,9 +37,9 @@ func ValidateAmount(value string) error {
 // This is a copy of the type from handler package to avoid import cycles
 type CreateBookingRoomRequest struct {
 	RoomId        string
+	PricePerNight string
 	Adults        uint32
 	Children      uint32
-	PricePerNight string
 }
 
 // ValidateRoom validates a single room's fields

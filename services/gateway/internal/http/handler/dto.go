@@ -49,13 +49,13 @@ type UpdateUserRoleRequest struct {
 }
 
 type UserResponse struct {
-	Id        int64     `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 	Email     string    `json:"email"`
 	Username  string    `json:"username,omitempty"`
 	Role      string    `json:"role"`
+	Id        int64     `json:"id"`
 	IsActive  bool      `json:"is_active"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type UsersResponse struct {
@@ -69,19 +69,19 @@ type LocationDTO struct {
 }
 
 type CreateHotelRequest struct {
+	Location    *LocationDTO `json:"location,omitempty"`
 	CountryCode string       `json:"country_code"`
 	CitySlug    string       `json:"city_slug"`
 	Title       string       `json:"title"`
-	OwnerId     int64        `json:"owner_id"`
 	Description string       `json:"description,omitempty"`
 	Address     string       `json:"address"`
-	Location    *LocationDTO `json:"location,omitempty"`
+	OwnerId     int64        `json:"owner_id"`
 }
 
 type UpdateHotelRequest struct {
+	Location    *LocationDTO `json:"location,omitempty"`
 	Description string       `json:"description"`
 	Address     string       `json:"address"`
-	Location    *LocationDTO `json:"location,omitempty"`
 }
 
 type UpdateHotelTitleRequest struct {
@@ -89,26 +89,26 @@ type UpdateHotelTitleRequest struct {
 }
 
 type HotelResponse struct {
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+	Location    *LocationDTO `json:"location,omitempty"`
 	Id          string       `json:"id"`
 	Title       string       `json:"title"`
 	HotelSlug   string       `json:"hotel_slug,omitempty"`
-	OwnerId     int64        `json:"owner_id"`
 	Description string       `json:"description"`
-	Rating      float32      `json:"rating,omitempty"`
 	Address     string       `json:"address"`
-	Location    *LocationDTO `json:"location,omitempty"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	OwnerId     int64        `json:"owner_id"`
+	Rating      float32      `json:"rating,omitempty"`
 }
 
 type HotelShortResponse struct {
+	Location  *LocationDTO `json:"location,omitempty"`
 	Id        string       `json:"id"`
 	Title     string       `json:"title"`
 	HotelSlug string       `json:"hotel_slug"`
+	Address   string       `json:"address"`
 	OwnerId   int64        `json:"owner_id"`
 	Rating    float32      `json:"rating,omitempty"`
-	Address   string       `json:"address"`
-	Location  *LocationDTO `json:"location,omitempty"`
 }
 
 type HotelsResponse struct {
@@ -117,20 +117,20 @@ type HotelsResponse struct {
 
 // Room DTOs
 type CreateRoomRequest struct {
-	CountryCode string   `json:"country_code"`
-	CitySlug    string   `json:"city_slug"`
+	RoomNumber  string   `json:"room_number"`
+	Type        string   `json:"type"`
 	HotelSlug   string   `json:"hotel_slug"`
 	HotelId     string   `json:"hotel_id,omitempty"`
 	Title       string   `json:"title"`
 	Description string   `json:"description,omitempty"`
-	RoomNumber  string   `json:"room_number"`
-	Type        string   `json:"type"`
 	Price       string   `json:"price"`
-	Capacity    int64    `json:"capacity"`
-	AreaSqm     float32  `json:"area_sqm"`
-	Floor       int64    `json:"floor"`
+	CountryCode string   `json:"country_code"`
+	CitySlug    string   `json:"city_slug"`
 	Amenities   []string `json:"amenities"`
 	Images      []string `json:"images"`
+	Floor       int64    `json:"floor"`
+	Capacity    int64    `json:"capacity"`
+	AreaSqm     float32  `json:"area_sqm"`
 }
 
 type UpdateRoomRequest struct {
@@ -139,11 +139,11 @@ type UpdateRoomRequest struct {
 	Type        string   `json:"type"`
 	Description string   `json:"description"`
 	Price       string   `json:"price"`
-	Capacity    int64    `json:"capacity"`
-	AreaSqm     float32  `json:"area_sqm"`
-	Floor       int64    `json:"floor"`
 	Amenities   []string `json:"amenities"`
 	Images      []string `json:"images"`
+	Capacity    int64    `json:"capacity"`
+	Floor       int64    `json:"floor"`
+	AreaSqm     float32  `json:"area_sqm"`
 }
 
 type UpdateRoomStatusRequest struct {
@@ -151,20 +151,20 @@ type UpdateRoomStatusRequest struct {
 }
 
 type RoomResponse struct {
-	Id          string    `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Price       string    `json:"price"`
 	RoomNumber  string    `json:"room_number"`
 	Status      string    `json:"status"`
 	Type        string    `json:"type"`
-	Price       string    `json:"price"`
-	Capacity    int64     `json:"capacity"`
-	AreaSqm     float32   `json:"area_sqm"`
-	Floor       int64     `json:"floor"`
+	Id          string    `json:"id"`
+	Description string    `json:"description,omitempty"`
+	Title       string    `json:"title"`
 	Amenities   []string  `json:"amenities"`
 	Images      []string  `json:"images"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Capacity    int64     `json:"capacity"`
+	Floor       int64     `json:"floor"`
+	AreaSqm     float32   `json:"area_sqm"`
 }
 
 type RoomShortResponse struct {
@@ -174,10 +174,10 @@ type RoomShortResponse struct {
 	Status     string   `json:"status"`
 	Type       string   `json:"type"`
 	Price      string   `json:"price"`
-	Capacity   int64    `json:"capacity"`
-	AreaSqm    float32  `json:"area_sqm"`
 	Amenities  []string `json:"amenities"`
 	Images     []string `json:"images"`
+	Capacity   int64    `json:"capacity"`
+	AreaSqm    float32  `json:"area_sqm"`
 }
 
 type RoomsResponse struct {
@@ -187,64 +187,64 @@ type RoomsResponse struct {
 // Booking DTOs
 type CreateBookingRoomRequest struct {
 	RoomId        string `json:"room_id"`
+	PricePerNight string `json:"price_per_night"`
 	Adults        uint32 `json:"adults"`
 	Children      uint32 `json:"children"`
-	PricePerNight string `json:"price_per_night"`
 }
 
 type CreateBookingRequest struct {
-	UserId              int64                       `json:"user_id"`
-	HotelId             string                      `json:"hotel_id"`
 	CheckIn             time.Time                   `json:"check_in"`
 	CheckOut            time.Time                   `json:"check_out"`
+	HotelId             string                      `json:"hotel_id"`
 	GuestName           string                      `json:"guest_name"`
 	GuestEmail          string                      `json:"guest_email,omitempty"`
 	GuestPhone          string                      `json:"guest_phone,omitempty"`
 	Currency            string                      `json:"currency"`
 	ExpectedTotalAmount string                      `json:"expected_total_amount"`
 	Rooms               []*CreateBookingRoomRequest `json:"rooms"`
+	UserId              int64                       `json:"user_id"`
 }
 
 type BookingRoomResponse struct {
 	Id            string `json:"id"`
 	RoomId        string `json:"room_id"`
+	PricePerNight string `json:"price_per_night"`
 	Adults        uint32 `json:"adults"`
 	Children      uint32 `json:"children"`
-	PricePerNight string `json:"price_per_night"`
 }
 
 type BookingResponse struct {
-	Id                  string                 `json:"id"`
-	UserId              int64                  `json:"user_id"`
-	HotelId             string                 `json:"hotel_id"`
-	CheckIn             time.Time              `json:"check_in"`
 	CheckOut            time.Time              `json:"check_out"`
-	Status              string                 `json:"status"`
+	UpdatedAt           time.Time              `json:"updated_at"`
+	CreatedAt           time.Time              `json:"created_at"`
+	CheckIn             time.Time              `json:"check_in"`
 	GuestName           string                 `json:"guest_name"`
+	Status              string                 `json:"status"`
+	Id                  string                 `json:"id"`
 	GuestEmail          string                 `json:"guest_email,omitempty"`
 	GuestPhone          string                 `json:"guest_phone,omitempty"`
 	Currency            string                 `json:"currency"`
 	ExpectedTotalAmount string                 `json:"expected_total_amount"`
 	FinalTotalAmount    string                 `json:"final_total_amount,omitempty"`
-	CreatedAt           time.Time              `json:"created_at"`
-	UpdatedAt           time.Time              `json:"updated_at"`
+	HotelId             string                 `json:"hotel_id"`
 	BookingRooms        []*BookingRoomResponse `json:"booking_rooms"`
+	UserId              int64                  `json:"user_id"`
 }
 
 type BookingShortResponse struct {
-	Id                  string                 `json:"id"`
-	UserId              int64                  `json:"user_id"`
-	HotelId             string                 `json:"hotel_id"`
 	CheckIn             time.Time              `json:"check_in"`
 	CheckOut            time.Time              `json:"check_out"`
-	Status              string                 `json:"status"`
 	GuestName           string                 `json:"guest_name"`
+	HotelId             string                 `json:"hotel_id"`
+	Status              string                 `json:"status"`
+	Id                  string                 `json:"id"`
 	GuestEmail          string                 `json:"guest_email,omitempty"`
 	GuestPhone          string                 `json:"guest_phone,omitempty"`
 	Currency            string                 `json:"currency"`
 	ExpectedTotalAmount string                 `json:"expected_total_amount"`
 	FinalTotalAmount    string                 `json:"final_total_amount,omitempty"`
 	BookingRooms        []*BookingRoomResponse `json:"booking_rooms"`
+	UserId              int64                  `json:"user_id"`
 }
 
 type BookingsResponse struct {

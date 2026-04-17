@@ -19,13 +19,13 @@ type JWTConfig struct {
 }
 
 type Config struct {
-	Env     string         `yaml:"env" env:"ENV" env-default:"local"`
-	LogLevel string        `yaml:"log_level" env:"LOG_LEVEL" env-default:"info"`
-	HTTP    HTTPConfig     `yaml:"http" env-prefix:"HTTP_"`
-	JWT     JWTConfig      `yaml:"jwt" env-prefix:"JWT_"`
-	Auth    GRPCServiceConfig `yaml:"auth" env-prefix:"AUTH_"`
-	Hotel   GRPCServiceConfig `yaml:"hotel" env-prefix:"HOTEL_"`
-	Booking GRPCServiceConfig `yaml:"booking" env-prefix:"BOOKING_"`
+	Env      string            `yaml:"env" env:"ENV" env-default:"local"`
+	LogLevel string            `yaml:"log_level" env:"LOG_LEVEL" env-default:"info"`
+	HTTP     HTTPConfig        `yaml:"http" env-prefix:"HTTP_"`
+	JWT      JWTConfig         `yaml:"jwt" env-prefix:"JWT_"`
+	Auth     GRPCServiceConfig `yaml:"auth" env-prefix:"AUTH_"`
+	Hotel    GRPCServiceConfig `yaml:"hotel" env-prefix:"HOTEL_"`
+	Booking  GRPCServiceConfig `yaml:"booking" env-prefix:"BOOKING_"`
 }
 
 func New(configPath string) (*Config, error) {

@@ -41,6 +41,10 @@ func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.Booki
 		Status: BookingStatusToDomain(req.Status),
 	}
 
+	if req.HotelId == "" {
+		return bookingRef, nil
+	}
+
 	hotelID, err := uuid.Parse(req.HotelId)
 	if err != nil {
 		return models.BookingRef{}, consts.ErrInvalidHotelID

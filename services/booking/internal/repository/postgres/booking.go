@@ -56,12 +56,27 @@ func (r *Repository) GetBookingsByHotelInfo(
 ) (*models.BookingList, error) {
 	db := r.executor(tx)
 
+	var userID any
+	if bookingRef.UserID > 0 {
+		userID = bookingRef.UserID
+	}
+
+	var hotelID any
+	if bookingRef.HotelID != uuid.Nil {
+		hotelID = bookingRef.HotelID
+	}
+
+	var statusFilter any
+	if bookingRef.Status != models.BookingStatusUnspecified {
+		statusFilter = bookingRef.Status
+	}
+
 	rows, err := db.Query(
 		ctx,
 		query.GetBookingsByHotelInfo,
-		bookingRef.UserID,
-		bookingRef.HotelID,
-		bookingRef.Status,
+		userID,
+		hotelID,
+		statusFilter,
 		limit,
 		offset,
 	)
@@ -110,9 +125,9 @@ func (r *Repository) GetBookingsByHotelInfo(
 	if err = db.QueryRow(
 		ctx,
 		query.GetBookingCountRows,
-		bookingRef.UserID,
-		bookingRef.HotelID,
-		bookingRef.Status,
+		userID,
+		hotelID,
+		statusFilter,
 	).Scan(&bookingList.TotalCount); err != nil {
 		return nil, err
 	}

@@ -47,8 +47,8 @@ func (h *Handler) GetBookings(
 	ctx context.Context,
 	req *bookingv1.GetBookingsRequest,
 ) (*bookingv1.GetBookingsResponse, error) {
-	if err := h.validator.Validate(req); err != nil {
-		return nil, helper.HandleValidationErr(err)
+	if req.Page == 0 || req.Limit == 0 || req.Limit > 100 {
+		return nil, status.Error(codes.InvalidArgument, "invalid pagination")
 	}
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)

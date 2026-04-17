@@ -1,0 +1,21 @@
+env: local
+log_level: debug
+
+http:
+  host: 0.0.0.0
+  port: 8080
+
+jwt:
+  access_secret: "b97f56e9cf04a5f51da1bc7ab16d5ccaac5f490a76b445c0b6514a4e34806ea4"
+
+auth:
+  host: localhost
+  port: 8081
+
+hotel:
+  host: localhost
+  port: 8082
+
+booking:
+  host: localhost
+  port: 8083

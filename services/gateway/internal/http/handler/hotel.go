@@ -114,6 +114,14 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		citySlug = r.URL.Query().Get("city_slug")
 	}
 
+	sortBy := r.URL.Query().Get("sortBy")
+	if sortBy == "" {
+		sortBy = r.URL.Query().Get("sort_by")
+	}
+	if sortBy == "" {
+		sortBy = "title"
+	}
+
 	page := utils.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = 1
@@ -128,6 +136,7 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		r.Context(), &hotelv1.GetHotelsRequest{
 			CountryCode: countryCode,
 			CitySlug:    citySlug,
+			SortBy:      sortBy,
 			Page:        page,
 			Limit:       limit,
 		},
@@ -308,7 +317,10 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	var price float32
 	if req.Price != "" {
 		var p float64
-		fmt.Sscanf(req.Price, "%f", &p)
+		if _, err := fmt.Sscanf(req.Price, "%f", &p); err != nil {
+			utils.RespondError(w, http.StatusBadRequest, "invalid price")
+			return
+		}
 		price = float32(p)
 	}
 

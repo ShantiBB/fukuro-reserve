@@ -2,7 +2,7 @@ version: '3'
 
 tasks:
   run:
-    desc: "Run (task run service=auth|hotel|booking)"
+    desc: "Run (task run service=auth|hotel|booking|gateway)"
     cmd: "go run services/{{.service}}/cmd/app/main.go"
     env:
       CONFIG_PATH: "services/{{.service}}/config/local.yaml"
@@ -10,7 +10,7 @@ tasks:
       vars: [service]
 
   build:
-    desc: "Build (task build service=auth|hotel|booking)"
+    desc: "Build (task build service=auth|hotel|booking|gateway)"
     cmds:
       - go build -o build/{{.service}}-service services/{{.service}}/cmd/app/main.go
     requires:
@@ -26,7 +26,7 @@ tasks:
       vars: [service]
 
   swag-gen:
-    desc: "Generate Swagger docs (task swag-gen service=auth|hotel|booking)"
+    desc: "Generate Swagger docs (task swag-gen service=auth|hotel|booking|gateway)"
     dir: services/{{.service}}
     cmds:
       - swag init -g cmd/app/main.go --output docs
@@ -70,3 +70,7 @@ tasks:
     cmd: goose create {{.title}} sql --dir services/{{.service}}/migrations
     requires:
       vars: [service]
+
+  gateway-smoke:
+    desc: "Run gateway smoke test"
+    cmd: bash scripts/gateway_smoke.sh

@@ -36,7 +36,7 @@ func New(cfg *config.Config) (*Clients, error) {
 	hotelAddr := fmt.Sprintf("%s:%d", cfg.Hotel.Host, cfg.Hotel.Port)
 	hotelConn, err := grpc.NewClient(hotelAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		authConn.Close()
+		_ = authConn.Close()
 		return nil, fmt.Errorf("failed to connect to hotel service: %w", err)
 	}
 
@@ -44,8 +44,8 @@ func New(cfg *config.Config) (*Clients, error) {
 	bookingAddr := fmt.Sprintf("%s:%d", cfg.Booking.Host, cfg.Booking.Port)
 	bookingConn, err := grpc.NewClient(bookingAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		authConn.Close()
-		hotelConn.Close()
+		_ = authConn.Close()
+		_ = hotelConn.Close()
 		return nil, fmt.Errorf("failed to connect to booking service: %w", err)
 	}
 

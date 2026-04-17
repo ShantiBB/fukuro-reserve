@@ -94,7 +94,9 @@ func (app *App) MustRun() {
 	r.Get(
 		"/health", func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			w.Write([]byte("OK"))
+			if _, err := w.Write([]byte("OK")); err != nil {
+				slog.Error("Failed to write health response", "error", err)
+			}
 		},
 	)
 

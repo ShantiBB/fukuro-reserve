@@ -70,7 +70,3 @@ tasks:
     cmd: goose create {{.title}} sql --dir services/{{.service}}/migrations
     requires:
       vars: [service]
-
-  gateway-smoke:
-    desc: "Run gateway smoke test"
-    cmd: bash scripts/gateway_smoke.sh

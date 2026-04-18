@@ -28,6 +28,7 @@ services/booking/build
 .venv
 .DS_Store
 build
+http-client.private.env.json
 
 # node
 node_modules

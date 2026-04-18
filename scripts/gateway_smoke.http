@@ -1,0 +1,531 @@
+### Gateway smoke flow for GoLand HTTP Client
+### Prerequisites:
+### 1) All 4 services are running.
+### 2) Choose environment `local` from `http-client.env.json`.
+### 3) Set real `adminEmail` and `adminPassword` in `http-client.private.env.json`.
+### 4) Run all requests in file order.
+
+### Variables are loaded from environment files:
+### - http-client.env.json (public defaults)
+### - http-client.private.env.json (private secrets)
+
+### 01. Health + dynamic variables
+GET {{baseUrl}}/health
+
+> {%
+  client.test("health is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+
+  const ts = String(Math.floor(Date.now() / 1000));
+  client.global.set("ts", ts);
+  client.global.set("ownerEmail", "http-owner-" + ts + "@example.com");
+  client.global.set("managedEmail", "http-managed-" + ts + "@example.com");
+  client.global.set("ownerUsername", "http-owner-" + ts);
+  client.global.set("managedUsername", "http-managed-" + ts);
+  client.global.set("hotelTitle", "HTTP Smoke Hotel " + ts);
+  client.global.set("hotelTitleRenamed", "HTTP Smoke Hotel Renamed " + ts);
+%}
+
+### 02. Register owner
+POST {{baseUrl}}/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{ownerEmail}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("register owner is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+  client.global.set("ownerAccess", response.body.access);
+  client.global.set("ownerRefresh", response.body.refresh);
+%}
+
+### 03. Login admin
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{adminEmail}}",
+  "password": "{{adminPassword}}"
+}
+
+> {%
+  client.test("admin login is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+  client.global.set("adminAccess", response.body.access);
+%}
+
+### 04. Login owner
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{ownerEmail}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("owner login is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+  client.global.set("ownerAccess", response.body.access);
+%}
+
+### 05. Refresh owner token
+POST {{baseUrl}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "{{ownerRefresh}}"
+}
+
+> {%
+  client.test("owner refresh is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 06. Decode owner id from JWT
+GET {{baseUrl}}/api/v1/auth/users?page=1&limit=100
+Authorization: Bearer {{adminAccess}}
+
+> {%
+  client.test("users list for owner id lookup is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+
+  const users = response.body.users || [];
+  const ownerEmail = client.global.get("ownerEmail");
+  const owner = users.find(function (u) {
+    return u.email === ownerEmail;
+  });
+  client.assert(owner, "Owner was not found in users list");
+  client.global.set("ownerId", String(owner.id));
+%}
+
+### 07. Users list as owner (must be forbidden)
+GET {{baseUrl}}/api/v1/auth/users?page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("users list by owner is 403", function () {
+    client.assert(response.status === 403, "Expected 403");
+  });
+%}
+
+### 08. Users list as admin
+GET {{baseUrl}}/api/v1/auth/users?page=1&limit=10
+Authorization: Bearer {{adminAccess}}
+
+> {%
+  client.test("users list by admin is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 09. Get owner profile
+GET {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get owner profile is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 10. Update owner profile
+PUT {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "email": "{{ownerEmail}}",
+  "username": "{{ownerUsername}}"
+}
+
+> {%
+  client.test("update owner profile is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 11. Create managed user as admin
+POST {{baseUrl}}/api/v1/auth/users
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "email": "{{managedEmail}}",
+  "username": "{{managedUsername}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("create managed user is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("managedId", String(response.body.id));
+%}
+
+### 12. Update owner activity as admin
+PATCH {{baseUrl}}/api/v1/auth/users/{{ownerId}}/activity
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "is_active": true
+}
+
+> {%
+  client.test("update activity is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 13. Update owner role as admin
+PATCH {{baseUrl}}/api/v1/auth/users/{{ownerId}}/role
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "role": "USER_ROLE_MODERATOR"
+}
+
+> {%
+  client.test("update role is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 14. Create hotel
+POST {{baseUrl}}/api/v1/hotels
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "country_code": "jp",
+  "city_slug": "tokyo",
+  "title": "{{hotelTitle}}",
+  "owner_id": 1,
+  "description": "http client smoke hotel",
+  "address": "1 HTTP Street, Tokyo",
+  "location": {
+    "latitude": 35.66,
+    "longitude": 139.70
+  }
+}
+
+> {%
+  client.test("create hotel is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("hotelId", response.body.id);
+  client.global.set("hotelSlug", response.body.hotel_slug);
+%}
+
+### 15. List hotels
+GET {{baseUrl}}/api/v1/hotels?country_code=jp&city_slug=tokyo&sort_by=title&page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list hotels is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 16. Get hotel by slug
+GET {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get hotel is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 17. Update hotel
+PUT {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "description": "updated by http client",
+  "address": "2 HTTP Street, Tokyo",
+  "location": {
+    "latitude": 35.67,
+    "longitude": 139.71
+  }
+}
+
+> {%
+  client.test("update hotel is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 18. Rename hotel
+PATCH {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}/title
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "title": "{{hotelTitleRenamed}}"
+}
+
+> {%
+  client.test("rename hotel is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+  const slugFromResponse = response.body.hotel_slug;
+  if (slugFromResponse) {
+    client.global.set("hotelSlug", slugFromResponse);
+  } else {
+    const title = client.global.get("hotelTitleRenamed").toLowerCase();
+    const generatedSlug = title.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    client.global.set("hotelSlug", generatedSlug);
+  }
+%}
+
+### 19. Get renamed hotel
+GET {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get renamed hotel is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 20. Create room
+POST {{baseUrl}}/api/v1/rooms
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "country_code": "jp",
+  "city_slug": "tokyo",
+  "hotel_slug": "{{hotelSlug}}",
+  "title": "HTTP Room 101",
+  "description": "http client room",
+  "room_number": "101",
+  "type": "ROOM_TYPE_SINGLE",
+  "price": "150.00",
+  "capacity": 2,
+  "area_sqm": 18.5,
+  "floor": 1,
+  "amenities": ["wifi"],
+  "images": ["https://example.com/http-room.jpg"]
+}
+
+> {%
+  client.test("create room is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("roomId", response.body.id);
+%}
+
+### 21. List rooms
+GET {{baseUrl}}/api/v1/rooms?country_code=jp&city_slug=tokyo&hotel_slug={{hotelSlug}}&page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list rooms is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 22. Get room
+GET {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get room is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 23. Update room
+PUT {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "title": "HTTP Room 101 Updated",
+  "room_number": "101",
+  "type": "ROOM_TYPE_DOUBLE",
+  "description": "updated by http client",
+  "price": "175.00",
+  "capacity": 3,
+  "area_sqm": 20.0,
+  "floor": 1,
+  "amenities": ["wifi", "tv"],
+  "images": ["https://example.com/http-room-updated.jpg"]
+}
+
+> {%
+  client.test("update room is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 24. Update room status
+PATCH {{baseUrl}}/api/v1/rooms/{{roomId}}/status
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "status": "ROOM_STATUS_MAINTENANCE"
+}
+
+> {%
+  client.test("update room status is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 25. Create booking
+POST {{baseUrl}}/api/v1/bookings
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "user_id": {{ownerId}},
+  "hotel_id": "{{hotelId}}",
+  "check_in": "2026-06-01T12:00:00Z",
+  "check_out": "2026-06-03T12:00:00Z",
+  "guest_name": "HTTP Booker",
+  "guest_email": "{{ownerEmail}}",
+  "guest_phone": "+79990000055",
+  "currency": "USD",
+  "expected_total_amount": "350.00",
+  "rooms": [
+    {
+      "room_id": "{{roomId}}",
+      "adults": 2,
+      "children": 1,
+      "price_per_night": "175.00"
+    }
+  ]
+}
+
+> {%
+  client.test("create booking is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("bookingId", response.body.id);
+%}
+
+### 26. List bookings (all)
+GET {{baseUrl}}/api/v1/bookings?page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list bookings all is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 27. List bookings by user
+GET {{baseUrl}}/api/v1/bookings?userId={{ownerId}}&page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list bookings by user is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 28. List bookings by user and hotel
+GET {{baseUrl}}/api/v1/bookings?userId={{ownerId}}&hotelId={{hotelId}}&page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list bookings by user+hotel is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 29. Get booking
+GET {{baseUrl}}/api/v1/bookings/{{bookingId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get booking is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 30. Confirm booking
+PATCH {{baseUrl}}/api/v1/bookings/{{bookingId}}/confirm
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("confirm booking is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 31. Cancel booking
+PATCH {{baseUrl}}/api/v1/bookings/{{bookingId}}/cancel
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("cancel booking is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 32. Delete booking
+DELETE {{baseUrl}}/api/v1/bookings/{{bookingId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete booking is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 33. Delete room
+DELETE {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete room is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 34. Delete hotel
+DELETE {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete hotel is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 35. Delete managed user as admin
+DELETE {{baseUrl}}/api/v1/auth/users/{{managedId}}
+Authorization: Bearer {{adminAccess}}
+
+> {%
+  client.test("delete managed user is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 36. Delete owner self
+DELETE {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete owner self is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}

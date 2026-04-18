@@ -1,48 +1,44 @@
 package router
 
-import (
-	"net/http"
-
-	"github.com/go-chi/chi/v5"
-)
+import "github.com/gin-gonic/gin"
 
 type RouteRegistrar interface {
-	Register(r chi.Router)
+	Register(r *gin.RouterGroup)
 }
 
 type AuthHandler interface {
-	Register(http.ResponseWriter, *http.Request)
-	Login(http.ResponseWriter, *http.Request)
-	RefreshToken(http.ResponseWriter, *http.Request)
-	GetUsers(http.ResponseWriter, *http.Request)
-	CreateUser(http.ResponseWriter, *http.Request)
-	GetUser(http.ResponseWriter, *http.Request)
-	UpdateUser(http.ResponseWriter, *http.Request)
-	UpdateUserActivity(http.ResponseWriter, *http.Request)
-	UpdateUserRole(http.ResponseWriter, *http.Request)
-	DeleteUser(http.ResponseWriter, *http.Request)
+	Register(*gin.Context)
+	Login(*gin.Context)
+	RefreshToken(*gin.Context)
+	GetUsers(*gin.Context)
+	CreateUser(*gin.Context)
+	GetUser(*gin.Context)
+	UpdateUser(*gin.Context)
+	UpdateUserActivity(*gin.Context)
+	UpdateUserRole(*gin.Context)
+	DeleteUser(*gin.Context)
 }
 
 type HotelHandler interface {
-	CreateHotel(http.ResponseWriter, *http.Request)
-	GetHotels(http.ResponseWriter, *http.Request)
-	GetHotel(http.ResponseWriter, *http.Request)
-	UpdateHotel(http.ResponseWriter, *http.Request)
-	UpdateHotelTitle(http.ResponseWriter, *http.Request)
-	DeleteHotel(http.ResponseWriter, *http.Request)
-	CreateRoom(http.ResponseWriter, *http.Request)
-	GetRooms(http.ResponseWriter, *http.Request)
-	GetRoom(http.ResponseWriter, *http.Request)
-	UpdateRoom(http.ResponseWriter, *http.Request)
-	UpdateRoomStatus(http.ResponseWriter, *http.Request)
-	DeleteRoom(http.ResponseWriter, *http.Request)
+	CreateHotel(*gin.Context)
+	GetHotels(*gin.Context)
+	GetHotel(*gin.Context)
+	UpdateHotel(*gin.Context)
+	UpdateHotelTitle(*gin.Context)
+	DeleteHotel(*gin.Context)
+	CreateRoom(*gin.Context)
+	GetRooms(*gin.Context)
+	GetRoom(*gin.Context)
+	UpdateRoom(*gin.Context)
+	UpdateRoomStatus(*gin.Context)
+	DeleteRoom(*gin.Context)
 }
 
 type BookingHandler interface {
-	CreateBooking(http.ResponseWriter, *http.Request)
-	GetBookings(http.ResponseWriter, *http.Request)
-	GetBooking(http.ResponseWriter, *http.Request)
-	ConfirmBooking(http.ResponseWriter, *http.Request)
-	CancelBooking(http.ResponseWriter, *http.Request)
-	DeleteBooking(http.ResponseWriter, *http.Request)
+	CreateBooking(*gin.Context)
+	GetBookings(*gin.Context)
+	GetBooking(*gin.Context)
+	ConfirmBooking(*gin.Context)
+	CancelBooking(*gin.Context)
+	DeleteBooking(*gin.Context)
 }

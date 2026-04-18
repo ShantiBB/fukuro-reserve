@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -31,50 +33,56 @@ func Error(w http.ResponseWriter, code int, message string) {
 
 // GRPCError converts gRPC error to HTTP error.
 func GRPCError(w http.ResponseWriter, err error) {
+	httpCode, message := grpcToHTTP(err)
+	Error(w, httpCode, message)
+}
+
+// GinJSON sends a JSON response in gin handlers.
+func GinJSON(c *gin.Context, code int, payload interface{}) {
+	c.JSON(code, payload)
+}
+
+// GinError sends an error response in gin handlers.
+func GinError(c *gin.Context, code int, message string) {
+	c.JSON(code, &ErrorResponse{Error: message})
+}
+
+// GinGRPCError converts gRPC error to HTTP error in gin handlers.
+func GinGRPCError(c *gin.Context, err error) {
+	httpCode, message := grpcToHTTP(err)
+	GinError(c, httpCode, message)
+}
+
+func grpcToHTTP(err error) (int, string) {
 	st, ok := status.FromError(err)
 	if !ok {
-		Error(w, http.StatusInternalServerError, "internal server error")
-		return
+		return http.StatusInternalServerError, "internal server error"
 	}
 
 	reason := extractErrorReason(st)
 
-	var httpCode int
-	var message string
 	switch st.Code() {
 	case codes.NotFound:
-		httpCode = http.StatusNotFound
-		message = reason
+		return http.StatusNotFound, reason
 	case codes.InvalidArgument:
-		httpCode = http.StatusBadRequest
-		message = reason
+		return http.StatusBadRequest, reason
 	case codes.Unauthenticated:
-		httpCode = http.StatusUnauthorized
-		message = reason
+		return http.StatusUnauthorized, reason
 	case codes.PermissionDenied:
-		httpCode = http.StatusForbidden
-		message = reason
+		return http.StatusForbidden, reason
 	case codes.AlreadyExists:
-		httpCode = http.StatusConflict
-		message = reason
+		return http.StatusConflict, reason
 	case codes.FailedPrecondition:
-		httpCode = http.StatusBadRequest
-		message = reason
+		return http.StatusBadRequest, reason
 	case codes.Internal:
-		httpCode = http.StatusInternalServerError
-		message = "internal server error"
+		return http.StatusInternalServerError, "internal server error"
 	case codes.Unavailable:
-		httpCode = http.StatusServiceUnavailable
-		message = "service unavailable"
+		return http.StatusServiceUnavailable, "service unavailable"
 	case codes.DeadlineExceeded:
-		httpCode = http.StatusGatewayTimeout
-		message = "request timeout"
+		return http.StatusGatewayTimeout, "request timeout"
 	default:
-		httpCode = http.StatusInternalServerError
-		message = "internal server error"
+		return http.StatusInternalServerError, "internal server error"
 	}
-
-	Error(w, httpCode, message)
 }
 
 func extractErrorReason(st *status.Status) string {

@@ -1,7 +1,7 @@
 package router
 
 import (
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 )
@@ -15,15 +15,14 @@ func NewRoomRoutes(pattern string, h HotelHandler) RouteRegistrar {
 	return roomRoutes{pattern: pattern, h: h}
 }
 
-func (rr roomRoutes) Register(r chi.Router) {
-	r.Route(rr.pattern, func(r chi.Router) {
-		r.Use(middleware.AuthMiddleware)
+func (rr roomRoutes) Register(r *gin.RouterGroup) {
+	rooms := r.Group(rr.pattern)
+	rooms.Use(middleware.AuthMiddleware())
 
-		r.Post("/", rr.h.CreateRoom)
-		r.Get("/", rr.h.GetRooms)
-		r.Get("/{roomId}", rr.h.GetRoom)
-		r.Put("/{roomId}", rr.h.UpdateRoom)
-		r.Patch("/{roomId}/status", rr.h.UpdateRoomStatus)
-		r.Delete("/{roomId}", rr.h.DeleteRoom)
-	})
+	rooms.POST("", rr.h.CreateRoom)
+	rooms.GET("", rr.h.GetRooms)
+	rooms.GET("/:roomId", rr.h.GetRoom)
+	rooms.PUT("/:roomId", rr.h.UpdateRoom)
+	rooms.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)
+	rooms.DELETE("/:roomId", rr.h.DeleteRoom)
 }

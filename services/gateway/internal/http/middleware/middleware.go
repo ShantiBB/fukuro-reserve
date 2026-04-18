@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
@@ -28,56 +29,61 @@ func SetJWTSecret(secret string) {
 }
 
 // AuthMiddleware validates JWT tokens
-func AuthMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(
-		func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get(consts.HeaderAuthorization)
-			if authHeader == "" {
-				responder.Error(w, http.StatusUnauthorized, "authorization header is required")
-				return
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader(consts.HeaderAuthorization)
+		if authHeader == "" {
+			responder.GinError(c, http.StatusUnauthorized, "authorization header is required")
+			c.Abort()
+			return
+		}
+
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
+			responder.GinError(c, http.StatusUnauthorized, "invalid authorization header format")
+			c.Abort()
+			return
+		}
+
+		tokenString := parts[1]
+		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+				return nil, jwt.ErrSignatureInvalid
 			}
+			return jwtSecret, nil
+		})
+		if err != nil || !token.Valid {
+			responder.GinError(c, http.StatusUnauthorized, "invalid token")
+			c.Abort()
+			return
+		}
 
-			parts := strings.Split(authHeader, " ")
-			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-				responder.Error(w, http.StatusUnauthorized, "invalid authorization header format")
-				return
-			}
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			responder.GinError(c, http.StatusUnauthorized, "invalid token claims")
+			c.Abort()
+			return
+		}
 
-			tokenString := parts[1]
-			token, err := jwt.Parse(
-				tokenString, func(token *jwt.Token) (interface{}, error) {
-					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-						return nil, jwt.ErrSignatureInvalid
-					}
-					return jwtSecret, nil
-				},
-			)
+		userID, ok := jwtclaims.ExtractUserID(claims)
+		if !ok {
+			responder.GinError(c, http.StatusUnauthorized, "invalid user id in token")
+			c.Abort()
+			return
+		}
 
-			if err != nil || !token.Valid {
-				responder.Error(w, http.StatusUnauthorized, "invalid token")
-				return
-			}
+		userEmail := jwtclaims.ExtractStringClaim(claims, "email", "Email")
+		userRole := jwtclaims.ExtractStringClaim(claims, "role", "Role")
 
-			claims, ok := token.Claims.(jwt.MapClaims)
-			if !ok {
-				responder.Error(w, http.StatusUnauthorized, "invalid token claims")
-				return
-			}
+		ctx := context.WithValue(c.Request.Context(), UserIDKey, userID)
+		ctx = context.WithValue(ctx, UserEmailKey, userEmail)
+		ctx = context.WithValue(ctx, UserRoleKey, userRole)
+		c.Request = c.Request.WithContext(ctx)
 
-			userID, ok := jwtclaims.ExtractUserID(claims)
-			if !ok {
-				responder.Error(w, http.StatusUnauthorized, "invalid user id in token")
-				return
-			}
+		c.Set(string(UserIDKey), userID)
+		c.Set(string(UserEmailKey), userEmail)
+		c.Set(string(UserRoleKey), userRole)
 
-			userEmail := jwtclaims.ExtractStringClaim(claims, "email", "Email")
-			userRole := jwtclaims.ExtractStringClaim(claims, "role", "Role")
-
-			ctx := context.WithValue(r.Context(), UserIDKey, userID)
-			ctx = context.WithValue(ctx, UserEmailKey, userEmail)
-			ctx = context.WithValue(ctx, UserRoleKey, userRole)
-
-			next.ServeHTTP(w, r.WithContext(ctx))
-		},
-	)
+		c.Next()
+	}
 }

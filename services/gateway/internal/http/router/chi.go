@@ -1,52 +1,58 @@
 package router
 
 import (
+	"context"
 	"net/http"
 	"time"
 
-	"github.com/go-chi/chi/v5"
-	chiMiddleware "github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	httpswagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/ShantiBB/fukuro-reserve/services/gateway/docs"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 )
 
-func New(r chi.Router, httpCfg config.HTTPConfig, corsCfg config.CORSConfig, routes ...RouteRegistrar) {
-	r.Use(chiMiddleware.RequestID)
-	r.Use(chiMiddleware.RealIP)
-	r.Use(chiMiddleware.Logger)
-	r.Use(chiMiddleware.Recoverer)
-	r.Use(chiMiddleware.Timeout(time.Duration(httpCfg.RequestTimeoutSec) * time.Second))
-
+func New(r *gin.Engine, httpCfg config.HTTPConfig, corsCfg config.CORSConfig, routes ...RouteRegistrar) {
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	r.Use(requestTimeoutMiddleware(time.Duration(httpCfg.RequestTimeoutSec) * time.Second))
 	r.Use(
-		cors.Handler(
-			cors.Options{
-				AllowedOrigins:   corsCfg.AllowedOrigins,
-				AllowedMethods:   corsCfg.AllowedMethods,
-				AllowedHeaders:   corsCfg.AllowedHeaders,
-				ExposedHeaders:   corsCfg.ExposedHeaders,
+		cors.New(
+			cors.Config{
+				AllowOrigins:     corsCfg.AllowedOrigins,
+				AllowMethods:     corsCfg.AllowedMethods,
+				AllowHeaders:     corsCfg.AllowedHeaders,
+				ExposeHeaders:    corsCfg.ExposedHeaders,
 				AllowCredentials: corsCfg.AllowCredentials,
-				MaxAge:           corsCfg.MaxAge,
+				MaxAge:           time.Duration(corsCfg.MaxAge) * time.Second,
 			},
 		),
 	)
 
-	// Health check
-	r.Get(
-		httpCfg.HealthPath, func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-		},
-	)
+	r.GET(httpCfg.HealthPath, func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 
-	// API routes
-	r.Route(
-		httpCfg.APIPrefix, func(r chi.Router) {
-			r.Get("/docs/swagger/*", httpswagger.WrapHandler)
-			for _, route := range routes {
-				route.Register(r)
-			}
-		},
-	)
+	api := r.Group(httpCfg.APIPrefix)
+	api.GET("/docs/swagger/*any", gin.WrapH(httpswagger.WrapHandler))
+	for _, route := range routes {
+		route.Register(api)
+	}
+}
+
+func requestTimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
+	if timeout <= 0 {
+		return func(c *gin.Context) {
+			c.Next()
+		}
+	}
+
+	return func(c *gin.Context) {
+		ctx, cancel := context.WithTimeout(c.Request.Context(), timeout)
+		defer cancel()
+
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
 }

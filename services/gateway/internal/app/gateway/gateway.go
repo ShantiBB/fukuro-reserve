@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/gin-gonic/gin"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
@@ -57,7 +57,7 @@ func (app *App) MustRun() {
 	bookingHandler := handler.NewBookingHandler(bookingService)
 
 	// Create router
-	r := chi.NewRouter()
+	r := gin.New()
 	router.New(
 		r,
 		app.Config.HTTP,

@@ -67,7 +67,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		userID, ok := jwtclaims.ExtractUserID(claims)
 		if !ok {
-			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidUserIDInToken})
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidJWTUserIDClaim})
 			c.Abort()
 			return
 		}

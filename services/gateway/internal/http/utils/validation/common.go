@@ -6,8 +6,9 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/google/uuid"
+
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 )
 
 var (

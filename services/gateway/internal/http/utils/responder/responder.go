@@ -5,6 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
+
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +26,7 @@ func GinGRPCError(c *gin.Context, err error) {
 func grpcToHTTP(err error) (int, string) {
 	st, ok := status.FromError(err)
 	if !ok {
-		return http.StatusInternalServerError, "internal server error"
+		return http.StatusInternalServerError, consts.ErrInternalServerError
 	}
 
 	reason := extractErrorReason(st)
@@ -43,13 +45,13 @@ func grpcToHTTP(err error) (int, string) {
 	case codes.FailedPrecondition:
 		return http.StatusBadRequest, reason
 	case codes.Internal:
-		return http.StatusInternalServerError, "internal server error"
+		return http.StatusInternalServerError, consts.ErrInternalServerError
 	case codes.Unavailable:
-		return http.StatusServiceUnavailable, "service unavailable"
+		return http.StatusServiceUnavailable, consts.ErrServiceUnavailable
 	case codes.DeadlineExceeded:
-		return http.StatusGatewayTimeout, "request timeout"
+		return http.StatusGatewayTimeout, consts.ErrRequestTimeout
 	default:
-		return http.StatusInternalServerError, "internal server error"
+		return http.StatusInternalServerError, consts.ErrInternalServerError
 	}
 }
 

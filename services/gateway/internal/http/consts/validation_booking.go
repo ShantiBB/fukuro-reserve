@@ -1,4 +1,4 @@
-package constants
+package consts
 
 const (
 	FieldBookingHotelID      = "hotel_id"

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
@@ -22,7 +23,7 @@ import (
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req dto.CreateBookingRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err := validation.ValidateCreateBookingRequest(req); err != nil {
@@ -53,26 +54,26 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 func (h *BookingHandler) GetBookings(c *gin.Context) {
 	userID, err := request.OptionalPositiveInt64Query(c, "userId")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "userId must be a positive integer"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrUserIDMustBePositiveInteger})
 		return
 	}
 
 	hotelID := c.Query("hotelId")
 	if hotelID != "" {
 		if err = validation.ValidateUUID(hotelID); err != nil {
-			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid hotel_id format"})
+			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidHotelIDFormat})
 			return
 		}
 	}
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrPageMustBePositiveInteger})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrLimitMustBePositiveInteger})
 		return
 	}
 
@@ -102,11 +103,11 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 func (h *BookingHandler) GetBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 
@@ -128,11 +129,11 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 
@@ -154,11 +155,11 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 
@@ -180,11 +181,11 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 

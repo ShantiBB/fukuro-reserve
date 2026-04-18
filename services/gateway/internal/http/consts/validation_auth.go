@@ -1,4 +1,4 @@
-package constants
+package consts
 
 const (
 	ErrPasswordRequired = "password is required"

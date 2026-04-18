@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	httpauth "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/auth"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
@@ -24,7 +25,7 @@ import (
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err := validation.ValidateRegisterRequest(req); err != nil {
@@ -53,7 +54,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err := validation.ValidateLoginRequest(req); err != nil {
@@ -82,7 +83,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err := validation.ValidateRefreshTokenRequest(req); err != nil {
@@ -116,12 +117,12 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrPageMustBePositiveInteger})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrLimitMustBePositiveInteger})
 		return
 	}
 
@@ -151,7 +152,7 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 
 	var req dto.CreateUserRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err = validation.ValidateCreateUserRequest(req); err != nil {
@@ -184,7 +185,7 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidUserID})
 		return
 	}
 
@@ -215,13 +216,13 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidUserID})
 		return
 	}
 
 	var req dto.UpdateUserRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err = validation.ValidateUpdateUserRequest(req); err != nil {
@@ -256,13 +257,13 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidUserID})
 		return
 	}
 
 	var req dto.UpdateUserActivityRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 
@@ -293,13 +294,13 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidUserID})
 		return
 	}
 
 	var req dto.UpdateUserRoleRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 	if err = validation.ValidateUpdateUserRoleRequest(req); err != nil {
@@ -331,7 +332,7 @@ func (h *AuthHandler) DeleteUser(c *gin.Context) {
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidUserID})
 		return
 	}
 

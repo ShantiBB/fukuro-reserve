@@ -1,4 +1,4 @@
-package constants
+package consts
 
 const (
 	CurrencyPattern = `^[A-Z]{3}$`

@@ -10,7 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 )
 
-var ErrAuthorizationHeaderRequired = errors.New("authorization header is required")
+var ErrAuthorizationHeaderRequired = errors.New(consts.ErrAuthorizationHeaderRequired)
 
 func OutgoingContextWithAuthorization(c *gin.Context) (context.Context, error) {
 	authHeader := c.GetHeader(consts.HeaderAuthorization)

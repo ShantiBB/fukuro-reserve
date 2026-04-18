@@ -1,4 +1,4 @@
-package constants
+package consts
 
 const (
 	ErrCountryCodeRequired = "country_code is required"

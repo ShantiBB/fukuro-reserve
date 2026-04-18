@@ -11,6 +11,7 @@ import (
 
 	userv1 "github.com/ShantiBB/fukuro-reserve/services/auth/api/user/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 )
 
@@ -39,12 +40,12 @@ func authContext(r *http.Request) (context.Context, error) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param request body RegisterRequest true "Register request"
-// @Success 200 {object} TokenResponse
+// @Param request body dto.RegisterRequest true "Register request"
+// @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /api/v1/auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var req RegisterRequest
+	var req dto.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -61,7 +62,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, tokenResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromProto(resp))
 }
 
 // Login godoc
@@ -69,12 +70,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param request body LoginRequest true "Login request"
-// @Success 200 {object} TokenResponse
+// @Param request body dto.LoginRequest true "Login request"
+// @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /api/v1/auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	var req LoginRequest
+	var req dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -91,7 +92,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, tokenResponseFromLoginProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromLoginProto(resp))
 }
 
 // RefreshToken godoc
@@ -99,12 +100,12 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Tags auth
 // @Accept json
 // @Produce json
-// @Param request body RefreshTokenRequest true "Refresh token request"
-// @Success 200 {object} TokenResponse
+// @Param request body dto.RefreshTokenRequest true "Refresh token request"
+// @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} utils.ErrorResponse
 // @Router /api/v1/auth/refresh [post]
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
-	var req RefreshTokenRequest
+	var req dto.RefreshTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -120,7 +121,7 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, tokenResponseFromRefreshProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromRefreshProto(resp))
 }
 
 // GetUsers godoc
@@ -129,7 +130,7 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param page query int false "Page number"
 // @Param limit query int false "Page size"
-// @Success 200 {object} UsersResponse
+// @Success 200 {object} dto.UsersResponse
 // @Router /api/v1/auth/users [get]
 func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -159,7 +160,7 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, usersResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.UsersResponseFromProto(resp))
 }
 
 // CreateUser godoc
@@ -167,8 +168,8 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Accept json
 // @Produce json
-// @Param request body CreateUserRequest true "Create user request"
-// @Success 201 {object} UserResponse
+// @Param request body dto.CreateUserRequest true "Create user request"
+// @Success 201 {object} dto.UserResponse
 // @Router /api/v1/auth/users [post]
 func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -177,7 +178,7 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req CreateUserRequest
+	var req dto.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -200,7 +201,7 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, userResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusCreated, dto.UserResponseFromProto(resp.User))
 }
 
 // GetUser godoc
@@ -208,7 +209,7 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Produce json
 // @Param id path int true "User ID"
-// @Success 200 {object} UserResponse
+// @Success 200 {object} dto.UserResponse
 // @Router /api/v1/auth/users/{id} [get]
 func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -230,7 +231,7 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, userResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusOK, dto.UserResponseFromProto(resp.User))
 }
 
 // UpdateUser godoc
@@ -239,8 +240,8 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param request body UpdateUserRequest true "Update user request"
-// @Success 200 {object} UserResponse
+// @Param request body dto.UpdateUserRequest true "Update user request"
+// @Success 200 {object} dto.UserResponse
 // @Router /api/v1/auth/users/{id} [put]
 func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -256,7 +257,7 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req UpdateUserRequest
+	var req dto.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -274,7 +275,7 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, updateUserResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserResponseFromProto(resp.User))
 }
 
 // UpdateUserActivity godoc
@@ -283,8 +284,8 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param request body UpdateUserActivityRequest true "Update activity request"
-// @Success 200 {object} UpdateUserActivityResponse
+// @Param request body dto.UpdateUserActivityRequest true "Update activity request"
+// @Success 200 {object} dto.UpdateUserActivityResponse
 // @Router /api/v1/auth/users/{id}/activity [patch]
 func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -300,7 +301,7 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	var req UpdateUserActivityRequest
+	var req dto.UpdateUserActivityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -326,8 +327,8 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 // @Accept json
 // @Produce json
 // @Param id path int true "User ID"
-// @Param request body UpdateUserRoleRequest true "Update role request"
-// @Success 200 {object} UpdateUserRoleResponse
+// @Param request body dto.UpdateUserRoleRequest true "Update role request"
+// @Success 200 {object} dto.UpdateUserRoleResponse
 // @Router /api/v1/auth/users/{id}/role [patch]
 func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
@@ -343,7 +344,7 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req UpdateUserRoleRequest
+	var req dto.UpdateUserRoleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return

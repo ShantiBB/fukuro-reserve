@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 )
@@ -25,11 +26,11 @@ func NewHotelHandler(clients *clients.Clients) *HotelHandler {
 // @Tags hotels
 // @Accept json
 // @Produce json
-// @Param request body CreateHotelRequest true "Create hotel request"
-// @Success 201 {object} HotelResponse
+// @Param request body dto.CreateHotelRequest true "Create hotel request"
+// @Success 201 {object} dto.HotelResponse
 // @Router /api/v1/hotels [post]
 func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
-	var req CreateHotelRequest
+	var req dto.CreateHotelRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -61,7 +62,7 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, hotelResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusCreated, dto.HotelResponseFromProto(resp.Hotel))
 }
 
 // GetHotels godoc
@@ -73,7 +74,7 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 // @Param sort_by query string false "Sort field"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {object} HotelsResponse
+// @Success 200 {object} dto.HotelsResponse
 // @Router /api/v1/hotels [get]
 func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 	countryCode := r.URL.Query().Get("countryCode")
@@ -118,7 +119,7 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, hotelsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.HotelsShortResponseFromProto(resp))
 }
 
 // GetHotel godoc
@@ -128,7 +129,7 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
 // @Param hotelSlug path string true "Hotel slug"
-// @Success 200 {object} HotelResponse
+// @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [get]
 func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "countryCode")
@@ -147,7 +148,7 @@ func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, hotelDetailResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.HotelDetailResponseFromProto(resp))
 }
 
 // UpdateHotel godoc
@@ -158,15 +159,15 @@ func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
 // @Param hotelSlug path string true "Hotel slug"
-// @Param request body UpdateHotelRequest true "Update hotel request"
-// @Success 200 {object} HotelResponse
+// @Param request body dto.UpdateHotelRequest true "Update hotel request"
+// @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
 func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "countryCode")
 	citySlug := chi.URLParam(r, "citySlug")
 	hotelSlug := chi.URLParam(r, "hotelSlug")
 
-	var req UpdateHotelRequest
+	var req dto.UpdateHotelRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -197,7 +198,7 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, updateHotelResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateHotelResponseFromProto(resp.Hotel))
 }
 
 // UpdateHotelTitle godoc
@@ -208,15 +209,15 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
 // @Param hotelSlug path string true "Hotel slug"
-// @Param request body UpdateHotelTitleRequest true "Update hotel title request"
-// @Success 200 {object} HotelResponse
+// @Param request body dto.UpdateHotelTitleRequest true "Update hotel title request"
+// @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) {
 	countryCode := chi.URLParam(r, "countryCode")
 	citySlug := chi.URLParam(r, "citySlug")
 	hotelSlug := chi.URLParam(r, "hotelSlug")
 
-	var req UpdateHotelTitleRequest
+	var req dto.UpdateHotelTitleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -235,7 +236,7 @@ func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, updateHotelTitleResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateHotelTitleResponseFromProto(resp.Hotel))
 }
 
 // DeleteHotel godoc
@@ -271,11 +272,11 @@ func (h *HotelHandler) DeleteHotel(w http.ResponseWriter, r *http.Request) {
 // @Tags rooms
 // @Accept json
 // @Produce json
-// @Param request body CreateRoomRequest true "Create room request"
-// @Success 201 {object} RoomResponse
+// @Param request body dto.CreateRoomRequest true "Create room request"
+// @Success 201 {object} dto.RoomResponse
 // @Router /api/v1/rooms [post]
 func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
-	var req CreateRoomRequest
+	var req dto.CreateRoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -327,7 +328,7 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, roomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusCreated, dto.RoomResponseFromProto(resp.Room))
 }
 
 // GetRooms godoc
@@ -339,7 +340,7 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 // @Param hotel_slug query string true "Hotel slug"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {object} RoomsResponse
+// @Success 200 {object} dto.RoomsResponse
 // @Router /api/v1/rooms [get]
 func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 	countryCode := r.URL.Query().Get("countryCode")
@@ -381,7 +382,7 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, roomsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.RoomsShortResponseFromProto(resp))
 }
 
 // GetRoom godoc
@@ -389,7 +390,7 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 // @Tags rooms
 // @Produce json
 // @Param roomId path string true "Room ID"
-// @Success 200 {object} RoomResponse
+// @Success 200 {object} dto.RoomResponse
 // @Router /api/v1/rooms/{roomId} [get]
 func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
@@ -406,7 +407,7 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, roomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusOK, dto.RoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoom godoc
@@ -415,8 +416,8 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param roomId path string true "Room ID"
-// @Param request body UpdateRoomRequest true "Update room request"
-// @Success 200 {object} RoomResponse
+// @Param request body dto.UpdateRoomRequest true "Update room request"
+// @Success 200 {object} dto.RoomResponse
 // @Router /api/v1/rooms/{roomId} [put]
 func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
@@ -425,7 +426,7 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req UpdateRoomRequest
+	var req dto.UpdateRoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -456,7 +457,7 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, updateRoomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateRoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoomStatus godoc
@@ -465,8 +466,8 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param roomId path string true "Room ID"
-// @Param request body UpdateRoomStatusRequest true "Update status request"
-// @Success 200 {object} StatusResponse
+// @Param request body dto.UpdateRoomStatusRequest true "Update status request"
+// @Success 200 {object} dto.StatusResponse
 // @Router /api/v1/rooms/{roomId}/status [patch]
 func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
@@ -475,7 +476,7 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var req UpdateRoomStatusRequest
+	var req dto.UpdateRoomStatusRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -492,7 +493,7 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteRoom godoc

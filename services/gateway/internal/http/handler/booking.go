@@ -10,6 +10,7 @@ import (
 
 	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
@@ -27,11 +28,11 @@ func NewBookingHandler(clients *clients.Clients) *BookingHandler {
 // @Tags bookings
 // @Accept json
 // @Produce json
-// @Param request body CreateBookingRequest true "Create booking request"
-// @Success 201 {object} BookingResponse
+// @Param request body dto.CreateBookingRequest true "Create booking request"
+// @Success 201 {object} dto.BookingResponse
 // @Router /api/v1/bookings [post]
 func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
-	var req CreateBookingRequest
+	var req dto.CreateBookingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
 		return
@@ -136,7 +137,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, bookingResponseFromProto(resp.Booking))
+	utils.RespondJSON(w, http.StatusCreated, dto.BookingResponseFromProto(resp.Booking))
 }
 
 // GetBookings godoc
@@ -148,7 +149,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 // @Param status query string false "Status"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {object} BookingsResponse
+// @Success 200 {object} dto.BookingsResponse
 // @Router /api/v1/bookings [get]
 func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 	req := &bookingv1.GetBookingsRequest{}
@@ -186,7 +187,7 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, bookingsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, dto.BookingsShortResponseFromProto(resp))
 }
 
 // GetBooking godoc
@@ -194,7 +195,7 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 // @Tags bookings
 // @Produce json
 // @Param bookingId path string true "Booking ID"
-// @Success 200 {object} BookingResponse
+// @Success 200 {object} dto.BookingResponse
 // @Router /api/v1/bookings/{bookingId} [get]
 func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
@@ -214,14 +215,14 @@ func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, bookingResponseFromProto(resp.Booking))
+	utils.RespondJSON(w, http.StatusOK, dto.BookingResponseFromProto(resp.Booking))
 }
 
 // ConfirmBooking godoc
 // @Summary Confirm booking
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
-// @Success 200 {object} StatusResponse
+// @Success 200 {object} dto.StatusResponse
 // @Router /api/v1/bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
@@ -243,14 +244,14 @@ func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // CancelBooking godoc
 // @Summary Cancel booking
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
-// @Success 200 {object} StatusResponse
+// @Success 200 {object} dto.StatusResponse
 // @Router /api/v1/bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
@@ -272,7 +273,7 @@ func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteBooking godoc

@@ -1,4 +1,4 @@
-package handler
+package dto
 
 import (
 	"time"
@@ -264,7 +264,7 @@ type BookingsResponse struct {
 }
 
 // Conversion functions
-func tokenResponseFromProto(resp *userv1.RegisterUserResponse) *TokenResponse {
+func TokenResponseFromProto(resp *userv1.RegisterUserResponse) *TokenResponse {
 	if resp == nil || resp.Tokens == nil {
 		return nil
 	}
@@ -274,7 +274,7 @@ func tokenResponseFromProto(resp *userv1.RegisterUserResponse) *TokenResponse {
 	}
 }
 
-func tokenResponseFromLoginProto(resp *userv1.LoginUserResponse) *TokenResponse {
+func TokenResponseFromLoginProto(resp *userv1.LoginUserResponse) *TokenResponse {
 	if resp == nil || resp.Tokens == nil {
 		return nil
 	}
@@ -284,7 +284,7 @@ func tokenResponseFromLoginProto(resp *userv1.LoginUserResponse) *TokenResponse 
 	}
 }
 
-func tokenResponseFromRefreshProto(resp *userv1.RefreshTokenResponse) *TokenResponse {
+func TokenResponseFromRefreshProto(resp *userv1.RefreshTokenResponse) *TokenResponse {
 	if resp == nil || resp.Tokens == nil {
 		return nil
 	}
@@ -294,7 +294,7 @@ func tokenResponseFromRefreshProto(resp *userv1.RefreshTokenResponse) *TokenResp
 	}
 }
 
-func userResponseFromProto(user *userv1.User) *UserResponse {
+func UserResponseFromProto(user *userv1.User) *UserResponse {
 	if user == nil {
 		return nil
 	}
@@ -332,7 +332,7 @@ func userShortResponseFromProto(user *userv1.UserShort) *UserResponse {
 	return resp
 }
 
-func usersResponseFromProto(resp *userv1.GetUsersResponse) *UsersResponse {
+func UsersResponseFromProto(resp *userv1.GetUsersResponse) *UsersResponse {
 	if resp == nil {
 		return nil
 	}
@@ -343,7 +343,7 @@ func usersResponseFromProto(resp *userv1.GetUsersResponse) *UsersResponse {
 	return &UsersResponse{Users: users}
 }
 
-func updateUserResponseFromProto(user *userv1.UpdateUser) *UserResponse {
+func UpdateUserResponseFromProto(user *userv1.UpdateUser) *UserResponse {
 	if user == nil {
 		return nil
 	}
@@ -366,7 +366,7 @@ func locationDTOFromProto(loc *hotelv1.Location) *LocationDTO {
 	}
 }
 
-func hotelResponseFromProto(hotel *hotelv1.CreateHotel) *HotelResponse {
+func HotelResponseFromProto(hotel *hotelv1.CreateHotel) *HotelResponse {
 	if hotel == nil {
 		return nil
 	}
@@ -388,7 +388,7 @@ func hotelResponseFromProto(hotel *hotelv1.CreateHotel) *HotelResponse {
 	return resp
 }
 
-func hotelDetailResponseFromProto(resp *hotelv1.GetHotelResponse) *HotelResponse {
+func HotelDetailResponseFromProto(resp *hotelv1.GetHotelResponse) *HotelResponse {
 	if resp == nil || resp.Hotel == nil {
 		return nil
 	}
@@ -431,7 +431,7 @@ func hotelShortResponseFromProto(hotel *hotelv1.HotelShort) *HotelShortResponse 
 	return resp
 }
 
-func hotelsShortResponseFromProto(resp *hotelv1.GetHotelsResponse) *HotelsResponse {
+func HotelsShortResponseFromProto(resp *hotelv1.GetHotelsResponse) *HotelsResponse {
 	if resp == nil {
 		return nil
 	}
@@ -442,7 +442,7 @@ func hotelsShortResponseFromProto(resp *hotelv1.GetHotelsResponse) *HotelsRespon
 	return &HotelsResponse{Hotels: hotels}
 }
 
-func updateHotelResponseFromProto(hotel *hotelv1.UpdateHotel) *HotelResponse {
+func UpdateHotelResponseFromProto(hotel *hotelv1.UpdateHotel) *HotelResponse {
 	if hotel == nil {
 		return nil
 	}
@@ -457,7 +457,7 @@ func updateHotelResponseFromProto(hotel *hotelv1.UpdateHotel) *HotelResponse {
 	return result
 }
 
-func updateHotelTitleResponseFromProto(hotel *hotelv1.UpdateHotelTitle) *HotelResponse {
+func UpdateHotelTitleResponseFromProto(hotel *hotelv1.UpdateHotelTitle) *HotelResponse {
 	if hotel == nil {
 		return nil
 	}
@@ -467,7 +467,7 @@ func updateHotelTitleResponseFromProto(hotel *hotelv1.UpdateHotelTitle) *HotelRe
 	}
 }
 
-func roomResponseFromProto(room *hotelv1.Room) *RoomResponse {
+func RoomResponseFromProto(room *hotelv1.Room) *RoomResponse {
 	if room == nil {
 		return nil
 	}
@@ -514,7 +514,7 @@ func roomShortResponseFromProto(room *hotelv1.RoomShort) *RoomShortResponse {
 	}
 }
 
-func roomsShortResponseFromProto(resp *hotelv1.GetRoomsResponse) *RoomsResponse {
+func RoomsShortResponseFromProto(resp *hotelv1.GetRoomsResponse) *RoomsResponse {
 	if resp == nil {
 		return nil
 	}
@@ -525,7 +525,7 @@ func roomsShortResponseFromProto(resp *hotelv1.GetRoomsResponse) *RoomsResponse 
 	return &RoomsResponse{Rooms: rooms}
 }
 
-func updateRoomResponseFromProto(room *hotelv1.UpdateRoom) *RoomResponse {
+func UpdateRoomResponseFromProto(room *hotelv1.UpdateRoom) *RoomResponse {
 	if room == nil {
 		return nil
 	}
@@ -569,7 +569,7 @@ func bookingRoomWithLockResponseFromProto(room *bookingv1.BookingRoomWithLock) *
 	}
 }
 
-func bookingResponseFromProto(booking *bookingv1.Booking) *BookingResponse {
+func BookingResponseFromProto(booking *bookingv1.Booking) *BookingResponse {
 	if booking == nil {
 		return nil
 	}
@@ -643,7 +643,7 @@ func bookingShortResponseFromProto(booking *bookingv1.BookingShort) *BookingShor
 	return resp
 }
 
-func bookingsShortResponseFromProto(resp *bookingv1.GetBookingsResponse) *BookingsResponse {
+func BookingsShortResponseFromProto(resp *bookingv1.GetBookingsResponse) *BookingsResponse {
 	if resp == nil {
 		return nil
 	}

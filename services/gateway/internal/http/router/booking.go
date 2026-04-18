@@ -7,8 +7,8 @@ import (
 )
 
 type bookingRoutes struct {
-	pattern string
 	h       BookingHandler
+	pattern string
 }
 
 func NewBookingRoutes(pattern string, h BookingHandler) RouteRegistrar {

@@ -9,9 +9,9 @@ type GRPCServiceConfig struct {
 
 type HTTPConfig struct {
 	Host               string `yaml:"host" env:"HOST" env-default:"0.0.0.0"`
-	Port               int    `yaml:"port" env:"PORT" env-default:"8080"`
 	HealthPath         string `yaml:"health_path" env:"HEALTH_PATH" env-default:"/health"`
 	APIPrefix          string `yaml:"api_prefix" env:"API_PREFIX" env-default:"/api/v1"`
+	Port               int    `yaml:"port" env:"PORT" env-default:"8080"`
 	ReadTimeoutSec     int    `yaml:"read_timeout_sec" env:"READ_TIMEOUT_SEC" env-default:"15"`
 	WriteTimeoutSec    int    `yaml:"write_timeout_sec" env:"WRITE_TIMEOUT_SEC" env-default:"15"`
 	IdleTimeoutSec     int    `yaml:"idle_timeout_sec" env:"IDLE_TIMEOUT_SEC" env-default:"60"`
@@ -40,13 +40,13 @@ type JWTConfig struct {
 type Config struct {
 	Env        string            `yaml:"env" env:"ENV" env-default:"local"`
 	LogLevel   string            `yaml:"log_level" env:"LOG_LEVEL" env-default:"info"`
-	HTTP       HTTPConfig        `yaml:"http" env-prefix:"HTTP_"`
-	Pagination PaginationConfig  `yaml:"pagination" env-prefix:"PAGINATION_"`
-	CORS       CORSConfig        `yaml:"cors" env-prefix:"CORS_"`
 	JWT        JWTConfig         `yaml:"jwt" env-prefix:"JWT_"`
 	Auth       GRPCServiceConfig `yaml:"auth" env-prefix:"AUTH_"`
 	Hotel      GRPCServiceConfig `yaml:"hotel" env-prefix:"HOTEL_"`
 	Booking    GRPCServiceConfig `yaml:"booking" env-prefix:"BOOKING_"`
+	CORS       CORSConfig        `yaml:"cors" env-prefix:"CORS_"`
+	HTTP       HTTPConfig        `yaml:"http" env-prefix:"HTTP_"`
+	Pagination PaginationConfig  `yaml:"pagination" env-prefix:"PAGINATION_"`
 }
 
 func New(configPath string) (*Config, error) {

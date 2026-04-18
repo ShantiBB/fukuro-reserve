@@ -7,8 +7,8 @@ import (
 )
 
 type authRoutes struct {
-	pattern string
 	h       AuthHandler
+	pattern string
 }
 
 func NewAuthRoutes(pattern string, h AuthHandler) RouteRegistrar {

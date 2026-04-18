@@ -538,6 +538,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UsersResponse'
+      security:
+      - Bearer: []
       summary: Get all users
       tags:
       - users
@@ -558,6 +560,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.UserResponse'
+      security:
+      - Bearer: []
       summary: Create a new user
       tags:
       - users
@@ -572,6 +576,8 @@ paths:
       responses:
         "204":
           description: No Content
+      security:
+      - Bearer: []
       summary: Delete user
       tags:
       - users
@@ -589,6 +595,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
+      security:
+      - Bearer: []
       summary: Get user by ID
       tags:
       - users
@@ -614,6 +622,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
+      security:
+      - Bearer: []
       summary: Update user
       tags:
       - users
@@ -640,6 +650,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UpdateUserActivityResponse'
+      security:
+      - Bearer: []
       summary: Update user activity status
       tags:
       - users
@@ -666,6 +678,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UpdateUserRoleResponse'
+      security:
+      - Bearer: []
       summary: Update user role
       tags:
       - users
@@ -699,6 +713,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.BookingsResponse'
+      security:
+      - Bearer: []
       summary: Get all bookings
       tags:
       - bookings
@@ -719,6 +735,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.BookingResponse'
+      security:
+      - Bearer: []
       summary: Create a new booking
       tags:
       - bookings
@@ -733,6 +751,8 @@ paths:
       responses:
         "204":
           description: No Content
+      security:
+      - Bearer: []
       summary: Delete booking
       tags:
       - bookings
@@ -750,6 +770,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.BookingResponse'
+      security:
+      - Bearer: []
       summary: Get booking by ID
       tags:
       - bookings
@@ -766,6 +788,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - Bearer: []
       summary: Cancel booking
       tags:
       - bookings
@@ -782,6 +806,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - Bearer: []
       summary: Confirm booking
       tags:
       - bookings
@@ -817,6 +843,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelsResponse'
+      security:
+      - Bearer: []
       summary: Get hotels
       tags:
       - hotels
@@ -837,6 +865,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
       summary: Create a new hotel
       tags:
       - hotels
@@ -861,6 +891,8 @@ paths:
       responses:
         "204":
           description: No Content
+      security:
+      - Bearer: []
       summary: Delete hotel
       tags:
       - hotels
@@ -888,6 +920,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
       summary: Get hotel by slug
       tags:
       - hotels
@@ -923,6 +957,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
       summary: Update hotel
       tags:
       - hotels
@@ -959,6 +995,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
       summary: Update hotel title
       tags:
       - hotels
@@ -995,6 +1033,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomsResponse'
+      security:
+      - Bearer: []
       summary: Get rooms
       tags:
       - rooms
@@ -1015,6 +1055,8 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
       summary: Create a new room
       tags:
       - rooms
@@ -1029,6 +1071,8 @@ paths:
       responses:
         "204":
           description: No Content
+      security:
+      - Bearer: []
       summary: Delete room
       tags:
       - rooms
@@ -1046,6 +1090,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
       summary: Get room by ID
       tags:
       - rooms
@@ -1071,6 +1117,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
       summary: Update room
       tags:
       - rooms
@@ -1097,6 +1145,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - Bearer: []
       summary: Update room status
       tags:
       - rooms

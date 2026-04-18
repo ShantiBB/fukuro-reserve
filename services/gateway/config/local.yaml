@@ -1,7 +1,10 @@
-# available: debug, info, warn, error
+# app environment: local, dev, test, prod
 env: local
 
-# available: info, warn, error
+# gin mode: debug, test, release
+gin_mode: release
+
+# log level: debug, info, warn, error
 log_level: debug
 
 http:

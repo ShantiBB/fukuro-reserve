@@ -43,7 +43,7 @@ func New(cfg *config.Config, logger *slog.Logger) (*App, error) {
 
 func (app *App) MustRun() {
 	slog.SetDefault(app.Logger)
-	gin.SetMode(resolveGinMode(app.Config.Env))
+	gin.SetMode(resolveGinMode(app.Config.GinMode))
 
 	// Set JWT secret for auth middleware
 	httpMiddleware.SetJWTSecret(app.Config.JWT.AccessSecret)
@@ -90,12 +90,14 @@ func (app *App) MustRun() {
 	app.gracefulShutdown(server)
 }
 
-func resolveGinMode(env string) string {
-	switch strings.ToLower(strings.TrimSpace(env)) {
-	case "local", "dev", "debug":
+func resolveGinMode(mode string) string {
+	switch strings.ToLower(strings.TrimSpace(mode)) {
+	case "debug":
 		return gin.DebugMode
 	case "test":
 		return gin.TestMode
+	case "release":
+		return gin.ReleaseMode
 	default:
 		return gin.ReleaseMode
 	}

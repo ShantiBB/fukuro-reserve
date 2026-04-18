@@ -17,6 +17,7 @@ import (
 // @Tags bookings
 // @Accept json
 // @Produce json
+// @Security Bearer
 // @Param request body dto.CreateBookingRequest true "Create booking request"
 // @Success 201 {object} dto.BookingResponse
 // @Router /bookings [post]
@@ -44,6 +45,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 // @Summary Get all bookings
 // @Tags bookings
 // @Produce json
+// @Security Bearer
 // @Param userId query int false "User ID"
 // @Param hotelId query string false "Hotel ID"
 // @Param status query string false "Status"
@@ -97,6 +99,7 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // @Summary Get booking by ID
 // @Tags bookings
 // @Produce json
+// @Security Bearer
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.BookingResponse
 // @Router /bookings/{bookingId} [get]
@@ -123,6 +126,7 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 // ConfirmBooking godoc
 // @Summary Confirm booking
 // @Tags bookings
+// @Security Bearer
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.StatusResponse
 // @Router /bookings/{bookingId}/confirm [patch]
@@ -149,6 +153,7 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 // CancelBooking godoc
 // @Summary Cancel booking
 // @Tags bookings
+// @Security Bearer
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.StatusResponse
 // @Router /bookings/{bookingId}/cancel [patch]
@@ -175,6 +180,7 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 // DeleteBooking godoc
 // @Summary Delete booking
 // @Tags bookings
+// @Security Bearer
 // @Param bookingId path string true "Booking ID"
 // @Success 204
 // @Router /bookings/{bookingId} [delete]

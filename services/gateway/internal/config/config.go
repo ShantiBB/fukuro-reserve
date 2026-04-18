@@ -39,6 +39,7 @@ type JWTConfig struct {
 
 type Config struct {
 	Env        string            `yaml:"env" env:"ENV" env-default:"local"`
+	GinMode    string            `yaml:"gin_mode" env:"GIN_MODE" env-default:"release"`
 	LogLevel   string            `yaml:"log_level" env:"LOG_LEVEL" env-default:"info"`
 	JWT        JWTConfig         `yaml:"jwt" env-prefix:"JWT_"`
 	Auth       GRPCServiceConfig `yaml:"auth" env-prefix:"AUTH_"`

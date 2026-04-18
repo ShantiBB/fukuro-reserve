@@ -33,14 +33,14 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader(consts.HeaderAuthorization)
 		if authHeader == "" {
-			responder.GinError(c, http.StatusUnauthorized, "authorization header is required")
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: "authorization header is required"})
 			c.Abort()
 			return
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-			responder.GinError(c, http.StatusUnauthorized, "invalid authorization header format")
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: "invalid authorization header format"})
 			c.Abort()
 			return
 		}
@@ -53,21 +53,21 @@ func AuthMiddleware() gin.HandlerFunc {
 			return jwtSecret, nil
 		})
 		if err != nil || !token.Valid {
-			responder.GinError(c, http.StatusUnauthorized, "invalid token")
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: "invalid token"})
 			c.Abort()
 			return
 		}
 
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok {
-			responder.GinError(c, http.StatusUnauthorized, "invalid token claims")
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: "invalid token claims"})
 			c.Abort()
 			return
 		}
 
 		userID, ok := jwtclaims.ExtractUserID(claims)
 		if !ok {
-			responder.GinError(c, http.StatusUnauthorized, "invalid user id in token")
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: "invalid user id in token"})
 			c.Abort()
 			return
 		}

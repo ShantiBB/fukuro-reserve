@@ -1,12 +1,10 @@
 package responder
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,40 +15,10 @@ type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// JSON sends a JSON response.
-func JSON(w http.ResponseWriter, code int, payload interface{}) {
-	w.Header().Set(consts.HeaderContentType, consts.ContentTypeJSON)
-	w.WriteHeader(code)
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-	}
-}
-
-// Error sends an error response.
-func Error(w http.ResponseWriter, code int, message string) {
-	JSON(w, code, &ErrorResponse{Error: message})
-}
-
-// GRPCError converts gRPC error to HTTP error.
-func GRPCError(w http.ResponseWriter, err error) {
-	httpCode, message := grpcToHTTP(err)
-	Error(w, httpCode, message)
-}
-
-// GinJSON sends a JSON response in gin handlers.
-func GinJSON(c *gin.Context, code int, payload interface{}) {
-	c.JSON(code, payload)
-}
-
-// GinError sends an error response in gin handlers.
-func GinError(c *gin.Context, code int, message string) {
-	c.JSON(code, &ErrorResponse{Error: message})
-}
-
 // GinGRPCError converts gRPC error to HTTP error in gin handlers.
 func GinGRPCError(c *gin.Context, err error) {
 	httpCode, message := grpcToHTTP(err)
-	GinError(c, httpCode, message)
+	c.JSON(httpCode, &ErrorResponse{Error: message})
 }
 
 func grpcToHTTP(err error) (int, string) {

@@ -23,12 +23,12 @@ import (
 // @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateRegisterRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -38,7 +38,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // Login godoc
@@ -52,12 +52,12 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateLoginRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -67,7 +67,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // RefreshToken godoc
@@ -81,12 +81,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Router /auth/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateRefreshTokenRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -96,7 +96,7 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetUsers godoc
@@ -110,18 +110,18 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "page must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "limit must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
 		return
 	}
 
@@ -131,7 +131,7 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // CreateUser godoc
@@ -145,17 +145,17 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 func (h *AuthHandler) CreateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	var req dto.CreateUserRequest
-	if err = request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err = c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err = validation.ValidateCreateUserRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -165,7 +165,7 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, resp)
 }
 
 // GetUser godoc
@@ -178,13 +178,13 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 func (h *AuthHandler) GetUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid user id")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
 		return
 	}
 
@@ -194,7 +194,7 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateUser godoc
@@ -209,23 +209,23 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid user id")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
 		return
 	}
 
 	var req dto.UpdateUserRequest
-	if err = request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err = c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err = validation.ValidateUpdateUserRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -235,7 +235,7 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateUserActivity godoc
@@ -250,19 +250,19 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid user id")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
 		return
 	}
 
 	var req dto.UpdateUserActivityRequest
-	if err = request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err = c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 
@@ -272,7 +272,7 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateUserRole godoc
@@ -287,23 +287,23 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid user id")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
 		return
 	}
 
 	var req dto.UpdateUserRoleRequest
-	if err = request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err = c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err = validation.ValidateUpdateUserRoleRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -313,7 +313,7 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // DeleteUser godoc
@@ -325,13 +325,13 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 func (h *AuthHandler) DeleteUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
-		responder.GinError(c, http.StatusUnauthorized, err.Error())
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	id, err := request.PositiveInt64Path(c, "id")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid user id")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid user id"})
 		return
 	}
 

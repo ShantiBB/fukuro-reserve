@@ -21,12 +21,12 @@ import (
 // @Router /bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req dto.CreateBookingRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateCreateBookingRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -36,7 +36,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, resp)
 }
 
 // GetBookings godoc
@@ -53,26 +53,26 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 func (h *BookingHandler) GetBookings(c *gin.Context) {
 	userID, err := request.OptionalPositiveInt64Query(c, "userId")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "userId must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "userId must be a positive integer"})
 		return
 	}
 
 	hotelID := c.Query("hotelId")
 	if hotelID != "" {
 		if err = validation.ValidateUUID(hotelID); err != nil {
-			responder.GinError(c, http.StatusBadRequest, "invalid hotel_id format")
+			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid hotel_id format"})
 			return
 		}
 	}
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "page must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "limit must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
 		return
 	}
 
@@ -89,7 +89,7 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetBooking godoc
@@ -102,11 +102,11 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 func (h *BookingHandler) GetBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		responder.GinError(c, http.StatusBadRequest, "booking id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid booking id format")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
 		return
 	}
 
@@ -116,7 +116,7 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // ConfirmBooking godoc
@@ -128,11 +128,11 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		responder.GinError(c, http.StatusBadRequest, "booking id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid booking id format")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
 		return
 	}
 
@@ -142,7 +142,7 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // CancelBooking godoc
@@ -154,11 +154,11 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		responder.GinError(c, http.StatusBadRequest, "booking id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid booking id format")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
 		return
 	}
 
@@ -168,7 +168,7 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // DeleteBooking godoc
@@ -180,11 +180,11 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
-		responder.GinError(c, http.StatusBadRequest, "booking id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "booking id is required"})
 		return
 	}
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid booking id format")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid booking id format"})
 		return
 	}
 

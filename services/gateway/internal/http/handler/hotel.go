@@ -21,12 +21,12 @@ import (
 // @Router /hotels [post]
 func (h *HotelHandler) CreateHotel(c *gin.Context) {
 	var req dto.CreateHotelRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateCreateHotelRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -36,7 +36,7 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, resp)
 }
 
 // GetHotels godoc
@@ -53,12 +53,12 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 func (h *HotelHandler) GetHotels(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "page must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "limit must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
 		return
 	}
 
@@ -80,7 +80,7 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetHotel godoc
@@ -104,7 +104,7 @@ func (h *HotelHandler) GetHotel(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateHotel godoc
@@ -120,12 +120,12 @@ func (h *HotelHandler) GetHotel(c *gin.Context) {
 // @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
 func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 	var req dto.UpdateHotelRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateUpdateHotelRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -141,7 +141,7 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateHotelTitle godoc
@@ -157,12 +157,12 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 // @Router /hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 	var req dto.UpdateHotelTitleRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateUpdateHotelTitleRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -178,7 +178,7 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // DeleteHotel godoc
@@ -213,12 +213,12 @@ func (h *HotelHandler) DeleteHotel(c *gin.Context) {
 // @Router /rooms [post]
 func (h *HotelHandler) CreateRoom(c *gin.Context) {
 	var req dto.CreateRoomRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateCreateRoomRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -228,7 +228,7 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusCreated, resp)
+	c.JSON(http.StatusCreated, resp)
 }
 
 // GetRooms godoc
@@ -245,12 +245,12 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 func (h *HotelHandler) GetRooms(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "page must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "page must be a positive integer"})
 		return
 	}
 	limit, err := request.OptionalUint64Query(c, "limit")
 	if err != nil {
-		responder.GinError(c, http.StatusBadRequest, "limit must be a positive integer")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "limit must be a positive integer"})
 		return
 	}
 
@@ -267,7 +267,7 @@ func (h *HotelHandler) GetRooms(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // GetRoom godoc
@@ -280,7 +280,7 @@ func (h *HotelHandler) GetRooms(c *gin.Context) {
 func (h *HotelHandler) GetRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
-		responder.GinError(c, http.StatusBadRequest, "room id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "room id is required"})
 		return
 	}
 
@@ -290,7 +290,7 @@ func (h *HotelHandler) GetRoom(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateRoom godoc
@@ -305,17 +305,17 @@ func (h *HotelHandler) GetRoom(c *gin.Context) {
 func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
-		responder.GinError(c, http.StatusBadRequest, "room id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "room id is required"})
 		return
 	}
 
 	var req dto.UpdateRoomRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateUpdateRoomRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -325,7 +325,7 @@ func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // UpdateRoomStatus godoc
@@ -340,17 +340,17 @@ func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
-		responder.GinError(c, http.StatusBadRequest, "room id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "room id is required"})
 		return
 	}
 
 	var req dto.UpdateRoomStatusRequest
-	if err := request.BindJSON(c, &req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, "invalid request body")
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "invalid request body"})
 		return
 	}
 	if err := validation.ValidateUpdateRoomStatusRequest(req); err != nil {
-		responder.GinError(c, http.StatusBadRequest, err.Error())
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -360,7 +360,7 @@ func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 		return
 	}
 
-	responder.GinJSON(c, http.StatusOK, resp)
+	c.JSON(http.StatusOK, resp)
 }
 
 // DeleteRoom godoc
@@ -372,7 +372,7 @@ func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 func (h *HotelHandler) DeleteRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
-		responder.GinError(c, http.StatusBadRequest, "room id is required")
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: "room id is required"})
 		return
 	}
 

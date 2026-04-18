@@ -79,15 +79,6 @@ tasks:
     requires:
       vars: [service]
 
-  gateway-smoke:
-    desc: "Run gateway HTTP smoke tests (task gateway-smoke env=local)"
-    vars:
-      env: '{{default "local" .env}}'
-      smoke_path: "services/gateway/test/smoke"
-    cmds:
-      - |
-        ijhttp \
-          {{.smoke_path}}/cases/*.http \
-          -e {{.env}} \
-          -v {{.smoke_path}}/http-client.env.json \
-          -L BASIC
+  gateway-e2e-smoke:
+    desc: "Run gateway Go e2e smoke tests (requires running auth/hotel/booking/gateway)"
+    cmd: go test ./services/gateway/test/smoke -v -count=1

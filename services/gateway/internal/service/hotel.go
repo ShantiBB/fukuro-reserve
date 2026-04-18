@@ -7,6 +7,8 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func (s *Hotel) CreateHotel(ctx context.Context, req dto.CreateHotelRequest) (*dto.HotelResponse, error) {
@@ -15,9 +17,12 @@ func (s *Hotel) CreateHotel(ctx context.Context, req dto.CreateHotelRequest) (*d
 		description = &req.Description
 	}
 
-	location := &hotelv1.CreateHotelLocationRequest{
-		Latitude:  req.Location.Latitude,
-		Longitude: req.Location.Longitude,
+	var location *hotelv1.CreateHotelLocationRequest
+	if req.Location != nil {
+		location = &hotelv1.CreateHotelLocationRequest{
+			Latitude:  req.Location.Latitude,
+			Longitude: req.Location.Longitude,
+		}
 	}
 
 	resp, err := s.clients.Hotel.CreateHotel(ctx, &hotelv1.CreateHotelRequest{
@@ -77,9 +82,12 @@ func (s *Hotel) UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlu
 		description = &req.Description
 	}
 
-	location := &hotelv1.UpdateHotelLocationRequest{
-		Latitude:  req.Location.Latitude,
-		Longitude: req.Location.Longitude,
+	var location *hotelv1.UpdateHotelLocationRequest
+	if req.Location != nil {
+		location = &hotelv1.UpdateHotelLocationRequest{
+			Latitude:  req.Location.Latitude,
+			Longitude: req.Location.Longitude,
+		}
 	}
 
 	resp, err := s.clients.Hotel.UpdateHotel(ctx, &hotelv1.UpdateHotelRequest{
@@ -127,14 +135,14 @@ func (s *Hotel) CreateRoom(ctx context.Context, req dto.CreateRoomRequest) (*dto
 	}
 
 	if req.CountryCode == "" || req.CitySlug == "" || req.HotelSlug == "" {
-		return nil, fmt.Errorf("country_code, city_slug, and hotel_slug are required")
+		return nil, status.Error(codes.InvalidArgument, "country_code, city_slug, and hotel_slug are required")
 	}
 
 	var price float32
 	if req.Price != "" {
 		var p float64
 		if _, err := fmt.Sscanf(req.Price, "%f", &p); err != nil {
-			return nil, fmt.Errorf("invalid price")
+			return nil, status.Error(codes.InvalidArgument, "invalid price")
 		}
 		price = float32(p)
 	}

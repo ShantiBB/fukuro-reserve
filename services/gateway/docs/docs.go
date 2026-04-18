@@ -844,6 +844,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/hotels/{countryCode}/{citySlug}/{hotelSlug}/rooms": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomsResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/hotels/{countryCode}/{citySlug}/{hotelSlug}/title": {
             "patch": {
                 "security": [
@@ -904,63 +963,6 @@ const docTemplate = `{
             }
         },
         "/rooms": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "rooms"
-                ],
-                "summary": "Get rooms",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Country code",
-                        "name": "countryCode",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "City slug",
-                        "name": "citySlug",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page number",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Page size",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.RoomsResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1384,9 +1386,6 @@ const docTemplate = `{
                 },
                 "floor": {
                     "type": "integer"
-                },
-                "hotel_id": {
-                    "type": "string"
                 },
                 "hotel_slug": {
                     "type": "string"
@@ -1816,7 +1815,24 @@ const docTemplate = `{
         "responder.ErrorResponse": {
             "type": "object",
             "properties": {
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/responder.ErrorResponseDetails"
+                    }
+                },
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "responder.ErrorResponseDetails": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "field": {
                     "type": "string"
                 }
             }

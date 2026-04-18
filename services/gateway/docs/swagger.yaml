@@ -157,8 +157,6 @@ definitions:
         type: string
       floor:
         type: integer
-      hotel_id:
-        type: string
       hotel_slug:
         type: string
       images:
@@ -436,7 +434,18 @@ definitions:
     type: object
   responder.ErrorResponse:
     properties:
+      details:
+        items:
+          $ref: '#/definitions/responder.ErrorResponseDetails'
+        type: array
       error:
+        type: string
+    type: object
+  responder.ErrorResponseDetails:
+    properties:
+      description:
+        type: string
+      field:
         type: string
     type: object
 info:
@@ -962,6 +971,44 @@ paths:
       summary: Update hotel
       tags:
       - hotels
+  /hotels/{countryCode}/{citySlug}/{hotelSlug}/rooms:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotelSlug
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomsResponse'
+      security:
+      - Bearer: []
+      summary: Get rooms
+      tags:
+      - rooms
   /hotels/{countryCode}/{citySlug}/{hotelSlug}/title:
     patch:
       consumes:
@@ -1001,43 +1048,6 @@ paths:
       tags:
       - hotels
   /rooms:
-    get:
-      parameters:
-      - description: Country code
-        in: query
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: query
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: query
-        name: hotelSlug
-        required: true
-        type: string
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Page size
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RoomsResponse'
-      security:
-      - Bearer: []
-      summary: Get rooms
-      tags:
-      - rooms
     post:
       consumes:
       - application/json

@@ -8,7 +8,6 @@ import (
 
 type roomHandler interface {
 	CreateRoom(*gin.Context)
-	GetRooms(*gin.Context)
 	GetRoom(*gin.Context)
 	UpdateRoom(*gin.Context)
 	UpdateRoomStatus(*gin.Context)
@@ -29,7 +28,6 @@ func (rr roomRoutes) Register(r *gin.RouterGroup) {
 	rooms.Use(middleware.AuthMiddleware())
 
 	rooms.POST("", rr.h.CreateRoom)
-	rooms.GET("", rr.h.GetRooms)
 	rooms.GET("/:roomId", rr.h.GetRoom)
 	rooms.PUT("/:roomId", rr.h.UpdateRoom)
 	rooms.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)

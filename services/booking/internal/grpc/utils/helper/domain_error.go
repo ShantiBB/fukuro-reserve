@@ -62,7 +62,7 @@ func HandleDomainErr(err error) error {
 
 	ei := &errdetails.ErrorInfo{
 		Reason: domErr.message,
-		Domain: "user-service",
+		Domain: "booking-service",
 	}
 
 	st, _ := status.New(domErr.code, "operation failed").WithDetails(ei)

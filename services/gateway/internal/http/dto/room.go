@@ -6,7 +6,6 @@ type CreateRoomRequest struct {
 	RoomNumber  string   `json:"room_number"`
 	Type        string   `json:"type"`
 	HotelSlug   string   `json:"hotel_slug"`
-	HotelId     string   `json:"hotel_id,omitempty"`
 	Title       string   `json:"title"`
 	Description string   `json:"description,omitempty"`
 	Price       string   `json:"price"`

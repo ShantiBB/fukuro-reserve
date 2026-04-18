@@ -1,0 +1,4 @@
+./auth.go
+./booking.go
+./hotel.go
+./new.go

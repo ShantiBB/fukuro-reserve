@@ -41,13 +41,13 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 // @Tags rooms
 // @Produce json
 // @Security Bearer
-// @Param countryCode query string true "Country code"
-// @Param citySlug query string true "City slug"
-// @Param hotelSlug query string true "Hotel slug"
+// @Param countryCode path string true "Country code"
+// @Param citySlug path string true "City slug"
+// @Param hotelSlug path string true "Hotel slug"
 // @Param page query int false "Page number"
 // @Param limit query int false "Page size"
 // @Success 200 {object} dto.RoomsResponse
-// @Router /rooms [get]
+// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug}/rooms [get]
 func (h *HotelHandler) GetRooms(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -60,17 +60,17 @@ func (h *HotelHandler) GetRooms(c *gin.Context) {
 		return
 	}
 
-	countryCode := request.FirstNonEmptyQuery(c, "countryCode", "country_code")
+	countryCode := c.Param("countryCode")
 	if countryCode == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
 		return
 	}
-	citySlug := request.FirstNonEmptyQuery(c, "citySlug", "city_slug")
+	citySlug := c.Param("citySlug")
 	if citySlug == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
 		return
 	}
-	hotelSlug := request.FirstNonEmptyQuery(c, "hotelSlug", "hotel_slug")
+	hotelSlug := c.Param("hotelSlug")
 	if hotelSlug == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrRoomHotelSlugReq})
 		return

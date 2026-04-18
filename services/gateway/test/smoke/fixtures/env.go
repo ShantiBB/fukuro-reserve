@@ -61,7 +61,7 @@ type Env struct {
 func New(t *testing.T) *Env {
 	t.Helper()
 
-	ts := time.Now().Unix()
+	ts := time.Now().UnixNano()
 	baseURL := strings.TrimSpace(os.Getenv("GATEWAY_SMOKE_BASE_URL"))
 	if baseURL == "" {
 		baseURL = "http://localhost:8080"

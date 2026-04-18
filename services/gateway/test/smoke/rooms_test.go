@@ -40,13 +40,7 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 
 	t.Run("31 list rooms", func(t *testing.T) {
 		var resp dto.RoomsResponse
-		status, body := env.RequestJSON(
-			http.MethodGet,
-			"/api/v1/rooms?country_code=jp&city_slug=tokyo&hotel_slug="+env.Data.HotelSlug+"&page=1&limit=10",
-			env.Data.OwnerAccess,
-			nil,
-			&resp,
-		)
+		status, body := env.RequestJSON(http.MethodGet, "/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug+"/rooms?page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 

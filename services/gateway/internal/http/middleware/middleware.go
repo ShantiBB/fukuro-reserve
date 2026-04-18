@@ -3,12 +3,12 @@ package middleware
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
+	jwtclaims "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/jwt"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
 )
 
@@ -64,14 +64,14 @@ func AuthMiddleware(next http.Handler) http.Handler {
 				return
 			}
 
-			userID, ok := extractUserID(claims)
+			userID, ok := jwtclaims.ExtractUserID(claims)
 			if !ok {
 				responder.Error(w, http.StatusUnauthorized, "invalid user id in token")
 				return
 			}
 
-			userEmail := extractStringClaim(claims, "email", "Email")
-			userRole := extractStringClaim(claims, "role", "Role")
+			userEmail := jwtclaims.ExtractStringClaim(claims, "email", "Email")
+			userRole := jwtclaims.ExtractStringClaim(claims, "role", "Role")
 
 			ctx := context.WithValue(r.Context(), UserIDKey, userID)
 			ctx = context.WithValue(ctx, UserEmailKey, userEmail)
@@ -80,30 +80,4 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r.WithContext(ctx))
 		},
 	)
-}
-
-func extractUserID(claims jwt.MapClaims) (int64, bool) {
-	for _, key := range []string{"sub", "Sub"} {
-		switch value := claims[key].(type) {
-		case float64:
-			return int64(value), true
-		case string:
-			id, err := strconv.ParseInt(value, 10, 64)
-			if err == nil {
-				return id, true
-			}
-		}
-	}
-
-	return 0, false
-}
-
-func extractStringClaim(claims jwt.MapClaims, keys ...string) string {
-	for _, key := range keys {
-		if value, ok := claims[key].(string); ok {
-			return value
-		}
-	}
-
-	return ""
 }

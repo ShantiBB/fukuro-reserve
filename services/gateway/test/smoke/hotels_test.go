@@ -43,7 +43,7 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug,
+			"/api/v1/hotels/"+env.Data.HotelID,
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -86,7 +86,7 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug,
+			"/api/v1/hotels/"+env.Data.HotelID,
 			env.Data.OwnerAccess,
 			nil,
 			&resp,

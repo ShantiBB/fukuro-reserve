@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ShantiBB/fukuro-reserve/services/hotel/internal/repository/models"
+	"github.com/google/uuid"
 
 	"github.com/gosimple/slug"
 )
@@ -37,6 +38,15 @@ func (s *Service) GetHotels(
 
 func (s *Service) GetHotelBySlug(ctx context.Context, ref models.HotelRef) (*models.Hotel, error) {
 	h, err := s.repo.SelectHotelBySlug(ctx, ref)
+	if err != nil {
+		return nil, err
+	}
+
+	return h, nil
+}
+
+func (s *Service) GetHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error) {
+	h, err := s.repo.SelectHotelByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}

@@ -14,6 +14,7 @@ type HotelRepository interface {
 		ctx context.Context, hotelRef models.HotelRef, sortField string, limit, offset uint64,
 	) (*models.HotelList, error)
 	SelectHotelBySlug(ctx context.Context, ref models.HotelRef) (*models.Hotel, error)
+	SelectHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error)
 	UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotel) error
 	UpdateHotelTitleBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotelTitle) error
 	DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error

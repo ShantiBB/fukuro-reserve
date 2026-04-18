@@ -18,6 +18,7 @@ type domainErr struct {
 var (
 	errHotelNotFound    = domainErr{consts.MsgHotelNotFound, codes.NotFound}
 	errRoomNotFound     = domainErr{consts.MsgRoomNotFound, codes.NotFound}
+	errInvalidHotelID   = domainErr{consts.MsgInvalidHotelID, codes.InvalidArgument}
 	errUniqueHotelField = domainErr{consts.MsgUniqueHotelField, codes.NotFound}
 	errUniqueRoomField  = domainErr{consts.MsgUniqueRoomField, codes.NotFound}
 	errInternalServer   = domainErr{consts.MsgInternalServer, codes.Internal}
@@ -34,6 +35,8 @@ func HandleDomainErr(err error) error {
 		domErr = errHotelNotFound
 	case errors.Is(err, consts.ErrRoomNotFound):
 		domErr = errRoomNotFound
+	case errors.Is(err, consts.ErrInvalidHotelID):
+		domErr = errInvalidHotelID
 	case errors.Is(err, consts.ErrUniqueHotelField):
 		domErr = errUniqueHotelField
 	case errors.Is(err, consts.ErrUniqueRoomField):

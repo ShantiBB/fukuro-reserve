@@ -13,6 +13,7 @@ import (
 type HotelService interface {
 	CreateHotel(ctx context.Context, h *models.CreateHotel) (*models.Hotel, error)
 	GetHotels(ctx context.Context, ref models.HotelRef, sort string, page, limit uint64) (*models.HotelList, error)
+	GetHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error)
 	GetHotelBySlug(ctx context.Context, ref models.HotelRef) (*models.Hotel, error)
 	UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotel) error
 	UpdateHotelTitleBySlug(

@@ -93,22 +93,21 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 }
 
 // GetHotel godoc
-// @Summary Get hotel by slug
+// @Summary Get hotel by ID
 // @Tags hotels
 // @Produce json
 // @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
+// @Param hotelId path string true "Hotel ID"
 // @Success 200 {object} dto.HotelResponse
-// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [get]
+// @Router /hotels/{hotelId} [get]
 func (h *HotelHandler) GetHotel(c *gin.Context) {
-	resp, err := h.service.GetHotel(
-		c.Request.Context(),
-		c.Param("countryCode"),
-		c.Param("citySlug"),
-		c.Param("hotelSlug"),
-	)
+	hotelID := c.Param("hotelId")
+	if hotelID == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
+		return
+	}
+
+	resp, err := h.service.GetHotelByID(c.Request.Context(), hotelID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return

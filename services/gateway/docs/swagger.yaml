@@ -905,35 +905,6 @@ paths:
       summary: Delete hotel
       tags:
       - hotels
-    get:
-      parameters:
-      - description: Country code
-        in: path
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: path
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: path
-        name: hotelSlug
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
-      summary: Get hotel by slug
-      tags:
-      - hotels
     put:
       consumes:
       - application/json
@@ -1045,6 +1016,26 @@ paths:
       security:
       - Bearer: []
       summary: Update hotel title
+      tags:
+      - hotels
+  /hotels/{hotelId}:
+    get:
+      parameters:
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Get hotel by ID
       tags:
       - hotels
   /rooms:

@@ -22,7 +22,7 @@ type authService interface {
 type hotelService interface {
 	CreateHotel(ctx context.Context, req dto.CreateHotelRequest) (*dto.HotelResponse, error)
 	GetHotels(ctx context.Context, countryCode, citySlug, sortBy string, page, limit uint64) (*dto.HotelsResponse, error)
-	GetHotel(ctx context.Context, countryCode, citySlug, hotelSlug string) (*dto.HotelResponse, error)
+	GetHotelByID(ctx context.Context, hotelID string) (*dto.HotelResponse, error)
 	UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error)
 	UpdateHotelTitle(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelTitleRequest) (*dto.HotelResponse, error)
 	DeleteHotel(ctx context.Context, countryCode, citySlug, hotelSlug string) error

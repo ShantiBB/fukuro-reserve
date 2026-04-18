@@ -702,51 +702,6 @@ const docTemplate = `{
             }
         },
         "/hotels/{countryCode}/{citySlug}/{hotelSlug}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "hotels"
-                ],
-                "summary": "Get hotel by slug",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Country code",
-                        "name": "countryCode",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "City slug",
-                        "name": "citySlug",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.HotelResponse"
-                        }
-                    }
-                }
-            },
             "put": {
                 "security": [
                     {
@@ -950,6 +905,39 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateHotelTitleRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/hotels/{hotelId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {

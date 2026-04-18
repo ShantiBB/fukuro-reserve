@@ -63,17 +63,15 @@ func (s *Hotel) GetHotels(ctx context.Context, countryCode, citySlug, sortBy str
 	return mapper.HotelsShortResponseFromProto(resp), nil
 }
 
-func (s *Hotel) GetHotel(ctx context.Context, countryCode, citySlug, hotelSlug string) (*dto.HotelResponse, error) {
-	resp, err := s.clients.Hotel.GetHotel(ctx, &hotelv1.GetHotelRequest{
-		CountryCode: countryCode,
-		CitySlug:    citySlug,
-		HotelSlug:   hotelSlug,
+func (s *Hotel) GetHotelByID(ctx context.Context, hotelID string) (*dto.HotelResponse, error) {
+	resp, err := s.clients.Hotel.GetHotelByID(ctx, &hotelv1.GetHotelByIDRequest{
+		Id: hotelID,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return mapper.HotelDetailResponseFromProto(resp), nil
+	return mapper.HotelDetailByIDResponseFromProto(resp), nil
 }
 
 func (s *Hotel) UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error) {

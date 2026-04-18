@@ -27,6 +27,20 @@ const (
 		FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3`
 
+	GetHotelByID = `
+		SELECT id,
+			   title,
+			   owner_id,
+			   description,
+			   address,
+			   longitude,
+			   latitude,
+			   rating,
+			   created_at,
+			   updated_at
+		FROM hotel
+		WHERE id = $1`
+
 	GetHotels = `
 		SELECT id,
 			   title,

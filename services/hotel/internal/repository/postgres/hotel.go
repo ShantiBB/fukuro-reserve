@@ -8,6 +8,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/hotel/internal/repository/postgres/query"
 	"github.com/ShantiBB/fukuro-reserve/services/hotel/pkg/lib/utils/consts"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -109,6 +110,30 @@ func (r *Repository) SelectHotelBySlug(ctx context.Context, ref models.HotelRef)
 		ref.CitySlug,
 		ref.HotelSlug,
 	).Scan(
+		&h.ID,
+		&h.Title,
+		&h.OwnerID,
+		&h.Description,
+		&h.Address,
+		&h.Location.Longitude,
+		&h.Location.Latitude,
+		&h.Rating,
+		&h.CreatedAt,
+		&h.UpdatedAt,
+	)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, consts.ErrHotelNotFound
+		}
+		return nil, err
+	}
+
+	return &h, nil
+}
+
+func (r *Repository) SelectHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error) {
+	var h models.Hotel
+	err := r.db.QueryRow(ctx, query.GetHotelByID, id).Scan(
 		&h.ID,
 		&h.Title,
 		&h.OwnerID,

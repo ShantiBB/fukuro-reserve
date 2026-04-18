@@ -49,6 +49,30 @@ func (h *Handler) GetHotels(ctx context.Context, req *hotelv1.GetHotelsRequest) 
 	}, nil
 }
 
+func (h *Handler) GetHotelByID(
+	ctx context.Context,
+	req *hotelv1.GetHotelByIDRequest,
+) (*hotelv1.GetHotelByIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := mapper.GetHotelByIDRequestToDomain(req.Id)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	hotel, err := h.svc.GetHotelByID(ctx, hotelID)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.GetHotelByIDResponse{
+		Hotel: mapper.HotelResponseToProto(hotel),
+	}, nil
+}
+
 func (h *Handler) GetHotel(ctx context.Context, req *hotelv1.GetHotelRequest) (*hotelv1.GetHotelResponse, error) {
 	if err := h.validator.Validate(req); err != nil {
 		return nil, helper.HandleValidationErr(err)

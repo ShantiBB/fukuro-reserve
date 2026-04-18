@@ -34,7 +34,18 @@ func HotelDetailResponseFromProto(resp *hotelv1.GetHotelResponse) *dto.HotelResp
 		return nil
 	}
 
-	hotel := resp.Hotel
+	return hotelDetailFromProto(resp.Hotel)
+}
+
+func HotelDetailByIDResponseFromProto(resp *hotelv1.GetHotelByIDResponse) *dto.HotelResponse {
+	if resp == nil || resp.Hotel == nil {
+		return nil
+	}
+
+	return hotelDetailFromProto(resp.Hotel)
+}
+
+func hotelDetailFromProto(hotel *hotelv1.Hotel) *dto.HotelResponse {
 	result := &dto.HotelResponse{
 		Id:          hotel.Id,
 		Title:       hotel.Title,

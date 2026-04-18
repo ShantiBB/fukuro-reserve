@@ -2,7 +2,6 @@ package dto
 
 import "time"
 
-// LocationDTO Hotel DTOs.
 type LocationDTO struct {
 	Latitude  float32 `json:"latitude"`
 	Longitude float32 `json:"longitude"`

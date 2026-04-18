@@ -2,7 +2,6 @@ package dto
 
 import "time"
 
-// Booking DTOs.
 type CreateBookingRoomRequest struct {
 	RoomId        string `json:"room_id"`
 	PricePerNight string `json:"price_per_night"`

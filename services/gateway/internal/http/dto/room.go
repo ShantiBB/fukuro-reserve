@@ -2,7 +2,6 @@ package dto
 
 import "time"
 
-// Room DTOs.
 type CreateRoomRequest struct {
 	RoomNumber  string   `json:"room_number"`
 	Type        string   `json:"type"`

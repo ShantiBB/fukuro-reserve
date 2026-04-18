@@ -2,7 +2,6 @@ package dto
 
 import "time"
 
-// CreateUserRequest User DTOs.
 type CreateUserRequest struct {
 	Email    string `json:"email"`
 	Username string `json:"username,omitempty"`

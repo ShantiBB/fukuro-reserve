@@ -13,7 +13,8 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
@@ -37,53 +38,53 @@ func NewBookingHandler(clients *clients.Clients, pagination config.PaginationCon
 func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateBookingRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
 	// Validate required fields
 	if req.GuestName == "" {
-		utils.RespondError(w, http.StatusBadRequest, "guest_name is required")
+		responder.Error(w, http.StatusBadRequest, "guest_name is required")
 		return
 	}
 
 	if err := validation.ValidateUUID(req.HotelId); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, err.Error())
+		responder.Error(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := validation.ValidateCurrency(req.Currency); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, err.Error())
+		responder.Error(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	if err := validation.ValidateAmount(req.ExpectedTotalAmount); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, err.Error())
+		responder.Error(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// Validate dates
 	if req.CheckIn.IsZero() {
-		utils.RespondError(w, http.StatusBadRequest, "check_in is required")
+		responder.Error(w, http.StatusBadRequest, "check_in is required")
 		return
 	}
 	if !req.CheckIn.After(time.Now()) {
-		utils.RespondError(w, http.StatusBadRequest, "check_in must be in the future")
+		responder.Error(w, http.StatusBadRequest, "check_in must be in the future")
 		return
 	}
 
 	if req.CheckOut.IsZero() {
-		utils.RespondError(w, http.StatusBadRequest, "check_out is required")
+		responder.Error(w, http.StatusBadRequest, "check_out is required")
 		return
 	}
 	if !req.CheckOut.After(req.CheckIn) {
-		utils.RespondError(w, http.StatusBadRequest, "check_out must be after check_in")
+		responder.Error(w, http.StatusBadRequest, "check_out must be after check_in")
 		return
 	}
 
 	// Validate rooms
 	if len(req.Rooms) == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "at least one room is required")
+		responder.Error(w, http.StatusBadRequest, "at least one room is required")
 		return
 	}
 
@@ -96,7 +97,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 			PricePerNight: room.PricePerNight,
 		}
 		if err := validation.ValidateRoom(roomCopy); err != nil {
-			utils.RespondError(w, http.StatusBadRequest, "room "+string(rune('A'+i))+": "+err.Error())
+			responder.Error(w, http.StatusBadRequest, "room "+string(rune('A'+i))+": "+err.Error())
 			return
 		}
 	}
@@ -136,11 +137,11 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, mapper.BookingResponseFromProto(resp.Booking))
+	responder.JSON(w, http.StatusCreated, mapper.BookingResponseFromProto(resp.Booking))
 }
 
 // GetBookings godoc
@@ -158,11 +159,11 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 	req := &bookingv1.GetBookingsRequest{}
 
 	if userID := r.URL.Query().Get("userId"); userID != "" {
-		req.UserId = utils.ParseInt64(userID)
+		req.UserId = query.ParseInt64(userID)
 	}
 	if hotelID := r.URL.Query().Get("hotelId"); hotelID != "" {
 		if err := validation.ValidateUUID(hotelID); err != nil {
-			utils.RespondError(w, http.StatusBadRequest, "invalid hotel_id format")
+			responder.Error(w, http.StatusBadRequest, "invalid hotel_id format")
 			return
 		}
 		req.HotelId = hotelID
@@ -171,12 +172,12 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 		req.Status = bookingv1.BookingStatus(bookingv1.BookingStatus_value[status])
 	}
 
-	page := utils.ParseUint64(r.URL.Query().Get("page"))
+	page := query.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = h.pagination.DefaultPage
 	}
 
-	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
+	limit := query.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
 		limit = h.pagination.DefaultPageSize
 	}
@@ -186,11 +187,11 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := h.clients.Booking.GetBookings(r.Context(), req)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.BookingsShortResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, mapper.BookingsShortResponseFromProto(resp))
 }
 
 // GetBooking godoc
@@ -203,22 +204,22 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
 	if bookingID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "booking id is required")
+		responder.Error(w, http.StatusBadRequest, "booking id is required")
 		return
 	}
 
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid booking id format")
+		responder.Error(w, http.StatusBadRequest, "invalid booking id format")
 		return
 	}
 
 	resp, err := h.clients.Booking.GetBooking(r.Context(), &bookingv1.GetBookingRequest{Id: bookingID})
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.BookingResponseFromProto(resp.Booking))
+	responder.JSON(w, http.StatusOK, mapper.BookingResponseFromProto(resp.Booking))
 }
 
 // ConfirmBooking godoc
@@ -230,12 +231,12 @@ func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
 	if bookingID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "booking id is required")
+		responder.Error(w, http.StatusBadRequest, "booking id is required")
 		return
 	}
 
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid booking id format")
+		responder.Error(w, http.StatusBadRequest, "invalid booking id format")
 		return
 	}
 
@@ -243,11 +244,11 @@ func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) 
 		r.Context(), &bookingv1.ConfirmBookingStatusRequest{Id: bookingID},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
+	responder.JSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // CancelBooking godoc
@@ -259,12 +260,12 @@ func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) 
 func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
 	if bookingID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "booking id is required")
+		responder.Error(w, http.StatusBadRequest, "booking id is required")
 		return
 	}
 
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid booking id format")
+		responder.Error(w, http.StatusBadRequest, "invalid booking id format")
 		return
 	}
 
@@ -272,11 +273,11 @@ func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 		r.Context(), &bookingv1.CancelBookingStatusRequest{Id: bookingID},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
+	responder.JSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteBooking godoc
@@ -288,18 +289,18 @@ func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 func (h *BookingHandler) DeleteBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
 	if bookingID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "booking id is required")
+		responder.Error(w, http.StatusBadRequest, "booking id is required")
 		return
 	}
 
 	if err := validation.ValidateUUID(bookingID); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid booking id format")
+		responder.Error(w, http.StatusBadRequest, "invalid booking id format")
 		return
 	}
 
 	_, err := h.clients.Booking.DeleteBooking(r.Context(), &bookingv1.DeleteBookingRequest{Id: bookingID})
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 

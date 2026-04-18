@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
 )
 
 type contextKey string
@@ -33,13 +33,13 @@ func AuthMiddleware(next http.Handler) http.Handler {
 		func(w http.ResponseWriter, r *http.Request) {
 			authHeader := r.Header.Get(consts.HeaderAuthorization)
 			if authHeader == "" {
-				utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+				responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 				return
 			}
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
-				utils.RespondError(w, http.StatusUnauthorized, "invalid authorization header format")
+				responder.Error(w, http.StatusUnauthorized, "invalid authorization header format")
 				return
 			}
 
@@ -54,19 +54,19 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			)
 
 			if err != nil || !token.Valid {
-				utils.RespondError(w, http.StatusUnauthorized, "invalid token")
+				responder.Error(w, http.StatusUnauthorized, "invalid token")
 				return
 			}
 
 			claims, ok := token.Claims.(jwt.MapClaims)
 			if !ok {
-				utils.RespondError(w, http.StatusUnauthorized, "invalid token claims")
+				responder.Error(w, http.StatusUnauthorized, "invalid token claims")
 				return
 			}
 
 			userID, ok := extractUserID(claims)
 			if !ok {
-				utils.RespondError(w, http.StatusUnauthorized, "invalid user id in token")
+				responder.Error(w, http.StatusUnauthorized, "invalid user id in token")
 				return
 			}
 

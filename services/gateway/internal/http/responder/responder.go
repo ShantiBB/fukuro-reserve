@@ -1,9 +1,8 @@
-package utils
+package responder
 
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -11,13 +10,13 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// ErrorResponse represents an error response
+// ErrorResponse represents an error response.
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
 
-// RespondJSON sends a JSON response
-func RespondJSON(w http.ResponseWriter, code int, payload interface{}) {
+// JSON sends a JSON response.
+func JSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set(consts.HeaderContentType, consts.ContentTypeJSON)
 	w.WriteHeader(code)
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
@@ -25,20 +24,19 @@ func RespondJSON(w http.ResponseWriter, code int, payload interface{}) {
 	}
 }
 
-// RespondError sends an error response
-func RespondError(w http.ResponseWriter, code int, message string) {
-	RespondJSON(w, code, &ErrorResponse{Error: message})
+// Error sends an error response.
+func Error(w http.ResponseWriter, code int, message string) {
+	JSON(w, code, &ErrorResponse{Error: message})
 }
 
-// RespondGRPCError converts gRPC error to HTTP error
-func RespondGRPCError(w http.ResponseWriter, err error) {
+// GRPCError converts gRPC error to HTTP error.
+func GRPCError(w http.ResponseWriter, err error) {
 	st, ok := status.FromError(err)
 	if !ok {
-		RespondError(w, http.StatusInternalServerError, "internal server error")
+		Error(w, http.StatusInternalServerError, "internal server error")
 		return
 	}
 
-	// Try to extract the error reason from ErrorInfo details
 	reason := extractErrorReason(st)
 
 	var httpCode int
@@ -76,12 +74,10 @@ func RespondGRPCError(w http.ResponseWriter, err error) {
 		message = "internal server error"
 	}
 
-	RespondError(w, httpCode, message)
+	Error(w, httpCode, message)
 }
 
-// extractErrorReason extracts the specific error reason from gRPC error details
 func extractErrorReason(st *status.Status) string {
-	// Get the ErrorInfo details if available
 	details := st.Details()
 	for _, d := range details {
 		if errInfo, ok := d.(*errdetails.ErrorInfo); ok {
@@ -90,24 +86,6 @@ func extractErrorReason(st *status.Status) string {
 			}
 		}
 	}
-	// Fallback to the default message if no reason found
+
 	return st.Message()
-}
-
-// ParseInt64 parses a string to int64
-func ParseInt64(s string) int64 {
-	i, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		return 0
-	}
-	return i
-}
-
-// ParseUint64 parses a string to uint64
-func ParseUint64(s string) uint64 {
-	i, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		return 0
-	}
-	return i
 }

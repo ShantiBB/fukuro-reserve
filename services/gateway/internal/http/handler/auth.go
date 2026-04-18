@@ -15,7 +15,8 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
 )
 
 type AuthHandler struct {
@@ -51,7 +52,7 @@ func authContext(r *http.Request) (context.Context, error) {
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req dto.RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -62,11 +63,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromRegister(resp))
+	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromRegister(resp))
 }
 
 // Login godoc
@@ -81,7 +82,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -92,11 +93,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromLogin(resp))
+	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromLogin(resp))
 }
 
 // RefreshToken godoc
@@ -111,7 +112,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req dto.RefreshTokenRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -121,11 +122,11 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromRefresh(resp))
+	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromRefresh(resp))
 }
 
 // GetUsers godoc
@@ -139,16 +140,16 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
-	page := utils.ParseUint64(r.URL.Query().Get("page"))
+	page := query.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = h.pagination.DefaultPage
 	}
 
-	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
+	limit := query.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
 		limit = h.pagination.DefaultPageSize
 	}
@@ -160,11 +161,11 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UsersResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, mapper.UsersResponseFromProto(resp))
 }
 
 // CreateUser godoc
@@ -178,13 +179,13 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	var req dto.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -201,11 +202,11 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, mapper.UserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusCreated, mapper.UserResponseFromProto(resp.User))
 }
 
 // GetUser godoc
@@ -218,24 +219,24 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	idStr := chi.URLParam(r, "id")
-	id := utils.ParseInt64(idStr)
+	id := query.ParseInt64(idStr)
 	if id == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "invalid user id")
+		responder.Error(w, http.StatusBadRequest, "invalid user id")
 		return
 	}
 
 	resp, err := h.clients.User.GetUser(ctx, &userv1.GetUserRequest{Id: id})
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusOK, mapper.UserResponseFromProto(resp.User))
 }
 
 // UpdateUser godoc
@@ -250,20 +251,20 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	idStr := chi.URLParam(r, "id")
-	id := utils.ParseInt64(idStr)
+	id := query.ParseInt64(idStr)
 	if id == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "invalid user id")
+		responder.Error(w, http.StatusBadRequest, "invalid user id")
 		return
 	}
 
 	var req dto.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -275,11 +276,11 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UpdateUserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusOK, mapper.UpdateUserResponseFromProto(resp.User))
 }
 
 // UpdateUserActivity godoc
@@ -294,20 +295,20 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	idStr := chi.URLParam(r, "id")
-	id := utils.ParseInt64(idStr)
+	id := query.ParseInt64(idStr)
 	if id == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "invalid user id")
+		responder.Error(w, http.StatusBadRequest, "invalid user id")
 		return
 	}
 
 	var req dto.UpdateUserActivityRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -318,11 +319,11 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserActivityResponse{IsActive: resp.IsActive})
+	responder.JSON(w, http.StatusOK, dto.UpdateUserActivityResponse{IsActive: resp.IsActive})
 }
 
 // UpdateUserRole godoc
@@ -337,20 +338,20 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	idStr := chi.URLParam(r, "id")
-	id := utils.ParseInt64(idStr)
+	id := query.ParseInt64(idStr)
 	if id == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "invalid user id")
+		responder.Error(w, http.StatusBadRequest, "invalid user id")
 		return
 	}
 
 	var req dto.UpdateUserRoleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -361,11 +362,11 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserRoleResponse{Role: resp.Role.String()})
+	responder.JSON(w, http.StatusOK, dto.UpdateUserRoleResponse{Role: resp.Role.String()})
 }
 
 // DeleteUser godoc
@@ -377,20 +378,20 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
-		utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
+		responder.Error(w, http.StatusUnauthorized, "authorization header is required")
 		return
 	}
 
 	idStr := chi.URLParam(r, "id")
-	id := utils.ParseInt64(idStr)
+	id := query.ParseInt64(idStr)
 	if id == 0 {
-		utils.RespondError(w, http.StatusBadRequest, "invalid user id")
+		responder.Error(w, http.StatusBadRequest, "invalid user id")
 		return
 	}
 
 	_, err = h.clients.User.DeleteUser(ctx, &userv1.DeleteUserRequest{Id: id})
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 

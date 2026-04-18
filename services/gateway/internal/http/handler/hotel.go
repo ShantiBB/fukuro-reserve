@@ -11,7 +11,8 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 )
 
@@ -35,7 +36,7 @@ func NewHotelHandler(clients *clients.Clients, pagination config.PaginationConfi
 func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateHotelRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -61,11 +62,11 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, mapper.HotelResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusCreated, mapper.HotelResponseFromProto(resp.Hotel))
 }
 
 // GetHotels godoc
@@ -98,12 +99,12 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		sortBy = "title"
 	}
 
-	page := utils.ParseUint64(r.URL.Query().Get("page"))
+	page := query.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = h.pagination.DefaultPage
 	}
 
-	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
+	limit := query.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
 		limit = h.pagination.DefaultPageSize
 	}
@@ -118,11 +119,11 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.HotelsShortResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, mapper.HotelsShortResponseFromProto(resp))
 }
 
 // GetHotel godoc
@@ -147,11 +148,11 @@ func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.HotelDetailResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, mapper.HotelDetailResponseFromProto(resp))
 }
 
 // UpdateHotel godoc
@@ -172,7 +173,7 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 
 	var req dto.UpdateHotelRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -197,11 +198,11 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UpdateHotelResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusOK, mapper.UpdateHotelResponseFromProto(resp.Hotel))
 }
 
 // UpdateHotelTitle godoc
@@ -222,7 +223,7 @@ func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) 
 
 	var req dto.UpdateHotelTitleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -235,11 +236,11 @@ func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) 
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UpdateHotelTitleResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusOK, mapper.UpdateHotelTitleResponseFromProto(resp.Hotel))
 }
 
 // DeleteHotel godoc
@@ -263,7 +264,7 @@ func (h *HotelHandler) DeleteHotel(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
@@ -281,7 +282,7 @@ func (h *HotelHandler) DeleteHotel(w http.ResponseWriter, r *http.Request) {
 func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	var req dto.CreateRoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -294,14 +295,14 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 	if req.Price != "" {
 		var p float64
 		if _, err := fmt.Sscanf(req.Price, "%f", &p); err != nil {
-			utils.RespondError(w, http.StatusBadRequest, "invalid price")
+			responder.Error(w, http.StatusBadRequest, "invalid price")
 			return
 		}
 		price = float32(p)
 	}
 
 	if req.CountryCode == "" || req.CitySlug == "" || req.HotelSlug == "" {
-		utils.RespondError(
+		responder.Error(
 			w,
 			http.StatusBadRequest,
 			"country_code, city_slug, and hotel_slug are required",
@@ -327,11 +328,11 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, mapper.RoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusCreated, mapper.RoomResponseFromProto(resp.Room))
 }
 
 // GetRooms godoc
@@ -361,12 +362,12 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 		hotelSlug = r.URL.Query().Get("hotel_slug")
 	}
 
-	page := utils.ParseUint64(r.URL.Query().Get("page"))
+	page := query.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
 		page = h.pagination.DefaultPage
 	}
 
-	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
+	limit := query.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
 		limit = h.pagination.DefaultPageSize
 	}
@@ -381,11 +382,11 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.RoomsShortResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, mapper.RoomsShortResponseFromProto(resp))
 }
 
 // GetRoom godoc
@@ -398,7 +399,7 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
 	if roomID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "room id is required")
+		responder.Error(w, http.StatusBadRequest, "room id is required")
 		return
 	}
 
@@ -406,11 +407,11 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 		r.Context(), &hotelv1.GetRoomRequest{Id: roomID},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.RoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusOK, mapper.RoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoom godoc
@@ -425,13 +426,13 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
 	if roomID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "room id is required")
+		responder.Error(w, http.StatusBadRequest, "room id is required")
 		return
 	}
 
 	var req dto.UpdateRoomRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -456,11 +457,11 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, mapper.UpdateRoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusOK, mapper.UpdateRoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoomStatus godoc
@@ -475,13 +476,13 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
 	if roomID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "room id is required")
+		responder.Error(w, http.StatusBadRequest, "room id is required")
 		return
 	}
 
 	var req dto.UpdateRoomStatusRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		utils.RespondError(w, http.StatusBadRequest, "invalid request body")
+		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
@@ -492,11 +493,11 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 		},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
+	responder.JSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteRoom godoc
@@ -508,7 +509,7 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 func (h *HotelHandler) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
 	if roomID == "" {
-		utils.RespondError(w, http.StatusBadRequest, "room id is required")
+		responder.Error(w, http.StatusBadRequest, "room id is required")
 		return
 	}
 
@@ -516,7 +517,7 @@ func (h *HotelHandler) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 		r.Context(), &hotelv1.DeleteRoomRequest{Id: roomID},
 	)
 	if err != nil {
-		utils.RespondGRPCError(w, err)
+		responder.GRPCError(w, err)
 		return
 	}
 

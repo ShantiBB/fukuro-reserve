@@ -29,6 +29,9 @@ func runSetupSmoke(t *testing.T, env *fixtures.Env) {
 				&resp,
 			)
 			env.RequireStatus(status, http.StatusOK, body)
+			if resp.Access == "" || resp.Refresh == "" {
+				t.Fatalf("register token response is invalid: %+v", resp)
+			}
 			env.Data.OwnerAccess = resp.Access
 			env.Data.OwnerRefresh = resp.Refresh
 		},
@@ -45,6 +48,9 @@ func runSetupSmoke(t *testing.T, env *fixtures.Env) {
 				&resp,
 			)
 			env.RequireStatus(status, http.StatusOK, body)
+			if resp.Access == "" || resp.Refresh == "" {
+				t.Fatalf("admin login token response is invalid: %+v", resp)
+			}
 			env.Data.AdminAccess = resp.Access
 		},
 	)
@@ -60,6 +66,9 @@ func runSetupSmoke(t *testing.T, env *fixtures.Env) {
 				&resp,
 			)
 			env.RequireStatus(status, http.StatusOK, body)
+			if resp.Access == "" || resp.Refresh == "" {
+				t.Fatalf("owner login token response is invalid: %+v", resp)
+			}
 			env.Data.OwnerAccess = resp.Access
 		},
 	)
@@ -75,6 +84,9 @@ func runSetupSmoke(t *testing.T, env *fixtures.Env) {
 				&resp,
 			)
 			env.RequireStatus(status, http.StatusOK, body)
+			if resp.Access == "" || resp.Refresh == "" {
+				t.Fatalf("refresh token response is invalid: %+v", resp)
+			}
 		},
 	)
 

@@ -10,6 +10,7 @@ func TestGatewaySmoke(t *testing.T) {
 	env := fixtures.New(t)
 
 	runSetupSmoke(t, env)
+	runAuthValidationSmoke(t, env)
 	runAuthSmoke(t, env)
 	runHotelsSmoke(t, env)
 	runRoomsSmoke(t, env)

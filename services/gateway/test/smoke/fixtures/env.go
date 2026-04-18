@@ -12,6 +12,20 @@ import (
 	"time"
 )
 
+type ValidationErrorResponse struct {
+	Error   string                  `json:"error"`
+	Details []ValidationErrorDetail `json:"details"`
+}
+
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+type ValidationErrorDetail struct {
+	Field       string `json:"field"`
+	Description string `json:"description"`
+}
+
 type RuntimeData struct {
 	Password          string
 	AdminEmail        string
@@ -131,5 +145,51 @@ func (e *Env) RequireStatus(got, want int, body []byte) {
 	e.t.Helper()
 	if got != want {
 		e.t.Fatalf("unexpected status: got=%d want=%d body=%s", got, want, string(body))
+	}
+}
+
+func (e *Env) RequireValidationError(status int, body []byte, expectedFields ...string) {
+	e.t.Helper()
+
+	if status != http.StatusBadRequest {
+		e.t.Fatalf("unexpected status for validation error: got=%d want=%d body=%s", status, http.StatusBadRequest, string(body))
+	}
+
+	var resp ValidationErrorResponse
+	if err := json.Unmarshal(body, &resp); err != nil {
+		e.t.Fatalf("decode validation response: %v; body=%s", err, string(body))
+	}
+	if resp.Error != "validation failed" {
+		e.t.Fatalf("unexpected validation error message: got=%q want=%q body=%s", resp.Error, "validation failed", string(body))
+	}
+	if len(resp.Details) == 0 {
+		e.t.Fatalf("expected validation details, got empty body=%s", string(body))
+	}
+
+	fields := make(map[string]struct{}, len(resp.Details))
+	for _, d := range resp.Details {
+		fields[d.Field] = struct{}{}
+	}
+
+	for _, field := range expectedFields {
+		if _, ok := fields[field]; !ok {
+			e.t.Fatalf("expected validation field %q, got details=%v body=%s", field, resp.Details, string(body))
+		}
+	}
+}
+
+func (e *Env) RequireError(status, wantStatus int, body []byte, wantError string) {
+	e.t.Helper()
+
+	if status != wantStatus {
+		e.t.Fatalf("unexpected status: got=%d want=%d body=%s", status, wantStatus, string(body))
+	}
+
+	var resp ErrorResponse
+	if err := json.Unmarshal(body, &resp); err != nil {
+		e.t.Fatalf("decode error response: %v; body=%s", err, string(body))
+	}
+	if resp.Error != wantError {
+		e.t.Fatalf("unexpected error message: got=%q want=%q body=%s", resp.Error, wantError, string(body))
 	}
 }

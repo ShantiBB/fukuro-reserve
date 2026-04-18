@@ -1,4 +1,4 @@
-package booking
+package service
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 )
 
-func (s *Service) CreateBooking(ctx context.Context, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
+func (s *Booking) CreateBooking(ctx context.Context, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
 	var guestEmail *string
 	if req.GuestEmail != "" {
 		guestEmail = &req.GuestEmail
@@ -50,7 +50,7 @@ func (s *Service) CreateBooking(ctx context.Context, req dto.CreateBookingReques
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
-func (s *Service) GetBookings(ctx context.Context, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
+func (s *Booking) GetBookings(ctx context.Context, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
 	if page == 0 {
 		page = s.pagination.DefaultPage
 	}
@@ -77,7 +77,7 @@ func (s *Service) GetBookings(ctx context.Context, userID int64, hotelID, status
 	return mapper.BookingsShortResponseFromProto(resp), nil
 }
 
-func (s *Service) GetBooking(ctx context.Context, bookingID string) (*dto.BookingResponse, error) {
+func (s *Booking) GetBooking(ctx context.Context, bookingID string) (*dto.BookingResponse, error) {
 	resp, err := s.clients.Booking.GetBooking(ctx, &bookingv1.GetBookingRequest{Id: bookingID})
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (s *Service) GetBooking(ctx context.Context, bookingID string) (*dto.Bookin
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
-func (s *Service) ConfirmBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
+func (s *Booking) ConfirmBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
 	resp, err := s.clients.Booking.ConfirmBookingStatus(ctx, &bookingv1.ConfirmBookingStatusRequest{Id: bookingID})
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (s *Service) ConfirmBooking(ctx context.Context, bookingID string) (*dto.St
 	return &dto.StatusResponse{Status: resp.Status.String()}, nil
 }
 
-func (s *Service) CancelBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
+func (s *Booking) CancelBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
 	resp, err := s.clients.Booking.CancelBookingStatus(ctx, &bookingv1.CancelBookingStatusRequest{Id: bookingID})
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (s *Service) CancelBooking(ctx context.Context, bookingID string) (*dto.Sta
 	return &dto.StatusResponse{Status: resp.Status.String()}, nil
 }
 
-func (s *Service) DeleteBooking(ctx context.Context, bookingID string) error {
+func (s *Booking) DeleteBooking(ctx context.Context, bookingID string) error {
 	_, err := s.clients.Booking.DeleteBooking(ctx, &bookingv1.DeleteBookingRequest{Id: bookingID})
 	return err
 }

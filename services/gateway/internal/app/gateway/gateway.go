@@ -18,9 +18,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/handler"
 	httpMiddleware "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/router"
-	authservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/auth"
-	bookingservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/booking"
-	hotelservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/hotel"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service"
 )
 
 type App struct {
@@ -49,9 +47,9 @@ func (app *App) MustRun() {
 	httpMiddleware.SetJWTSecret(app.Config.JWT.AccessSecret)
 
 	// Create services
-	authService := authservice.New(app.Clients, app.Config.Pagination)
-	hotelService := hotelservice.New(app.Clients, app.Config.Pagination)
-	bookingService := bookingservice.New(app.Clients, app.Config.Pagination)
+	authService := service.NewAuth(app.Clients, app.Config.Pagination)
+	hotelService := service.NewHotel(app.Clients, app.Config.Pagination)
+	bookingService := service.NewBooking(app.Clients, app.Config.Pagination)
 
 	// Create handlers
 	authHandler := handler.NewAuthHandler(authService)

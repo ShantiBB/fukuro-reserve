@@ -11,6 +11,7 @@ import (
 
 	_ "github.com/ShantiBB/fukuro-reserve/services/gateway/docs"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/pkg/lib/logger"
 )
 
 type RouteRegistrar interface {
@@ -18,8 +19,8 @@ type RouteRegistrar interface {
 }
 
 func New(r *gin.Engine, httpCfg config.HTTPConfig, corsCfg config.CORSConfig, routes ...RouteRegistrar) {
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	r.Use(logger.RequestLogger())
+	r.Use(logger.RecoveryWithLogger())
 	r.Use(requestTimeoutMiddleware(time.Duration(httpCfg.RequestTimeoutSec) * time.Second))
 	r.Use(
 		cors.New(

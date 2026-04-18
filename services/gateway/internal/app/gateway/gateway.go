@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -42,6 +43,7 @@ func New(cfg *config.Config, logger *slog.Logger) (*App, error) {
 
 func (app *App) MustRun() {
 	slog.SetDefault(app.Logger)
+	gin.SetMode(resolveGinMode(app.Config.Env))
 
 	// Set JWT secret for auth middleware
 	httpMiddleware.SetJWTSecret(app.Config.JWT.AccessSecret)
@@ -86,6 +88,17 @@ func (app *App) MustRun() {
 	}()
 
 	app.gracefulShutdown(server)
+}
+
+func resolveGinMode(env string) string {
+	switch strings.ToLower(strings.TrimSpace(env)) {
+	case "local", "dev", "debug":
+		return gin.DebugMode
+	case "test":
+		return gin.TestMode
+	default:
+		return gin.ReleaseMode
+	}
 }
 
 func (app *App) gracefulShutdown(server *http.Server) {

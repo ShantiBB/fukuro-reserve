@@ -8,8 +8,8 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
-	jwtclaims "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/jwt"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
+	jwtclaims "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/jwt"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
 )
 
 type contextKey string

@@ -10,8 +10,8 @@ import (
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/query"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
 	authservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/auth"
 )
 

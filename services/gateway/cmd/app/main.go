@@ -28,7 +28,7 @@ func main() {
 
 	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "services/gateway/config/local.yaml"
+		panic("CONFIG_PATH environment variable is not set")
 	}
 
 	cfg, err := config.New(configPath)

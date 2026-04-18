@@ -102,15 +102,6 @@ func ParseInt64(s string) int64 {
 	return i
 }
 
-// ParseUint32 parses a string to uint32
-func ParseUint32(s string) uint32 {
-	i, err := strconv.ParseUint(s, 10, 32)
-	if err != nil {
-		return 0
-	}
-	return uint32(i)
-}
-
 // ParseUint64 parses a string to uint64
 func ParseUint64(s string) uint64 {
 	i, err := strconv.ParseUint(s, 10, 64)

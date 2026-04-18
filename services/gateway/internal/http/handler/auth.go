@@ -318,7 +318,7 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, UpdateUserActivityResponse{IsActive: resp.IsActive})
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserActivityResponse{IsActive: resp.IsActive})
 }
 
 // UpdateUserRole godoc
@@ -361,7 +361,7 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, UpdateUserRoleResponse{Role: resp.Role.String()})
+	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserRoleResponse{Role: resp.Role.String()})
 }
 
 // DeleteUser godoc

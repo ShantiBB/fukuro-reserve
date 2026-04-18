@@ -106,27 +106,3 @@ func extractStringClaim(claims jwt.MapClaims, keys ...string) string {
 
 	return ""
 }
-
-// GetUserID extracts user ID from context
-func GetUserID(ctx context.Context) int64 {
-	if id, ok := ctx.Value(UserIDKey).(int64); ok {
-		return id
-	}
-	return 0
-}
-
-// GetUserRole extracts user role from context
-func GetUserRole(ctx context.Context) string {
-	if role, ok := ctx.Value(UserRoleKey).(string); ok {
-		return role
-	}
-	return ""
-}
-
-// GetUserEmail extracts user email from context
-func GetUserEmail(ctx context.Context) string {
-	if email, ok := ctx.Value(UserEmailKey).(string); ok {
-		return email
-	}
-	return ""
-}

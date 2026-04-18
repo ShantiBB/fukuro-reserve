@@ -11,16 +11,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/query"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
-	bookingservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/booking"
 )
-
-type BookingHandler struct {
-	service *bookingservice.Service
-}
-
-func NewBookingHandler(service *bookingservice.Service) *BookingHandler {
-	return &BookingHandler{service: service}
-}
 
 // CreateBooking godoc
 // @Summary Create a new booking

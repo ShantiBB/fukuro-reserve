@@ -6,20 +6,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 )
-
-type Service struct {
-	clients    *clients.Clients
-	pagination config.PaginationConfig
-}
-
-func New(clients *clients.Clients, pagination config.PaginationConfig) *Service {
-	return &Service{clients: clients, pagination: pagination}
-}
 
 func (s *Service) CreateBooking(ctx context.Context, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
 	var guestEmail *string

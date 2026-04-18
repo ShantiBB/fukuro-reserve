@@ -1,10 +1,10 @@
 basePath: /api/v1
 definitions:
-  handler.BookingResponse:
+  dto.BookingResponse:
     properties:
       booking_rooms:
         items:
-          $ref: '#/definitions/handler.BookingRoomResponse'
+          $ref: '#/definitions/dto.BookingRoomResponse'
         type: array
       check_in:
         type: string
@@ -35,7 +35,7 @@ definitions:
       user_id:
         type: integer
     type: object
-  handler.BookingRoomResponse:
+  dto.BookingRoomResponse:
     properties:
       adults:
         type: integer
@@ -48,11 +48,11 @@ definitions:
       room_id:
         type: string
     type: object
-  handler.BookingShortResponse:
+  dto.BookingShortResponse:
     properties:
       booking_rooms:
         items:
-          $ref: '#/definitions/handler.BookingRoomResponse'
+          $ref: '#/definitions/dto.BookingRoomResponse'
         type: array
       check_in:
         type: string
@@ -79,14 +79,14 @@ definitions:
       user_id:
         type: integer
     type: object
-  handler.BookingsResponse:
+  dto.BookingsResponse:
     properties:
       bookings:
         items:
-          $ref: '#/definitions/handler.BookingShortResponse'
+          $ref: '#/definitions/dto.BookingShortResponse'
         type: array
     type: object
-  handler.CreateBookingRequest:
+  dto.CreateBookingRequest:
     properties:
       check_in:
         type: string
@@ -106,12 +106,12 @@ definitions:
         type: string
       rooms:
         items:
-          $ref: '#/definitions/handler.CreateBookingRoomRequest'
+          $ref: '#/definitions/dto.CreateBookingRoomRequest'
         type: array
       user_id:
         type: integer
     type: object
-  handler.CreateBookingRoomRequest:
+  dto.CreateBookingRoomRequest:
     properties:
       adults:
         type: integer
@@ -122,7 +122,7 @@ definitions:
       room_id:
         type: string
     type: object
-  handler.CreateHotelRequest:
+  dto.CreateHotelRequest:
     properties:
       address:
         type: string
@@ -133,13 +133,13 @@ definitions:
       description:
         type: string
       location:
-        $ref: '#/definitions/handler.LocationDTO'
+        $ref: '#/definitions/dto.LocationDTO'
       owner_id:
         type: integer
       title:
         type: string
     type: object
-  handler.CreateRoomRequest:
+  dto.CreateRoomRequest:
     properties:
       amenities:
         items:
@@ -174,7 +174,7 @@ definitions:
       type:
         type: string
     type: object
-  handler.CreateUserRequest:
+  dto.CreateUserRequest:
     properties:
       email:
         type: string
@@ -183,7 +183,7 @@ definitions:
       username:
         type: string
     type: object
-  handler.HotelResponse:
+  dto.HotelResponse:
     properties:
       address:
         type: string
@@ -196,7 +196,7 @@ definitions:
       id:
         type: string
       location:
-        $ref: '#/definitions/handler.LocationDTO'
+        $ref: '#/definitions/dto.LocationDTO'
       owner_id:
         type: integer
       rating:
@@ -206,7 +206,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  handler.HotelShortResponse:
+  dto.HotelShortResponse:
     properties:
       address:
         type: string
@@ -215,7 +215,7 @@ definitions:
       id:
         type: string
       location:
-        $ref: '#/definitions/handler.LocationDTO'
+        $ref: '#/definitions/dto.LocationDTO'
       owner_id:
         type: integer
       rating:
@@ -223,40 +223,40 @@ definitions:
       title:
         type: string
     type: object
-  handler.HotelsResponse:
+  dto.HotelsResponse:
     properties:
       hotels:
         items:
-          $ref: '#/definitions/handler.HotelShortResponse'
+          $ref: '#/definitions/dto.HotelShortResponse'
         type: array
     type: object
-  handler.LocationDTO:
+  dto.LocationDTO:
     properties:
       latitude:
         type: number
       longitude:
         type: number
     type: object
-  handler.LoginRequest:
+  dto.LoginRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  handler.RefreshTokenRequest:
+  dto.RefreshTokenRequest:
     properties:
       refresh_token:
         type: string
     type: object
-  handler.RegisterRequest:
+  dto.RegisterRequest:
     properties:
       email:
         type: string
       password:
         type: string
     type: object
-  handler.RoomResponse:
+  dto.RoomResponse:
     properties:
       amenities:
         items:
@@ -291,7 +291,7 @@ definitions:
       updated_at:
         type: string
     type: object
-  handler.RoomShortResponse:
+  dto.RoomShortResponse:
     properties:
       amenities:
         items:
@@ -318,40 +318,40 @@ definitions:
       type:
         type: string
     type: object
-  handler.RoomsResponse:
+  dto.RoomsResponse:
     properties:
       rooms:
         items:
-          $ref: '#/definitions/handler.RoomShortResponse'
+          $ref: '#/definitions/dto.RoomShortResponse'
         type: array
     type: object
-  handler.StatusResponse:
+  dto.StatusResponse:
     properties:
       status:
         type: string
     type: object
-  handler.TokenResponse:
+  dto.TokenResponse:
     properties:
       access:
         type: string
       refresh:
         type: string
     type: object
-  handler.UpdateHotelRequest:
+  dto.UpdateHotelRequest:
     properties:
       address:
         type: string
       description:
         type: string
       location:
-        $ref: '#/definitions/handler.LocationDTO'
+        $ref: '#/definitions/dto.LocationDTO'
     type: object
-  handler.UpdateHotelTitleRequest:
+  dto.UpdateHotelTitleRequest:
     properties:
       title:
         type: string
     type: object
-  handler.UpdateRoomRequest:
+  dto.UpdateRoomRequest:
     properties:
       amenities:
         items:
@@ -378,39 +378,39 @@ definitions:
       type:
         type: string
     type: object
-  handler.UpdateRoomStatusRequest:
+  dto.UpdateRoomStatusRequest:
     properties:
       status:
         type: string
     type: object
-  handler.UpdateUserActivityRequest:
+  dto.UpdateUserActivityRequest:
     properties:
       is_active:
         type: boolean
     type: object
-  handler.UpdateUserActivityResponse:
+  dto.UpdateUserActivityResponse:
     properties:
       is_active:
         type: boolean
     type: object
-  handler.UpdateUserRequest:
+  dto.UpdateUserRequest:
     properties:
       email:
         type: string
       username:
         type: string
     type: object
-  handler.UpdateUserRoleRequest:
+  dto.UpdateUserRoleRequest:
     properties:
       role:
         type: string
     type: object
-  handler.UpdateUserRoleResponse:
+  dto.UpdateUserRoleResponse:
     properties:
       role:
         type: string
     type: object
-  handler.UserResponse:
+  dto.UserResponse:
     properties:
       created_at:
         type: string
@@ -427,14 +427,14 @@ definitions:
       username:
         type: string
     type: object
-  handler.UsersResponse:
+  dto.UsersResponse:
     properties:
       users:
         items:
-          $ref: '#/definitions/handler.UserResponse'
+          $ref: '#/definitions/dto.UserResponse'
         type: array
     type: object
-  utils.ErrorResponse:
+  responder.ErrorResponse:
     properties:
       error:
         type: string
@@ -445,7 +445,7 @@ info:
   title: Swagger Gateway API
   version: "1.0"
 paths:
-  /api/v1/auth/login:
+  /auth/login:
     post:
       consumes:
       - application/json
@@ -455,22 +455,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.LoginRequest'
+          $ref: '#/definitions/dto.LoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.TokenResponse'
+            $ref: '#/definitions/dto.TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.ErrorResponse'
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Login user
       tags:
       - auth
-  /api/v1/auth/refresh:
+  /auth/refresh:
     post:
       consumes:
       - application/json
@@ -480,22 +480,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.RefreshTokenRequest'
+          $ref: '#/definitions/dto.RefreshTokenRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.TokenResponse'
+            $ref: '#/definitions/dto.TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.ErrorResponse'
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Refresh access token
       tags:
       - auth
-  /api/v1/auth/register:
+  /auth/register:
     post:
       consumes:
       - application/json
@@ -505,22 +505,22 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.RegisterRequest'
+          $ref: '#/definitions/dto.RegisterRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.TokenResponse'
+            $ref: '#/definitions/dto.TokenResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/utils.ErrorResponse'
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Register a new user
       tags:
       - auth
-  /api/v1/auth/users:
+  /auth/users:
     get:
       parameters:
       - description: Page number
@@ -537,7 +537,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.UsersResponse'
+            $ref: '#/definitions/dto.UsersResponse'
       summary: Get all users
       tags:
       - users
@@ -550,18 +550,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateUserRequest'
+          $ref: '#/definitions/dto.CreateUserRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handler.UserResponse'
+            $ref: '#/definitions/dto.UserResponse'
       summary: Create a new user
       tags:
       - users
-  /api/v1/auth/users/{id}:
+  /auth/users/{id}:
     delete:
       parameters:
       - description: User ID
@@ -588,7 +588,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.UserResponse'
+            $ref: '#/definitions/dto.UserResponse'
       summary: Get user by ID
       tags:
       - users
@@ -606,18 +606,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateUserRequest'
+          $ref: '#/definitions/dto.UpdateUserRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.UserResponse'
+            $ref: '#/definitions/dto.UserResponse'
       summary: Update user
       tags:
       - users
-  /api/v1/auth/users/{id}/activity:
+  /auth/users/{id}/activity:
     patch:
       consumes:
       - application/json
@@ -632,18 +632,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateUserActivityRequest'
+          $ref: '#/definitions/dto.UpdateUserActivityRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.UpdateUserActivityResponse'
+            $ref: '#/definitions/dto.UpdateUserActivityResponse'
       summary: Update user activity status
       tags:
       - users
-  /api/v1/auth/users/{id}/role:
+  /auth/users/{id}/role:
     patch:
       consumes:
       - application/json
@@ -658,18 +658,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateUserRoleRequest'
+          $ref: '#/definitions/dto.UpdateUserRoleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.UpdateUserRoleResponse'
+            $ref: '#/definitions/dto.UpdateUserRoleResponse'
       summary: Update user role
       tags:
       - users
-  /api/v1/bookings:
+  /bookings:
     get:
       parameters:
       - description: User ID
@@ -698,7 +698,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.BookingsResponse'
+            $ref: '#/definitions/dto.BookingsResponse'
       summary: Get all bookings
       tags:
       - bookings
@@ -711,18 +711,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateBookingRequest'
+          $ref: '#/definitions/dto.CreateBookingRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handler.BookingResponse'
+            $ref: '#/definitions/dto.BookingResponse'
       summary: Create a new booking
       tags:
       - bookings
-  /api/v1/bookings/{bookingId}:
+  /bookings/{bookingId}:
     delete:
       parameters:
       - description: Booking ID
@@ -749,11 +749,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.BookingResponse'
+            $ref: '#/definitions/dto.BookingResponse'
       summary: Get booking by ID
       tags:
       - bookings
-  /api/v1/bookings/{bookingId}/cancel:
+  /bookings/{bookingId}/cancel:
     patch:
       parameters:
       - description: Booking ID
@@ -765,11 +765,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.StatusResponse'
+            $ref: '#/definitions/dto.StatusResponse'
       summary: Cancel booking
       tags:
       - bookings
-  /api/v1/bookings/{bookingId}/confirm:
+  /bookings/{bookingId}/confirm:
     patch:
       parameters:
       - description: Booking ID
@@ -781,11 +781,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.StatusResponse'
+            $ref: '#/definitions/dto.StatusResponse'
       summary: Confirm booking
       tags:
       - bookings
-  /api/v1/hotels:
+  /hotels:
     get:
       parameters:
       - description: Country code
@@ -816,7 +816,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.HotelsResponse'
+            $ref: '#/definitions/dto.HotelsResponse'
       summary: Get hotels
       tags:
       - hotels
@@ -829,18 +829,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateHotelRequest'
+          $ref: '#/definitions/dto.CreateHotelRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handler.HotelResponse'
+            $ref: '#/definitions/dto.HotelResponse'
       summary: Create a new hotel
       tags:
       - hotels
-  /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}:
+  /hotels/{countryCode}/{citySlug}/{hotelSlug}:
     delete:
       parameters:
       - description: Country code
@@ -887,7 +887,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.HotelResponse'
+            $ref: '#/definitions/dto.HotelResponse'
       summary: Get hotel by slug
       tags:
       - hotels
@@ -915,18 +915,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateHotelRequest'
+          $ref: '#/definitions/dto.UpdateHotelRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.HotelResponse'
+            $ref: '#/definitions/dto.HotelResponse'
       summary: Update hotel
       tags:
       - hotels
-  /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}/title:
+  /hotels/{countryCode}/{citySlug}/{hotelSlug}/title:
     patch:
       consumes:
       - application/json
@@ -951,40 +951,40 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateHotelTitleRequest'
+          $ref: '#/definitions/dto.UpdateHotelTitleRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.HotelResponse'
+            $ref: '#/definitions/dto.HotelResponse'
       summary: Update hotel title
       tags:
       - hotels
-  /api/v1/rooms:
+  /rooms:
     get:
       parameters:
       - description: Country code
         in: query
-        name: country_code
+        name: countryCode
         required: true
         type: string
       - description: City slug
         in: query
-        name: city_slug
+        name: citySlug
         required: true
         type: string
       - description: Hotel slug
         in: query
-        name: hotel_slug
+        name: hotelSlug
         required: true
         type: string
       - description: Page number
         in: query
         name: page
         type: integer
-      - description: Limit
+      - description: Page size
         in: query
         name: limit
         type: integer
@@ -994,7 +994,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.RoomsResponse'
+            $ref: '#/definitions/dto.RoomsResponse'
       summary: Get rooms
       tags:
       - rooms
@@ -1007,18 +1007,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateRoomRequest'
+          $ref: '#/definitions/dto.CreateRoomRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/handler.RoomResponse'
+            $ref: '#/definitions/dto.RoomResponse'
       summary: Create a new room
       tags:
       - rooms
-  /api/v1/rooms/{roomId}:
+  /rooms/{roomId}:
     delete:
       parameters:
       - description: Room ID
@@ -1045,7 +1045,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.RoomResponse'
+            $ref: '#/definitions/dto.RoomResponse'
       summary: Get room by ID
       tags:
       - rooms
@@ -1063,18 +1063,18 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateRoomRequest'
+          $ref: '#/definitions/dto.UpdateRoomRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.RoomResponse'
+            $ref: '#/definitions/dto.RoomResponse'
       summary: Update room
       tags:
       - rooms
-  /api/v1/rooms/{roomId}/status:
+  /rooms/{roomId}/status:
     patch:
       consumes:
       - application/json
@@ -1084,19 +1084,19 @@ paths:
         name: roomId
         required: true
         type: string
-      - description: Update status request
+      - description: Update room status request
         in: body
         name: request
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateRoomStatusRequest'
+          $ref: '#/definitions/dto.UpdateRoomStatusRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/handler.StatusResponse'
+            $ref: '#/definitions/dto.StatusResponse'
       summary: Update room status
       tags:
       - rooms

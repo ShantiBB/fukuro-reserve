@@ -20,7 +20,7 @@ import (
 // @Param request body dto.RegisterRequest true "Register request"
 // @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} responder.ErrorResponse
-// @Router /api/v1/auth/register [post]
+// @Router /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -49,7 +49,7 @@ func (h *AuthHandler) Register(c *gin.Context) {
 // @Param request body dto.LoginRequest true "Login request"
 // @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} responder.ErrorResponse
-// @Router /api/v1/auth/login [post]
+// @Router /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -78,7 +78,7 @@ func (h *AuthHandler) Login(c *gin.Context) {
 // @Param request body dto.RefreshTokenRequest true "Refresh token request"
 // @Success 200 {object} dto.TokenResponse
 // @Failure 400 {object} responder.ErrorResponse
-// @Router /api/v1/auth/refresh [post]
+// @Router /auth/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -106,7 +106,7 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Param limit query int false "Page size"
 // @Success 200 {object} dto.UsersResponse
-// @Router /api/v1/auth/users [get]
+// @Router /auth/users [get]
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -141,7 +141,7 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 // @Produce json
 // @Param request body dto.CreateUserRequest true "Create user request"
 // @Success 201 {object} dto.UserResponse
-// @Router /api/v1/auth/users [post]
+// @Router /auth/users [post]
 func (h *AuthHandler) CreateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -174,7 +174,7 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 // @Produce json
 // @Param id path int true "User ID"
 // @Success 200 {object} dto.UserResponse
-// @Router /api/v1/auth/users/{id} [get]
+// @Router /auth/users/{id} [get]
 func (h *AuthHandler) GetUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -205,7 +205,7 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 // @Param id path int true "User ID"
 // @Param request body dto.UpdateUserRequest true "Update user request"
 // @Success 200 {object} dto.UserResponse
-// @Router /api/v1/auth/users/{id} [put]
+// @Router /auth/users/{id} [put]
 func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -246,7 +246,7 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 // @Param id path int true "User ID"
 // @Param request body dto.UpdateUserActivityRequest true "Update activity request"
 // @Success 200 {object} dto.UpdateUserActivityResponse
-// @Router /api/v1/auth/users/{id}/activity [patch]
+// @Router /auth/users/{id}/activity [patch]
 func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -283,7 +283,7 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 // @Param id path int true "User ID"
 // @Param request body dto.UpdateUserRoleRequest true "Update role request"
 // @Success 200 {object} dto.UpdateUserRoleResponse
-// @Router /api/v1/auth/users/{id}/role [patch]
+// @Router /auth/users/{id}/role [patch]
 func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -321,7 +321,7 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 // @Tags users
 // @Param id path int true "User ID"
 // @Success 204
-// @Router /api/v1/auth/users/{id} [delete]
+// @Router /auth/users/{id} [delete]
 func (h *AuthHandler) DeleteUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {

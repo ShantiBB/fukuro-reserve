@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/auth/login": {
+        "/auth/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -34,7 +34,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.LoginRequest"
+                            "$ref": "#/definitions/dto.LoginRequest"
                         }
                     }
                 ],
@@ -42,19 +42,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.TokenResponse"
+                            "$ref": "#/definitions/dto.TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
+                            "$ref": "#/definitions/responder.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/refresh": {
+        "/auth/refresh": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -73,7 +73,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RefreshTokenRequest"
+                            "$ref": "#/definitions/dto.RefreshTokenRequest"
                         }
                     }
                 ],
@@ -81,19 +81,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.TokenResponse"
+                            "$ref": "#/definitions/dto.TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
+                            "$ref": "#/definitions/responder.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/register": {
+        "/auth/register": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -112,7 +112,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.RegisterRequest"
+                            "$ref": "#/definitions/dto.RegisterRequest"
                         }
                     }
                 ],
@@ -120,19 +120,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.TokenResponse"
+                            "$ref": "#/definitions/dto.TokenResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/utils.ErrorResponse"
+                            "$ref": "#/definitions/responder.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/users": {
+        "/auth/users": {
             "get": {
                 "produces": [
                     "application/json"
@@ -159,7 +159,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UsersResponse"
+                            "$ref": "#/definitions/dto.UsersResponse"
                         }
                     }
                 }
@@ -182,7 +182,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateUserRequest"
+                            "$ref": "#/definitions/dto.CreateUserRequest"
                         }
                     }
                 ],
@@ -190,13 +190,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handler.UserResponse"
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/users/{id}": {
+        "/auth/users/{id}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -218,7 +218,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UserResponse"
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     }
                 }
@@ -248,7 +248,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserRequest"
+                            "$ref": "#/definitions/dto.UpdateUserRequest"
                         }
                     }
                 ],
@@ -256,7 +256,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UserResponse"
+                            "$ref": "#/definitions/dto.UserResponse"
                         }
                     }
                 }
@@ -282,7 +282,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/auth/users/{id}/activity": {
+        "/auth/users/{id}/activity": {
             "patch": {
                 "consumes": [
                     "application/json"
@@ -308,7 +308,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserActivityRequest"
+                            "$ref": "#/definitions/dto.UpdateUserActivityRequest"
                         }
                     }
                 ],
@@ -316,13 +316,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserActivityResponse"
+                            "$ref": "#/definitions/dto.UpdateUserActivityResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/auth/users/{id}/role": {
+        "/auth/users/{id}/role": {
             "patch": {
                 "consumes": [
                     "application/json"
@@ -348,7 +348,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserRoleRequest"
+                            "$ref": "#/definitions/dto.UpdateUserRoleRequest"
                         }
                     }
                 ],
@@ -356,13 +356,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateUserRoleResponse"
+                            "$ref": "#/definitions/dto.UpdateUserRoleResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/bookings": {
+        "/bookings": {
             "get": {
                 "produces": [
                     "application/json"
@@ -407,7 +407,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.BookingsResponse"
+                            "$ref": "#/definitions/dto.BookingsResponse"
                         }
                     }
                 }
@@ -430,7 +430,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateBookingRequest"
+                            "$ref": "#/definitions/dto.CreateBookingRequest"
                         }
                     }
                 ],
@@ -438,13 +438,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handler.BookingResponse"
+                            "$ref": "#/definitions/dto.BookingResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/bookings/{bookingId}": {
+        "/bookings/{bookingId}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -466,7 +466,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.BookingResponse"
+                            "$ref": "#/definitions/dto.BookingResponse"
                         }
                     }
                 }
@@ -492,7 +492,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/bookings/{bookingId}/cancel": {
+        "/bookings/{bookingId}/cancel": {
             "patch": {
                 "tags": [
                     "bookings"
@@ -511,13 +511,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.StatusResponse"
+                            "$ref": "#/definitions/dto.StatusResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/bookings/{bookingId}/confirm": {
+        "/bookings/{bookingId}/confirm": {
             "patch": {
                 "tags": [
                     "bookings"
@@ -536,13 +536,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.StatusResponse"
+                            "$ref": "#/definitions/dto.StatusResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/hotels": {
+        "/hotels": {
             "get": {
                 "produces": [
                     "application/json"
@@ -589,7 +589,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.HotelsResponse"
+                            "$ref": "#/definitions/dto.HotelsResponse"
                         }
                     }
                 }
@@ -612,7 +612,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateHotelRequest"
+                            "$ref": "#/definitions/dto.CreateHotelRequest"
                         }
                     }
                 ],
@@ -620,13 +620,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handler.HotelResponse"
+                            "$ref": "#/definitions/dto.HotelResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}": {
+        "/hotels/{countryCode}/{citySlug}/{hotelSlug}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -662,7 +662,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.HotelResponse"
+                            "$ref": "#/definitions/dto.HotelResponse"
                         }
                     }
                 }
@@ -706,7 +706,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateHotelRequest"
+                            "$ref": "#/definitions/dto.UpdateHotelRequest"
                         }
                     }
                 ],
@@ -714,7 +714,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.HotelResponse"
+                            "$ref": "#/definitions/dto.HotelResponse"
                         }
                     }
                 }
@@ -754,7 +754,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}/title": {
+        "/hotels/{countryCode}/{citySlug}/{hotelSlug}/title": {
             "patch": {
                 "consumes": [
                     "application/json"
@@ -794,7 +794,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateHotelTitleRequest"
+                            "$ref": "#/definitions/dto.UpdateHotelTitleRequest"
                         }
                     }
                 ],
@@ -802,13 +802,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.HotelResponse"
+                            "$ref": "#/definitions/dto.HotelResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/rooms": {
+        "/rooms": {
             "get": {
                 "produces": [
                     "application/json"
@@ -821,21 +821,21 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Country code",
-                        "name": "country_code",
+                        "name": "countryCode",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "City slug",
-                        "name": "city_slug",
+                        "name": "citySlug",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Hotel slug",
-                        "name": "hotel_slug",
+                        "name": "hotelSlug",
                         "in": "query",
                         "required": true
                     },
@@ -847,7 +847,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Limit",
+                        "description": "Page size",
                         "name": "limit",
                         "in": "query"
                     }
@@ -856,7 +856,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.RoomsResponse"
+                            "$ref": "#/definitions/dto.RoomsResponse"
                         }
                     }
                 }
@@ -879,7 +879,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateRoomRequest"
+                            "$ref": "#/definitions/dto.CreateRoomRequest"
                         }
                     }
                 ],
@@ -887,13 +887,13 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handler.RoomResponse"
+                            "$ref": "#/definitions/dto.RoomResponse"
                         }
                     }
                 }
             }
         },
-        "/api/v1/rooms/{roomId}": {
+        "/rooms/{roomId}": {
             "get": {
                 "produces": [
                     "application/json"
@@ -915,7 +915,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.RoomResponse"
+                            "$ref": "#/definitions/dto.RoomResponse"
                         }
                     }
                 }
@@ -945,7 +945,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateRoomRequest"
+                            "$ref": "#/definitions/dto.UpdateRoomRequest"
                         }
                     }
                 ],
@@ -953,7 +953,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.RoomResponse"
+                            "$ref": "#/definitions/dto.RoomResponse"
                         }
                     }
                 }
@@ -979,7 +979,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/rooms/{roomId}/status": {
+        "/rooms/{roomId}/status": {
             "patch": {
                 "consumes": [
                     "application/json"
@@ -1000,12 +1000,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Update status request",
+                        "description": "Update room status request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateRoomStatusRequest"
+                            "$ref": "#/definitions/dto.UpdateRoomStatusRequest"
                         }
                     }
                 ],
@@ -1013,7 +1013,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.StatusResponse"
+                            "$ref": "#/definitions/dto.StatusResponse"
                         }
                     }
                 }
@@ -1021,13 +1021,13 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handler.BookingResponse": {
+        "dto.BookingResponse": {
             "type": "object",
             "properties": {
                 "booking_rooms": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.BookingRoomResponse"
+                        "$ref": "#/definitions/dto.BookingRoomResponse"
                     }
                 },
                 "check_in": {
@@ -1074,7 +1074,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.BookingRoomResponse": {
+        "dto.BookingRoomResponse": {
             "type": "object",
             "properties": {
                 "adults": {
@@ -1094,13 +1094,13 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.BookingShortResponse": {
+        "dto.BookingShortResponse": {
             "type": "object",
             "properties": {
                 "booking_rooms": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.BookingRoomResponse"
+                        "$ref": "#/definitions/dto.BookingRoomResponse"
                     }
                 },
                 "check_in": {
@@ -1141,18 +1141,18 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.BookingsResponse": {
+        "dto.BookingsResponse": {
             "type": "object",
             "properties": {
                 "bookings": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.BookingShortResponse"
+                        "$ref": "#/definitions/dto.BookingShortResponse"
                     }
                 }
             }
         },
-        "handler.CreateBookingRequest": {
+        "dto.CreateBookingRequest": {
             "type": "object",
             "properties": {
                 "check_in": {
@@ -1182,7 +1182,7 @@ const docTemplate = `{
                 "rooms": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.CreateBookingRoomRequest"
+                        "$ref": "#/definitions/dto.CreateBookingRoomRequest"
                     }
                 },
                 "user_id": {
@@ -1190,7 +1190,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.CreateBookingRoomRequest": {
+        "dto.CreateBookingRoomRequest": {
             "type": "object",
             "properties": {
                 "adults": {
@@ -1207,7 +1207,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.CreateHotelRequest": {
+        "dto.CreateHotelRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1223,7 +1223,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "location": {
-                    "$ref": "#/definitions/handler.LocationDTO"
+                    "$ref": "#/definitions/dto.LocationDTO"
                 },
                 "owner_id": {
                     "type": "integer"
@@ -1233,7 +1233,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.CreateRoomRequest": {
+        "dto.CreateRoomRequest": {
             "type": "object",
             "properties": {
                 "amenities": {
@@ -1286,7 +1286,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.CreateUserRequest": {
+        "dto.CreateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1300,7 +1300,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.HotelResponse": {
+        "dto.HotelResponse": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1319,7 +1319,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "location": {
-                    "$ref": "#/definitions/handler.LocationDTO"
+                    "$ref": "#/definitions/dto.LocationDTO"
                 },
                 "owner_id": {
                     "type": "integer"
@@ -1335,7 +1335,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.HotelShortResponse": {
+        "dto.HotelShortResponse": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1348,7 +1348,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "location": {
-                    "$ref": "#/definitions/handler.LocationDTO"
+                    "$ref": "#/definitions/dto.LocationDTO"
                 },
                 "owner_id": {
                     "type": "integer"
@@ -1361,18 +1361,18 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.HotelsResponse": {
+        "dto.HotelsResponse": {
             "type": "object",
             "properties": {
                 "hotels": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.HotelShortResponse"
+                        "$ref": "#/definitions/dto.HotelShortResponse"
                     }
                 }
             }
         },
-        "handler.LocationDTO": {
+        "dto.LocationDTO": {
             "type": "object",
             "properties": {
                 "latitude": {
@@ -1383,7 +1383,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.LoginRequest": {
+        "dto.LoginRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1394,7 +1394,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RefreshTokenRequest": {
+        "dto.RefreshTokenRequest": {
             "type": "object",
             "properties": {
                 "refresh_token": {
@@ -1402,7 +1402,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RegisterRequest": {
+        "dto.RegisterRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1413,7 +1413,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RoomResponse": {
+        "dto.RoomResponse": {
             "type": "object",
             "properties": {
                 "amenities": {
@@ -1466,7 +1466,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RoomShortResponse": {
+        "dto.RoomShortResponse": {
             "type": "object",
             "properties": {
                 "amenities": {
@@ -1507,18 +1507,18 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.RoomsResponse": {
+        "dto.RoomsResponse": {
             "type": "object",
             "properties": {
                 "rooms": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.RoomShortResponse"
+                        "$ref": "#/definitions/dto.RoomShortResponse"
                     }
                 }
             }
         },
-        "handler.StatusResponse": {
+        "dto.StatusResponse": {
             "type": "object",
             "properties": {
                 "status": {
@@ -1526,7 +1526,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.TokenResponse": {
+        "dto.TokenResponse": {
             "type": "object",
             "properties": {
                 "access": {
@@ -1537,7 +1537,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateHotelRequest": {
+        "dto.UpdateHotelRequest": {
             "type": "object",
             "properties": {
                 "address": {
@@ -1547,11 +1547,11 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "location": {
-                    "$ref": "#/definitions/handler.LocationDTO"
+                    "$ref": "#/definitions/dto.LocationDTO"
                 }
             }
         },
-        "handler.UpdateHotelTitleRequest": {
+        "dto.UpdateHotelTitleRequest": {
             "type": "object",
             "properties": {
                 "title": {
@@ -1559,7 +1559,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateRoomRequest": {
+        "dto.UpdateRoomRequest": {
             "type": "object",
             "properties": {
                 "amenities": {
@@ -1600,7 +1600,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateRoomStatusRequest": {
+        "dto.UpdateRoomStatusRequest": {
             "type": "object",
             "properties": {
                 "status": {
@@ -1608,7 +1608,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateUserActivityRequest": {
+        "dto.UpdateUserActivityRequest": {
             "type": "object",
             "properties": {
                 "is_active": {
@@ -1616,7 +1616,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateUserActivityResponse": {
+        "dto.UpdateUserActivityResponse": {
             "type": "object",
             "properties": {
                 "is_active": {
@@ -1624,7 +1624,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateUserRequest": {
+        "dto.UpdateUserRequest": {
             "type": "object",
             "properties": {
                 "email": {
@@ -1635,7 +1635,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateUserRoleRequest": {
+        "dto.UpdateUserRoleRequest": {
             "type": "object",
             "properties": {
                 "role": {
@@ -1643,7 +1643,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateUserRoleResponse": {
+        "dto.UpdateUserRoleResponse": {
             "type": "object",
             "properties": {
                 "role": {
@@ -1651,7 +1651,7 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UserResponse": {
+        "dto.UserResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -1677,18 +1677,18 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UsersResponse": {
+        "dto.UsersResponse": {
             "type": "object",
             "properties": {
                 "users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/handler.UserResponse"
+                        "$ref": "#/definitions/dto.UserResponse"
                     }
                 }
             }
         },
-        "utils.ErrorResponse": {
+        "responder.ErrorResponse": {
             "type": "object",
             "properties": {
                 "error": {

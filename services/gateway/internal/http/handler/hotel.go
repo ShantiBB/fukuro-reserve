@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param request body dto.CreateHotelRequest true "Create hotel request"
 // @Success 201 {object} dto.HotelResponse
-// @Router /api/v1/hotels [post]
+// @Router /hotels [post]
 func (h *HotelHandler) CreateHotel(c *gin.Context) {
 	var req dto.CreateHotelRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -49,7 +49,7 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
 // @Success 200 {object} dto.HotelsResponse
-// @Router /api/v1/hotels [get]
+// @Router /hotels [get]
 func (h *HotelHandler) GetHotels(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -91,7 +91,7 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 // @Param citySlug path string true "City slug"
 // @Param hotelSlug path string true "Hotel slug"
 // @Success 200 {object} dto.HotelResponse
-// @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [get]
+// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [get]
 func (h *HotelHandler) GetHotel(c *gin.Context) {
 	resp, err := h.service.GetHotel(
 		c.Request.Context(),
@@ -117,7 +117,7 @@ func (h *HotelHandler) GetHotel(c *gin.Context) {
 // @Param hotelSlug path string true "Hotel slug"
 // @Param request body dto.UpdateHotelRequest true "Update hotel request"
 // @Success 200 {object} dto.HotelResponse
-// @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
+// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
 func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 	var req dto.UpdateHotelRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -154,7 +154,7 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 // @Param hotelSlug path string true "Hotel slug"
 // @Param request body dto.UpdateHotelTitleRequest true "Update hotel title request"
 // @Success 200 {object} dto.HotelResponse
-// @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
+// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 	var req dto.UpdateHotelTitleRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -188,7 +188,7 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 // @Param citySlug path string true "City slug"
 // @Param hotelSlug path string true "Hotel slug"
 // @Success 204
-// @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [delete]
+// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [delete]
 func (h *HotelHandler) DeleteHotel(c *gin.Context) {
 	if err := h.service.DeleteHotel(
 		c.Request.Context(),
@@ -210,7 +210,7 @@ func (h *HotelHandler) DeleteHotel(c *gin.Context) {
 // @Produce json
 // @Param request body dto.CreateRoomRequest true "Create room request"
 // @Success 201 {object} dto.RoomResponse
-// @Router /api/v1/rooms [post]
+// @Router /rooms [post]
 func (h *HotelHandler) CreateRoom(c *gin.Context) {
 	var req dto.CreateRoomRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -241,7 +241,7 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Param limit query int false "Page size"
 // @Success 200 {object} dto.RoomsResponse
-// @Router /api/v1/rooms [get]
+// @Router /rooms [get]
 func (h *HotelHandler) GetRooms(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -276,7 +276,7 @@ func (h *HotelHandler) GetRooms(c *gin.Context) {
 // @Produce json
 // @Param roomId path string true "Room ID"
 // @Success 200 {object} dto.RoomResponse
-// @Router /api/v1/rooms/{roomId} [get]
+// @Router /rooms/{roomId} [get]
 func (h *HotelHandler) GetRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
@@ -301,7 +301,7 @@ func (h *HotelHandler) GetRoom(c *gin.Context) {
 // @Param roomId path string true "Room ID"
 // @Param request body dto.UpdateRoomRequest true "Update room request"
 // @Success 200 {object} dto.RoomResponse
-// @Router /api/v1/rooms/{roomId} [put]
+// @Router /rooms/{roomId} [put]
 func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
@@ -336,7 +336,7 @@ func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 // @Param roomId path string true "Room ID"
 // @Param request body dto.UpdateRoomStatusRequest true "Update room status request"
 // @Success 200 {object} dto.StatusResponse
-// @Router /api/v1/rooms/{roomId}/status [patch]
+// @Router /rooms/{roomId}/status [patch]
 func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {
@@ -368,7 +368,7 @@ func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 // @Tags rooms
 // @Param roomId path string true "Room ID"
 // @Success 204
-// @Router /api/v1/rooms/{roomId} [delete]
+// @Router /rooms/{roomId} [delete]
 func (h *HotelHandler) DeleteRoom(c *gin.Context) {
 	roomID := c.Param("roomId")
 	if roomID == "" {

@@ -18,7 +18,7 @@ import (
 // @Produce json
 // @Param request body dto.CreateBookingRequest true "Create booking request"
 // @Success 201 {object} dto.BookingResponse
-// @Router /api/v1/bookings [post]
+// @Router /bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req dto.CreateBookingRequest
 	if err := request.BindJSON(c, &req); err != nil {
@@ -49,7 +49,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
 // @Success 200 {object} dto.BookingsResponse
-// @Router /api/v1/bookings [get]
+// @Router /bookings [get]
 func (h *BookingHandler) GetBookings(c *gin.Context) {
 	userID, err := request.OptionalPositiveInt64Query(c, "userId")
 	if err != nil {
@@ -98,7 +98,7 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // @Produce json
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.BookingResponse
-// @Router /api/v1/bookings/{bookingId} [get]
+// @Router /bookings/{bookingId} [get]
 func (h *BookingHandler) GetBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -124,7 +124,7 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.StatusResponse
-// @Router /api/v1/bookings/{bookingId}/confirm [patch]
+// @Router /bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -150,7 +150,7 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
 // @Success 200 {object} dto.StatusResponse
-// @Router /api/v1/bookings/{bookingId}/cancel [patch]
+// @Router /bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -176,7 +176,7 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
 // @Success 204
-// @Router /api/v1/bookings/{bookingId} [delete]
+// @Router /bookings/{bookingId} [delete]
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {

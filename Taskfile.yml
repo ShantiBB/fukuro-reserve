@@ -78,3 +78,16 @@ tasks:
     cmd: goose create {{.title}} sql --dir services/{{.service}}/migrations
     requires:
       vars: [service]
+
+  gateway-smoke:
+    desc: "Run gateway HTTP smoke tests (task gateway-smoke env=local)"
+    vars:
+      env: '{{default "local" .env}}'
+      smoke_path: "services/gateway/test/smoke"
+    cmds:
+      - |
+        ijhttp \
+          {{.smoke_path}}/cases/*.http \
+          -e {{.env}} \
+          -v {{.smoke_path}}/http-client.env.json \
+          -L BASIC

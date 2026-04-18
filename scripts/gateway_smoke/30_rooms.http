@@ -1,0 +1,89 @@
+### Room endpoints
+### Requires: hotels file completed
+
+### 30. Create room
+POST {{baseUrl}}/api/v1/rooms
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "country_code": "jp",
+  "city_slug": "tokyo",
+  "hotel_slug": "{{hotelSlug}}",
+  "title": "HTTP Room 101",
+  "description": "http client room",
+  "room_number": "101",
+  "type": "ROOM_TYPE_SINGLE",
+  "price": "150.00",
+  "capacity": 2,
+  "area_sqm": 18.5,
+  "floor": 1,
+  "amenities": ["wifi"],
+  "images": ["https://example.com/http-room.jpg"]
+}
+
+> {%
+  client.test("create room is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("roomId", response.body.id);
+%}
+
+### 31. List rooms
+GET {{baseUrl}}/api/v1/rooms?country_code=jp&city_slug=tokyo&hotel_slug={{hotelSlug}}&page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("list rooms is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 32. Get room
+GET {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get room is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 33. Update room
+PUT {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "title": "HTTP Room 101 Updated",
+  "room_number": "101",
+  "type": "ROOM_TYPE_DOUBLE",
+  "description": "updated by http client",
+  "price": "175.00",
+  "capacity": 3,
+  "area_sqm": 20.0,
+  "floor": 1,
+  "amenities": ["wifi", "tv"],
+  "images": ["https://example.com/http-room-updated.jpg"]
+}
+
+> {%
+  client.test("update room is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 34. Update room status
+PATCH {{baseUrl}}/api/v1/rooms/{{roomId}}/status
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "status": "ROOM_STATUS_MAINTENANCE"
+}
+
+> {%
+  client.test("update room status is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}

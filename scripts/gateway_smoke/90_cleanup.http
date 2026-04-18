@@ -1,0 +1,52 @@
+### Cleanup
+### Requires: prior files completed
+
+### 90. Delete booking
+DELETE {{baseUrl}}/api/v1/bookings/{{bookingId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete booking is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 91. Delete room
+DELETE {{baseUrl}}/api/v1/rooms/{{roomId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete room is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 92. Delete hotel
+DELETE {{baseUrl}}/api/v1/hotels/jp/tokyo/{{hotelSlug}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete hotel is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 93. Delete managed user as admin
+DELETE {{baseUrl}}/api/v1/auth/users/{{managedId}}
+Authorization: Bearer {{adminAccess}}
+
+> {%
+  client.test("delete managed user is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}
+
+### 94. Delete owner self
+DELETE {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("delete owner self is 204", function () {
+    client.assert(response.status === 204, "Expected 204");
+  });
+%}

@@ -1,0 +1,96 @@
+### Auth/user endpoints
+### Requires: setup completed
+
+### 10. Users list as owner (must be forbidden)
+GET {{baseUrl}}/api/v1/auth/users?page=1&limit=10
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("users list by owner is 403", function () {
+    client.assert(response.status === 403, "Expected 403");
+  });
+%}
+
+### 11. Users list as admin
+GET {{baseUrl}}/api/v1/auth/users?page=1&limit=10
+Authorization: Bearer {{adminAccess}}
+
+> {%
+  client.test("users list by admin is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 12. Get owner profile
+GET {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+
+> {%
+  client.test("get owner profile is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 13. Update owner profile
+PUT {{baseUrl}}/api/v1/auth/users/{{ownerId}}
+Authorization: Bearer {{ownerAccess}}
+Content-Type: application/json
+
+{
+  "email": "{{ownerEmail}}",
+  "username": "{{ownerUsername}}"
+}
+
+> {%
+  client.test("update owner profile is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 14. Create managed user as admin
+POST {{baseUrl}}/api/v1/auth/users
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "email": "{{managedEmail}}",
+  "username": "{{managedUsername}}",
+  "password": "{{password}}"
+}
+
+> {%
+  client.test("create managed user is 201", function () {
+    client.assert(response.status === 201, "Expected 201");
+  });
+  client.global.set("managedId", String(response.body.id));
+%}
+
+### 15. Update owner activity as admin
+PATCH {{baseUrl}}/api/v1/auth/users/{{ownerId}}/activity
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "is_active": true
+}
+
+> {%
+  client.test("update activity is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}
+
+### 16. Update owner role as admin
+PATCH {{baseUrl}}/api/v1/auth/users/{{ownerId}}/role
+Authorization: Bearer {{adminAccess}}
+Content-Type: application/json
+
+{
+  "role": "USER_ROLE_MODERATOR"
+}
+
+> {%
+  client.test("update role is 200", function () {
+    client.assert(response.status === 200, "Expected 200");
+  });
+%}

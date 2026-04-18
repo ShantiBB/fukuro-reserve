@@ -10,7 +10,6 @@ import (
 
 	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
@@ -21,20 +20,6 @@ type BookingHandler struct {
 
 func NewBookingHandler(clients *clients.Clients) *BookingHandler {
 	return &BookingHandler{clients: clients}
-}
-
-func (h *BookingHandler) Routes() chi.Router {
-	r := chi.NewRouter()
-	r.Use(middleware.AuthMiddleware)
-
-	r.Post("/", h.CreateBooking)
-	r.Get("/", h.GetBookings)
-	r.Get("/{bookingId}", h.GetBooking)
-	r.Patch("/{bookingId}/confirm", h.ConfirmBooking)
-	r.Patch("/{bookingId}/cancel", h.CancelBooking)
-	r.Delete("/{bookingId}", h.DeleteBooking)
-
-	return r
 }
 
 // CreateBooking godoc

@@ -11,7 +11,6 @@ import (
 
 	userv1 "github.com/ShantiBB/fukuro-reserve/services/auth/api/user/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 )
 
@@ -33,31 +32,6 @@ func authContext(r *http.Request) (context.Context, error) {
 		r.Context(),
 		metadata.Pairs("authorization", authHeader),
 	), nil
-}
-
-func (h *AuthHandler) Routes() chi.Router {
-	r := chi.NewRouter()
-
-	// Public routes
-	r.Post("/register", h.Register)
-	r.Post("/login", h.Login)
-	r.Post("/refresh", h.RefreshToken)
-
-	// Protected routes - require authentication
-	r.Group(
-		func(r chi.Router) {
-			r.Use(middleware.AuthMiddleware)
-			r.Get("/users", h.GetUsers)
-			r.Post("/users", h.CreateUser)
-			r.Get("/users/{id}", h.GetUser)
-			r.Put("/users/{id}", h.UpdateUser)
-			r.Patch("/users/{id}/activity", h.UpdateUserActivity)
-			r.Patch("/users/{id}/role", h.UpdateUserRole)
-			r.Delete("/users/{id}", h.DeleteUser)
-		},
-	)
-
-	return r
 }
 
 // Register godoc

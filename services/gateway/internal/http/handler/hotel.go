@@ -8,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 )
@@ -19,34 +18,6 @@ type HotelHandler struct {
 
 func NewHotelHandler(clients *clients.Clients) *HotelHandler {
 	return &HotelHandler{clients: clients}
-}
-
-func (h *HotelHandler) HotelRoutes() chi.Router {
-	r := chi.NewRouter()
-	r.Use(middleware.AuthMiddleware)
-
-	r.Post("/", h.CreateHotel)
-	r.Get("/", h.GetHotels)
-	r.Get("/{countryCode}/{citySlug}/{hotelSlug}", h.GetHotel)
-	r.Put("/{countryCode}/{citySlug}/{hotelSlug}", h.UpdateHotel)
-	r.Patch("/{countryCode}/{citySlug}/{hotelSlug}/title", h.UpdateHotelTitle)
-	r.Delete("/{countryCode}/{citySlug}/{hotelSlug}", h.DeleteHotel)
-
-	return r
-}
-
-func (h *HotelHandler) RoomRoutes() chi.Router {
-	r := chi.NewRouter()
-	r.Use(middleware.AuthMiddleware)
-
-	r.Post("/", h.CreateRoom)
-	r.Get("/", h.GetRooms)
-	r.Get("/{roomId}", h.GetRoom)
-	r.Put("/{roomId}", h.UpdateRoom)
-	r.Patch("/{roomId}/status", h.UpdateRoomStatus)
-	r.Delete("/{roomId}", h.DeleteRoom)
-
-	return r
 }
 
 // CreateHotel godoc

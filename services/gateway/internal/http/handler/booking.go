@@ -12,6 +12,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
@@ -139,7 +140,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, dto.BookingResponseFromProto(resp.Booking))
+	utils.RespondJSON(w, http.StatusCreated, mapper.BookingResponseFromProto(resp.Booking))
 }
 
 // GetBookings godoc
@@ -189,7 +190,7 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.BookingsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.BookingsShortResponseFromProto(resp))
 }
 
 // GetBooking godoc
@@ -217,7 +218,7 @@ func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.BookingResponseFromProto(resp.Booking))
+	utils.RespondJSON(w, http.StatusOK, mapper.BookingResponseFromProto(resp.Booking))
 }
 
 // ConfirmBooking godoc

@@ -45,14 +45,13 @@ func (app *App) MustRun() {
 	// Set JWT secret for auth middleware
 	httpMiddleware.SetJWTSecret(app.Config.JWT.AccessSecret)
 
-	// Create router
-	r := chi.NewRouter()
-
 	// Create handlers
 	authHandler := handler.NewAuthHandler(app.Clients, app.Config.Pagination)
 	hotelHandler := handler.NewHotelHandler(app.Clients, app.Config.Pagination)
 	bookingHandler := handler.NewBookingHandler(app.Clients, app.Config.Pagination)
 
+	// Create router
+	r := chi.NewRouter()
 	router.New(
 		r,
 		app.Config.HTTP,

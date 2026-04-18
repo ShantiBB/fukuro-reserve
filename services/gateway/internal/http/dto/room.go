@@ -1,10 +1,6 @@
 package dto
 
-import (
-	"time"
-
-	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
-)
+import "time"
 
 // Room DTOs.
 type CreateRoomRequest struct {
@@ -73,87 +69,4 @@ type RoomShortResponse struct {
 
 type RoomsResponse struct {
 	Rooms []*RoomShortResponse `json:"rooms"`
-}
-
-func RoomResponseFromProto(room *hotelv1.Room) *RoomResponse {
-	if room == nil {
-		return nil
-	}
-
-	resp := &RoomResponse{
-		Id:         room.Id,
-		Title:      room.Title,
-		RoomNumber: room.RoomNumber,
-		Status:     room.Status.String(),
-		Type:       room.Type.String(),
-		Price:      room.Price,
-		Capacity:   room.Capacity,
-		AreaSqm:    room.AreaSqm,
-		Floor:      room.Floor,
-		Amenities:  room.Amenities,
-		Images:     room.Images,
-	}
-
-	if room.Description != nil {
-		resp.Description = *room.Description
-	}
-	if room.CreatedAt != nil {
-		resp.CreatedAt = room.CreatedAt.AsTime()
-	}
-	if room.UpdatedAt != nil {
-		resp.UpdatedAt = room.UpdatedAt.AsTime()
-	}
-
-	return resp
-}
-
-func roomShortResponseFromProto(room *hotelv1.RoomShort) *RoomShortResponse {
-	if room == nil {
-		return nil
-	}
-
-	return &RoomShortResponse{
-		Id:         room.Id,
-		Title:      room.Title,
-		RoomNumber: room.RoomNumber,
-		Status:     room.Status.String(),
-		Type:       room.Type.String(),
-		Price:      room.Price,
-		Capacity:   room.Capacity,
-		AreaSqm:    room.AreaSqm,
-		Amenities:  room.Amenities,
-		Images:     room.Images,
-	}
-}
-
-func RoomsShortResponseFromProto(resp *hotelv1.GetRoomsResponse) *RoomsResponse {
-	if resp == nil {
-		return nil
-	}
-
-	rooms := make([]*RoomShortResponse, len(resp.Rooms))
-	for i, r := range resp.Rooms {
-		rooms[i] = roomShortResponseFromProto(r)
-	}
-
-	return &RoomsResponse{Rooms: rooms}
-}
-
-func UpdateRoomResponseFromProto(room *hotelv1.UpdateRoom) *RoomResponse {
-	if room == nil {
-		return nil
-	}
-
-	return &RoomResponse{
-		Title:       room.Title,
-		Description: room.Description,
-		RoomNumber:  room.RoomNumber,
-		Type:        room.Type.String(),
-		Price:       room.Price,
-		Capacity:    room.Capacity,
-		AreaSqm:     room.AreaSqm,
-		Floor:       room.Floor,
-		Amenities:   room.Amenities,
-		Images:      room.Images,
-	}
 }

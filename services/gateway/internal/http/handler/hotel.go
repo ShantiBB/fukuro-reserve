@@ -10,6 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 )
@@ -64,7 +65,7 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, dto.HotelResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusCreated, mapper.HotelResponseFromProto(resp.Hotel))
 }
 
 // GetHotels godoc
@@ -121,7 +122,7 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.HotelsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.HotelsShortResponseFromProto(resp))
 }
 
 // GetHotel godoc
@@ -150,7 +151,7 @@ func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.HotelDetailResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.HotelDetailResponseFromProto(resp))
 }
 
 // UpdateHotel godoc
@@ -200,7 +201,7 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateHotelResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusOK, mapper.UpdateHotelResponseFromProto(resp.Hotel))
 }
 
 // UpdateHotelTitle godoc
@@ -238,7 +239,7 @@ func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateHotelTitleResponseFromProto(resp.Hotel))
+	utils.RespondJSON(w, http.StatusOK, mapper.UpdateHotelTitleResponseFromProto(resp.Hotel))
 }
 
 // DeleteHotel godoc
@@ -330,7 +331,7 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, dto.RoomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusCreated, mapper.RoomResponseFromProto(resp.Room))
 }
 
 // GetRooms godoc
@@ -384,7 +385,7 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.RoomsShortResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.RoomsShortResponseFromProto(resp))
 }
 
 // GetRoom godoc
@@ -409,7 +410,7 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.RoomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusOK, mapper.RoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoom godoc
@@ -459,7 +460,7 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateRoomResponseFromProto(resp.Room))
+	utils.RespondJSON(w, http.StatusOK, mapper.UpdateRoomResponseFromProto(resp.Room))
 }
 
 // UpdateRoomStatus godoc

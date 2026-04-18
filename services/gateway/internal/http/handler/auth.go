@@ -14,6 +14,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 )
 
@@ -65,7 +66,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromRegister(resp))
 }
 
 // Login godoc
@@ -95,7 +96,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromLoginProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromLogin(resp))
 }
 
 // RefreshToken godoc
@@ -124,7 +125,7 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.TokenResponseFromRefreshProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.TokenResponseFromRefresh(resp))
 }
 
 // GetUsers godoc
@@ -163,7 +164,7 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UsersResponseFromProto(resp))
+	utils.RespondJSON(w, http.StatusOK, mapper.UsersResponseFromProto(resp))
 }
 
 // CreateUser godoc
@@ -204,7 +205,7 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusCreated, dto.UserResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusCreated, mapper.UserResponseFromProto(resp.User))
 }
 
 // GetUser godoc
@@ -234,7 +235,7 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UserResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusOK, mapper.UserResponseFromProto(resp.User))
 }
 
 // UpdateUser godoc
@@ -278,7 +279,7 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, dto.UpdateUserResponseFromProto(resp.User))
+	utils.RespondJSON(w, http.StatusOK, mapper.UpdateUserResponseFromProto(resp.User))
 }
 
 // UpdateUserActivity godoc

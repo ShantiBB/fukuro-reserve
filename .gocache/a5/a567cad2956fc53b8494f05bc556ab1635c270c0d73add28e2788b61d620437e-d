@@ -1,0 +1,13 @@
+./booking.pb.go
+./booking_room.pb.go
+./booking_service.pb.go
+./booking_service_grpc.pb.go
+./booking_status.pb.go
+./cancel_booking_status.pb.go
+./common.pb.go
+./confirm_booking_status.pb.go
+./create_booking.pb.go
+./delete_booking.pb.go
+./get_booking.pb.go
+./get_bookings.pb.go
+./room_lock.pb.go

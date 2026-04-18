@@ -11,7 +11,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/grpc/utils/helper"
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/grpc/utils/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/repository/models"
-	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/utils/consts"
 )
 
 func (h *Handler) CreateBooking(
@@ -24,12 +23,12 @@ func (h *Handler) CreateBooking(
 
 	booking, err := mapper.CreateBookingRequestToDomain(req)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	rooms, err := mapper.CreateBookingRoomsToDomain(req.Rooms)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	created, err := h.svc.BookingCreate(ctx, booking, rooms)
@@ -53,7 +52,7 @@ func (h *Handler) GetBookings(
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)
 	if err != nil {
-		return nil, consts.ErrInvalidHotelID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	bookingList, err := h.svc.GetBookings(ctx, bookingRef, req.Page, req.Limit)
@@ -80,7 +79,7 @@ func (h *Handler) GetBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	booking, err := h.svc.GetBookingById(ctx, bookingId)
@@ -104,7 +103,7 @@ func (h *Handler) ConfirmBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
@@ -127,7 +126,7 @@ func (h *Handler) CancelBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
@@ -150,7 +149,7 @@ func (h *Handler) DeleteBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {

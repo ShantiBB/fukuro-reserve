@@ -1,0 +1,6 @@
+./booking_room_to_domain.go
+./booking_room_to_proto.go
+./booking_to_domain.go
+./booking_to_proto.go
+./room_lock_to_domain.go
+./room_lock_to_proto.go

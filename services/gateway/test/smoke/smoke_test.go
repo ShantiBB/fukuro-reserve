@@ -14,6 +14,7 @@ func TestGatewaySmoke(t *testing.T) {
 	runAuthSmoke(t, env)
 	runHotelsSmoke(t, env)
 	runRoomsSmoke(t, env)
+	runBookingValidationSmoke(t, env)
 	runBookingsSmoke(t, env)
 	runCleanupSmoke(t, env)
 }

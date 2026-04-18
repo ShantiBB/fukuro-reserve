@@ -1,6 +1,7 @@
 package request
 
 import (
+	"errors"
 	"strconv"
 	"strings"
 
@@ -23,8 +24,11 @@ func OptionalPositiveInt64Query(c *gin.Context, key string) (int64, error) {
 	}
 
 	value, err := strconv.ParseInt(raw, 10, 64)
-	if err != nil || value <= 0 {
+	if err != nil {
 		return 0, err
+	}
+	if value <= 0 {
+		return 0, errors.New("value must be positive")
 	}
 
 	return value, nil

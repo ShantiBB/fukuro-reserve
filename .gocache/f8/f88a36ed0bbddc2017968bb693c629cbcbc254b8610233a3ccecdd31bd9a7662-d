@@ -1,0 +1,6 @@
+./auth.go
+./booking.go
+./common.go
+./hotel.go
+./room.go
+./user.go

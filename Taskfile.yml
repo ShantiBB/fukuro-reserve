@@ -40,6 +40,14 @@ tasks:
     requires:
       vars: [service]
 
+  staticcheck:
+    desc: "Run staticcheck (task staticcheck service=auth|hotel|booking|gateway)"
+    dir: services/{{.service}}
+    cmds:
+      - go run honnef.co/go/tools/cmd/staticcheck@latest ./...
+    requires:
+      vars: [service]
+
   postgres-up:
     desc: "Start PostgreSQL container"
     cmds:

@@ -11,12 +11,13 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-chi/chi/v5"
+
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/handler"
 	httpMiddleware "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/router"
-	"github.com/go-chi/chi/v5"
 )
 
 type App struct {
@@ -48,20 +49,18 @@ func (app *App) MustRun() {
 	r := chi.NewRouter()
 
 	// Create handlers
-	authHandler := handler.NewAuthHandler(app.Clients)
-	hotelHandler := handler.NewHotelHandler(app.Clients)
-	bookingHandler := handler.NewBookingHandler(app.Clients)
+	authHandler := handler.NewAuthHandler(app.Clients, app.Config.Pagination)
+	hotelHandler := handler.NewHotelHandler(app.Clients, app.Config.Pagination)
+	bookingHandler := handler.NewBookingHandler(app.Clients, app.Config.Pagination)
 
-	router.New(r, authHandler, hotelHandler, bookingHandler)
-
-	// Health check
-	r.Get(
-		"/health", func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusOK)
-			if _, err := w.Write([]byte("OK")); err != nil {
-				slog.Error("Failed to write health response", "error", err)
-			}
-		},
+	router.New(
+		r,
+		app.Config.HTTP,
+		app.Config.CORS,
+		router.NewAuthRoutes("/auth", authHandler),
+		router.NewHotelRoutes("/hotels", hotelHandler),
+		router.NewRoomRoutes("/rooms", hotelHandler),
+		router.NewBookingRoutes("/bookings", bookingHandler),
 	)
 
 	// Start server
@@ -69,9 +68,9 @@ func (app *App) MustRun() {
 	server := &http.Server{
 		Addr:         addr,
 		Handler:      r,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		ReadTimeout:  time.Duration(app.Config.HTTP.ReadTimeoutSec) * time.Second,
+		WriteTimeout: time.Duration(app.Config.HTTP.WriteTimeoutSec) * time.Second,
+		IdleTimeout:  time.Duration(app.Config.HTTP.IdleTimeoutSec) * time.Second,
 	}
 
 	go func() {
@@ -91,7 +90,10 @@ func (app *App) gracefulShutdown(server *http.Server) {
 
 	slog.Info("Shutting down HTTP server")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(
+		context.Background(),
+		time.Duration(app.Config.HTTP.ShutdownTimeoutSec)*time.Second,
+	)
 	defer cancel()
 
 	if err := server.Shutdown(ctx); err != nil {

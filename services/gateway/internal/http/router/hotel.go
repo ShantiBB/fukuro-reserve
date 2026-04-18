@@ -3,19 +3,27 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/handler"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 )
 
-func hotelRouter(pattern string, r chi.Router, h *handler.HotelHandler) {
-	r.Route(pattern, func(r chi.Router) {
+type hotelRoutes struct {
+	pattern string
+	h       HotelHandler
+}
+
+func NewHotelRoutes(pattern string, h HotelHandler) RouteRegistrar {
+	return hotelRoutes{pattern: pattern, h: h}
+}
+
+func (hr hotelRoutes) Register(r chi.Router) {
+	r.Route(hr.pattern, func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
 
-		r.Post("/", h.CreateHotel)
-		r.Get("/", h.GetHotels)
-		r.Get("/{countryCode}/{citySlug}/{hotelSlug}", h.GetHotel)
-		r.Put("/{countryCode}/{citySlug}/{hotelSlug}", h.UpdateHotel)
-		r.Patch("/{countryCode}/{citySlug}/{hotelSlug}/title", h.UpdateHotelTitle)
-		r.Delete("/{countryCode}/{citySlug}/{hotelSlug}", h.DeleteHotel)
+		r.Post("/", hr.h.CreateHotel)
+		r.Get("/", hr.h.GetHotels)
+		r.Get("/{countryCode}/{citySlug}/{hotelSlug}", hr.h.GetHotel)
+		r.Put("/{countryCode}/{citySlug}/{hotelSlug}", hr.h.UpdateHotel)
+		r.Patch("/{countryCode}/{citySlug}/{hotelSlug}/title", hr.h.UpdateHotelTitle)
+		r.Delete("/{countryCode}/{citySlug}/{hotelSlug}", hr.h.DeleteHotel)
 	})
 }

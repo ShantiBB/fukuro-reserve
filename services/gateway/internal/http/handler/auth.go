@@ -10,21 +10,24 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	userv1 "github.com/ShantiBB/fukuro-reserve/services/auth/api/user/v1"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 )
 
 type AuthHandler struct {
-	clients *clients.Clients
+	clients    *clients.Clients
+	pagination config.PaginationConfig
 }
 
-func NewAuthHandler(clients *clients.Clients) *AuthHandler {
-	return &AuthHandler{clients: clients}
+func NewAuthHandler(clients *clients.Clients, pagination config.PaginationConfig) *AuthHandler {
+	return &AuthHandler{clients: clients, pagination: pagination}
 }
 
 func authContext(r *http.Request) (context.Context, error) {
-	authHeader := r.Header.Get("Authorization")
+	authHeader := r.Header.Get(consts.HeaderAuthorization)
 	if authHeader == "" {
 		return nil, http.ErrNoCookie
 	}
@@ -141,12 +144,12 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 
 	page := utils.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
-		page = 1
+		page = h.pagination.DefaultPage
 	}
 
 	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
-		limit = 100
+		limit = h.pagination.DefaultPageSize
 	}
 
 	resp, err := h.clients.User.GetUsers(

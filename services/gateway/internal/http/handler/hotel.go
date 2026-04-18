@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
@@ -14,11 +15,12 @@ import (
 )
 
 type HotelHandler struct {
-	clients *clients.Clients
+	clients    *clients.Clients
+	pagination config.PaginationConfig
 }
 
-func NewHotelHandler(clients *clients.Clients) *HotelHandler {
-	return &HotelHandler{clients: clients}
+func NewHotelHandler(clients *clients.Clients, pagination config.PaginationConfig) *HotelHandler {
+	return &HotelHandler{clients: clients, pagination: pagination}
 }
 
 // CreateHotel godoc
@@ -97,12 +99,12 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 
 	page := utils.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
-		page = 1
+		page = h.pagination.DefaultPage
 	}
 
 	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
-		limit = 100
+		limit = h.pagination.DefaultPageSize
 	}
 
 	resp, err := h.clients.Hotel.GetHotels(
@@ -360,12 +362,12 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 
 	page := utils.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
-		page = 1
+		page = h.pagination.DefaultPage
 	}
 
 	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
-		limit = 100
+		limit = h.pagination.DefaultPageSize
 	}
 
 	resp, err := h.clients.Room.GetRooms(

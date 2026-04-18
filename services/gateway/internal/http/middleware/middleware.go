@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
 )
 
@@ -30,7 +31,7 @@ func SetJWTSecret(secret string) {
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
+			authHeader := r.Header.Get(consts.HeaderAuthorization)
 			if authHeader == "" {
 				utils.RespondError(w, http.StatusUnauthorized, "authorization header is required")
 				return

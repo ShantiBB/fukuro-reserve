@@ -1,6 +1,7 @@
 package router
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -9,35 +10,43 @@ import (
 	httpswagger "github.com/swaggo/http-swagger"
 
 	_ "github.com/ShantiBB/fukuro-reserve/services/gateway/docs"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/handler"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 )
 
-func New(r chi.Router, authHandler *handler.AuthHandler, hotelHandler *handler.HotelHandler, bookingHandler *handler.BookingHandler) {
+func New(r chi.Router, httpCfg config.HTTPConfig, corsCfg config.CORSConfig, routes ...RouteRegistrar) {
 	r.Use(chiMiddleware.RequestID)
 	r.Use(chiMiddleware.RealIP)
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
-	r.Use(chiMiddleware.Timeout(60 * time.Second))
+	r.Use(chiMiddleware.Timeout(time.Duration(httpCfg.RequestTimeoutSec) * time.Second))
 
 	r.Use(
 		cors.Handler(
 			cors.Options{
-				AllowedOrigins:   []string{"*"},
-				AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-				AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-				ExposedHeaders:   []string{"Link"},
-				AllowCredentials: true,
-				MaxAge:           300,
+				AllowedOrigins:   corsCfg.AllowedOrigins,
+				AllowedMethods:   corsCfg.AllowedMethods,
+				AllowedHeaders:   corsCfg.AllowedHeaders,
+				ExposedHeaders:   corsCfg.ExposedHeaders,
+				AllowCredentials: corsCfg.AllowCredentials,
+				MaxAge:           corsCfg.MaxAge,
 			},
 		),
 	)
 
-	r.Route("/api/v1", func(r chi.Router) {
-		r.Get("/docs/swagger/*", httpswagger.WrapHandler)
+	// Health check
+	r.Get(
+		httpCfg.HealthPath, func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		},
+	)
 
-		authRouter("/auth", r, authHandler)
-		hotelRouter("/hotels", r, hotelHandler)
-		roomRouter("/rooms", r, hotelHandler)
-		bookingRouter("/bookings", r, bookingHandler)
-	})
+	// API routes
+	r.Route(
+		httpCfg.APIPrefix, func(r chi.Router) {
+			r.Get("/docs/swagger/*", httpswagger.WrapHandler)
+			for _, route := range routes {
+				route.Register(r)
+			}
+		},
+	)
 }

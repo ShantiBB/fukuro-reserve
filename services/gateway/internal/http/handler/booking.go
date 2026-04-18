@@ -9,6 +9,7 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils"
@@ -16,11 +17,12 @@ import (
 )
 
 type BookingHandler struct {
-	clients *clients.Clients
+	clients    *clients.Clients
+	pagination config.PaginationConfig
 }
 
-func NewBookingHandler(clients *clients.Clients) *BookingHandler {
-	return &BookingHandler{clients: clients}
+func NewBookingHandler(clients *clients.Clients, pagination config.PaginationConfig) *BookingHandler {
+	return &BookingHandler{clients: clients, pagination: pagination}
 }
 
 // CreateBooking godoc
@@ -170,12 +172,12 @@ func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 
 	page := utils.ParseUint64(r.URL.Query().Get("page"))
 	if page == 0 {
-		page = 1
+		page = h.pagination.DefaultPage
 	}
 
 	limit := utils.ParseUint64(r.URL.Query().Get("limit"))
 	if limit == 0 {
-		limit = 100
+		limit = h.pagination.DefaultPageSize
 	}
 
 	req.Page = page

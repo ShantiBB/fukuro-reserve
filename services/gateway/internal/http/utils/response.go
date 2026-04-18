@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,7 +18,7 @@ type ErrorResponse struct {
 
 // RespondJSON sends a JSON response
 func RespondJSON(w http.ResponseWriter, code int, payload interface{}) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set(consts.HeaderContentType, consts.ContentTypeJSON)
 	w.WriteHeader(code)
 	if err := json.NewEncoder(w).Encode(payload); err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

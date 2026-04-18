@@ -153,8 +153,10 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 // @Summary Get all users
 // @Tags users
 // @Produce json
-// @Success 200 {array} UserResponse
-// @Router /api/v1/users [get]
+// @Param page query int false "Page number"
+// @Param limit query int false "Page size"
+// @Success 200 {object} UsersResponse
+// @Router /api/v1/auth/users [get]
 func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -172,10 +174,12 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 		limit = 100
 	}
 
-	resp, err := h.clients.User.GetUsers(ctx, &userv1.GetUsersRequest{
-		Page:  page,
-		Limit: limit,
-	})
+	resp, err := h.clients.User.GetUsers(
+		ctx, &userv1.GetUsersRequest{
+			Page:  page,
+			Limit: limit,
+		},
+	)
 	if err != nil {
 		utils.RespondGRPCError(w, err)
 		return
@@ -191,7 +195,7 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param request body CreateUserRequest true "Create user request"
 // @Success 201 {object} UserResponse
-// @Router /api/v1/users [post]
+// @Router /api/v1/auth/users [post]
 func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -231,7 +235,7 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path int true "User ID"
 // @Success 200 {object} UserResponse
-// @Router /api/v1/users/{id} [get]
+// @Router /api/v1/auth/users/{id} [get]
 func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -262,8 +266,8 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path int true "User ID"
 // @Param request body UpdateUserRequest true "Update user request"
-// @Success 200 {object} UpdateUserResponse
-// @Router /api/v1/users/{id} [put]
+// @Success 200 {object} UserResponse
+// @Router /api/v1/auth/users/{id} [put]
 func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -307,7 +311,7 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Param id path int true "User ID"
 // @Param request body UpdateUserActivityRequest true "Update activity request"
 // @Success 200 {object} UpdateUserActivityResponse
-// @Router /api/v1/users/{id}/activity [patch]
+// @Router /api/v1/auth/users/{id}/activity [patch]
 func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -339,7 +343,7 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, map[string]interface{}{"is_active": resp.IsActive})
+	utils.RespondJSON(w, http.StatusOK, UpdateUserActivityResponse{IsActive: resp.IsActive})
 }
 
 // UpdateUserRole godoc
@@ -350,7 +354,7 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 // @Param id path int true "User ID"
 // @Param request body UpdateUserRoleRequest true "Update role request"
 // @Success 200 {object} UpdateUserRoleResponse
-// @Router /api/v1/users/{id}/role [patch]
+// @Router /api/v1/auth/users/{id}/role [patch]
 func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {
@@ -382,7 +386,7 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, map[string]interface{}{"role": resp.Role.String()})
+	utils.RespondJSON(w, http.StatusOK, UpdateUserRoleResponse{Role: resp.Role.String()})
 }
 
 // DeleteUser godoc
@@ -390,7 +394,7 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 // @Tags users
 // @Param id path int true "User ID"
 // @Success 204
-// @Router /api/v1/users/{id} [delete]
+// @Router /api/v1/auth/users/{id} [delete]
 func (h *AuthHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	ctx, err := authContext(r)
 	if err != nil {

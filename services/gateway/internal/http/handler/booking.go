@@ -163,7 +163,7 @@ func (h *BookingHandler) CreateBooking(w http.ResponseWriter, r *http.Request) {
 // @Param status query string false "Status"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {array} BookingShortResponse
+// @Success 200 {object} BookingsResponse
 // @Router /api/v1/bookings [get]
 func (h *BookingHandler) GetBookings(w http.ResponseWriter, r *http.Request) {
 	req := &bookingv1.GetBookingsRequest{}
@@ -236,7 +236,7 @@ func (h *BookingHandler) GetBooking(w http.ResponseWriter, r *http.Request) {
 // @Summary Confirm booking
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} StatusResponse
 // @Router /api/v1/bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
@@ -258,14 +258,14 @@ func (h *BookingHandler) ConfirmBooking(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, map[string]interface{}{"status": resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
 }
 
 // CancelBooking godoc
 // @Summary Cancel booking
 // @Tags bookings
 // @Param bookingId path string true "Booking ID"
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} StatusResponse
 // @Router /api/v1/bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 	bookingID := chi.URLParam(r, "bookingId")
@@ -287,7 +287,7 @@ func (h *BookingHandler) CancelBooking(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, map[string]interface{}{"status": resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteBooking godoc

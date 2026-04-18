@@ -97,11 +97,12 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 // @Summary Get hotels
 // @Tags hotels
 // @Produce json
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
+// @Param country_code query string true "Country code"
+// @Param city_slug query string true "City slug"
+// @Param sort_by query string false "Sort field"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {array} HotelShortResponse
+// @Success 200 {object} HotelsResponse
 // @Router /api/v1/hotels [get]
 func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 	countryCode := r.URL.Query().Get("countryCode")
@@ -362,12 +363,12 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 // @Summary Get rooms
 // @Tags rooms
 // @Produce json
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
+// @Param country_code query string true "Country code"
+// @Param city_slug query string true "City slug"
+// @Param hotel_slug query string true "Hotel slug"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
-// @Success 200 {array} RoomShortResponse
+// @Success 200 {object} RoomsResponse
 // @Router /api/v1/rooms [get]
 func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 	countryCode := r.URL.Query().Get("countryCode")
@@ -494,7 +495,7 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param roomId path string true "Room ID"
 // @Param request body UpdateRoomStatusRequest true "Update status request"
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} StatusResponse
 // @Router /api/v1/rooms/{roomId}/status [patch]
 func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) {
 	roomID := chi.URLParam(r, "roomId")
@@ -520,7 +521,7 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	utils.RespondJSON(w, http.StatusOK, map[string]interface{}{"status": resp.Status.String()})
+	utils.RespondJSON(w, http.StatusOK, StatusResponse{Status: resp.Status.String()})
 }
 
 // DeleteRoom godoc

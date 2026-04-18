@@ -14,7 +14,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	httpswagger "github.com/swaggo/http-swagger"
 
+	_ "github.com/ShantiBB/fukuro-reserve/services/gateway/docs"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/handler"
@@ -78,6 +80,8 @@ func (app *App) MustRun() {
 	// Routes
 	r.Route(
 		"/api/v1", func(r chi.Router) {
+			r.Get("/docs/swagger/*", httpswagger.WrapHandler)
+
 			// Auth routes
 			r.Mount("/auth", authHandler.Routes())
 

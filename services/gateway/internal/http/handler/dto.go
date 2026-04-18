@@ -44,7 +44,15 @@ type UpdateUserActivityRequest struct {
 	IsActive bool `json:"is_active"`
 }
 
+type UpdateUserActivityResponse struct {
+	IsActive bool `json:"is_active"`
+}
+
 type UpdateUserRoleRequest struct {
+	Role string `json:"role"`
+}
+
+type UpdateUserRoleResponse struct {
 	Role string `json:"role"`
 }
 
@@ -147,6 +155,10 @@ type UpdateRoomRequest struct {
 }
 
 type UpdateRoomStatusRequest struct {
+	Status string `json:"status"`
+}
+
+type StatusResponse struct {
 	Status string `json:"status"`
 }
 

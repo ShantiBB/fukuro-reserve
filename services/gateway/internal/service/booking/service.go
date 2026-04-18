@@ -1,0 +1,121 @@
+package booking
+
+import (
+	"context"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
+)
+
+type Service struct {
+	clients    *clients.Clients
+	pagination config.PaginationConfig
+}
+
+func New(clients *clients.Clients, pagination config.PaginationConfig) *Service {
+	return &Service{clients: clients, pagination: pagination}
+}
+
+func (s *Service) CreateBooking(ctx context.Context, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
+	var guestEmail *string
+	if req.GuestEmail != "" {
+		guestEmail = &req.GuestEmail
+	}
+
+	var guestPhone *string
+	if req.GuestPhone != "" {
+		guestPhone = &req.GuestPhone
+	}
+
+	rooms := make([]*bookingv1.CreateBookingRoomRequest, len(req.Rooms))
+	for i, room := range req.Rooms {
+		rooms[i] = &bookingv1.CreateBookingRoomRequest{
+			RoomId:        room.RoomId,
+			Adults:        room.Adults,
+			Children:      room.Children,
+			PricePerNight: room.PricePerNight,
+		}
+	}
+
+	resp, err := s.clients.Booking.CreateBooking(ctx, &bookingv1.CreateBookingRequest{
+		UserId:              req.UserId,
+		HotelId:             req.HotelId,
+		CheckIn:             timestamppb.New(req.CheckIn),
+		CheckOut:            timestamppb.New(req.CheckOut),
+		GuestName:           req.GuestName,
+		GuestEmail:          guestEmail,
+		GuestPhone:          guestPhone,
+		Currency:            req.Currency,
+		ExpectedTotalAmount: req.ExpectedTotalAmount,
+		Rooms:               rooms,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.BookingResponseFromProto(resp.Booking), nil
+}
+
+func (s *Service) GetBookings(ctx context.Context, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
+	if page == 0 {
+		page = s.pagination.DefaultPage
+	}
+	if limit == 0 {
+		limit = s.pagination.DefaultPageSize
+	}
+
+	req := &bookingv1.GetBookingsRequest{Page: page, Limit: limit}
+	if userID != 0 {
+		req.UserId = userID
+	}
+	if hotelID != "" {
+		req.HotelId = hotelID
+	}
+	if status != "" {
+		req.Status = bookingv1.BookingStatus(bookingv1.BookingStatus_value[status])
+	}
+
+	resp, err := s.clients.Booking.GetBookings(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.BookingsShortResponseFromProto(resp), nil
+}
+
+func (s *Service) GetBooking(ctx context.Context, bookingID string) (*dto.BookingResponse, error) {
+	resp, err := s.clients.Booking.GetBooking(ctx, &bookingv1.GetBookingRequest{Id: bookingID})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.BookingResponseFromProto(resp.Booking), nil
+}
+
+func (s *Service) ConfirmBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
+	resp, err := s.clients.Booking.ConfirmBookingStatus(ctx, &bookingv1.ConfirmBookingStatusRequest{Id: bookingID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.StatusResponse{Status: resp.Status.String()}, nil
+}
+
+func (s *Service) CancelBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
+	resp, err := s.clients.Booking.CancelBookingStatus(ctx, &bookingv1.CancelBookingStatusRequest{Id: bookingID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.StatusResponse{Status: resp.Status.String()}, nil
+}
+
+func (s *Service) DeleteBooking(ctx context.Context, bookingID string) error {
+	_, err := s.clients.Booking.DeleteBooking(ctx, &bookingv1.DeleteBookingRequest{Id: bookingID})
+	return err
+}

@@ -7,25 +7,20 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	userv1 "github.com/ShantiBB/fukuro-reserve/services/auth/api/user/v1"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
+	authservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/auth"
 )
 
 type AuthHandler struct {
-	clients    *clients.Clients
-	pagination config.PaginationConfig
+	service *authservice.Service
 }
 
-func NewAuthHandler(clients *clients.Clients, pagination config.PaginationConfig) *AuthHandler {
-	return &AuthHandler{clients: clients, pagination: pagination}
+func NewAuthHandler(service *authservice.Service) *AuthHandler {
+	return &AuthHandler{service: service}
 }
 
 func authContext(r *http.Request) (context.Context, error) {
@@ -47,7 +42,7 @@ func authContext(r *http.Request) (context.Context, error) {
 // @Produce json
 // @Param request body dto.RegisterRequest true "Register request"
 // @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} utils.ErrorResponse
+// @Failure 400 {object} responder.ErrorResponse
 // @Router /api/v1/auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req dto.RegisterRequest
@@ -56,18 +51,13 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.Token.RegisterUser(
-		r.Context(), &userv1.RegisterUserRequest{
-			Email:    req.Email,
-			Password: req.Password,
-		},
-	)
+	resp, err := h.service.Register(r.Context(), req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromRegister(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // Login godoc
@@ -77,7 +67,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param request body dto.LoginRequest true "Login request"
 // @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} utils.ErrorResponse
+// @Failure 400 {object} responder.ErrorResponse
 // @Router /api/v1/auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req dto.LoginRequest
@@ -86,18 +76,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.Token.LoginUser(
-		r.Context(), &userv1.LoginUserRequest{
-			Email:    req.Email,
-			Password: req.Password,
-		},
-	)
+	resp, err := h.service.Login(r.Context(), req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromLogin(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // RefreshToken godoc
@@ -107,7 +92,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param request body dto.RefreshTokenRequest true "Refresh token request"
 // @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} utils.ErrorResponse
+// @Failure 400 {object} responder.ErrorResponse
 // @Router /api/v1/auth/refresh [post]
 func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	var req dto.RefreshTokenRequest
@@ -116,17 +101,13 @@ func (h *AuthHandler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.Token.RefreshToken(
-		r.Context(), &userv1.RefreshTokenRequest{
-			RefreshToken: req.RefreshToken,
-		},
-	)
+	resp, err := h.service.RefreshToken(r.Context(), req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.TokenResponseFromRefresh(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // GetUsers godoc
@@ -145,27 +126,15 @@ func (h *AuthHandler) GetUsers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := query.ParseUint64(r.URL.Query().Get("page"))
-	if page == 0 {
-		page = h.pagination.DefaultPage
-	}
-
 	limit := query.ParseUint64(r.URL.Query().Get("limit"))
-	if limit == 0 {
-		limit = h.pagination.DefaultPageSize
-	}
 
-	resp, err := h.clients.User.GetUsers(
-		ctx, &userv1.GetUsersRequest{
-			Page:  page,
-			Limit: limit,
-		},
-	)
+	resp, err := h.service.GetUsers(ctx, page, limit)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UsersResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // CreateUser godoc
@@ -189,24 +158,13 @@ func (h *AuthHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var username *string
-	if req.Username != "" {
-		username = &req.Username
-	}
-
-	resp, err := h.clients.User.CreateUser(
-		ctx, &userv1.CreateUserRequest{
-			Email:    req.Email,
-			Username: username,
-			Password: req.Password,
-		},
-	)
+	resp, err := h.service.CreateUser(ctx, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusCreated, mapper.UserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusCreated, resp)
 }
 
 // GetUser godoc
@@ -230,13 +188,13 @@ func (h *AuthHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.User.GetUser(ctx, &userv1.GetUserRequest{Id: id})
+	resp, err := h.service.GetUser(ctx, id)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateUser godoc
@@ -268,19 +226,13 @@ func (h *AuthHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.User.UpdateUser(
-		ctx, &userv1.UpdateUserRequest{
-			Id:       id,
-			Email:    req.Email,
-			Username: req.Username,
-		},
-	)
+	resp, err := h.service.UpdateUser(ctx, id, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UpdateUserResponseFromProto(resp.User))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateUserActivity godoc
@@ -312,18 +264,13 @@ func (h *AuthHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp, err := h.clients.User.UpdateUserActivity(
-		ctx, &userv1.UpdateUserActivityRequest{
-			Id:       id,
-			IsActive: wrapperspb.Bool(req.IsActive),
-		},
-	)
+	resp, err := h.service.UpdateUserActivity(ctx, id, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, dto.UpdateUserActivityResponse{IsActive: resp.IsActive})
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateUserRole godoc
@@ -355,18 +302,13 @@ func (h *AuthHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.User.UpdateUserRole(
-		ctx, &userv1.UpdateUserRoleRequest{
-			Id:   id,
-			Role: userv1.UserRole(userv1.UserRole_value[req.Role]),
-		},
-	)
+	resp, err := h.service.UpdateUserRole(ctx, id, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, dto.UpdateUserRoleResponse{Role: resp.Role.String()})
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // DeleteUser godoc
@@ -389,8 +331,7 @@ func (h *AuthHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = h.clients.User.DeleteUser(ctx, &userv1.DeleteUserRequest{Id: id})
-	if err != nil {
+	if err := h.service.DeleteUser(ctx, id); err != nil {
 		responder.GRPCError(w, err)
 		return
 	}

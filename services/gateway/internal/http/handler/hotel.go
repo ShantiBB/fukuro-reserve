@@ -2,27 +2,22 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/grpc/clients"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/query"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/responder"
-	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
+	hotelservice "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/service/hotel"
 )
 
 type HotelHandler struct {
-	clients    *clients.Clients
-	pagination config.PaginationConfig
+	service *hotelservice.Service
 }
 
-func NewHotelHandler(clients *clients.Clients, pagination config.PaginationConfig) *HotelHandler {
-	return &HotelHandler{clients: clients, pagination: pagination}
+func NewHotelHandler(service *hotelservice.Service) *HotelHandler {
+	return &HotelHandler{service: service}
 }
 
 // CreateHotel godoc
@@ -40,33 +35,13 @@ func (h *HotelHandler) CreateHotel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var description *string
-	if req.Description != "" {
-		description = &req.Description
-	}
-
-	location := &hotelv1.CreateHotelLocationRequest{
-		Latitude:  req.Location.Latitude,
-		Longitude: req.Location.Longitude,
-	}
-
-	resp, err := h.clients.Hotel.CreateHotel(
-		r.Context(), &hotelv1.CreateHotelRequest{
-			CountryCode: req.CountryCode,
-			CitySlug:    req.CitySlug,
-			Title:       req.Title,
-			OwnerId:     req.OwnerId,
-			Description: description,
-			Address:     req.Address,
-			Location:    location,
-		},
-	)
+	resp, err := h.service.CreateHotel(r.Context(), req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusCreated, mapper.HotelResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusCreated, resp)
 }
 
 // GetHotels godoc
@@ -99,31 +74,20 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 		sortBy = "title"
 	}
 
-	page := query.ParseUint64(r.URL.Query().Get("page"))
-	if page == 0 {
-		page = h.pagination.DefaultPage
-	}
-
-	limit := query.ParseUint64(r.URL.Query().Get("limit"))
-	if limit == 0 {
-		limit = h.pagination.DefaultPageSize
-	}
-
-	resp, err := h.clients.Hotel.GetHotels(
-		r.Context(), &hotelv1.GetHotelsRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			SortBy:      sortBy,
-			Page:        page,
-			Limit:       limit,
-		},
+	resp, err := h.service.GetHotels(
+		r.Context(),
+		countryCode,
+		citySlug,
+		sortBy,
+		query.ParseUint64(r.URL.Query().Get("page")),
+		query.ParseUint64(r.URL.Query().Get("limit")),
 	)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.HotelsShortResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // GetHotel godoc
@@ -136,23 +100,18 @@ func (h *HotelHandler) GetHotels(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [get]
 func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	hotelSlug := chi.URLParam(r, "hotelSlug")
-
-	resp, err := h.clients.Hotel.GetHotel(
-		r.Context(), &hotelv1.GetHotelRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			HotelSlug:   hotelSlug,
-		},
+	resp, err := h.service.GetHotel(
+		r.Context(),
+		chi.URLParam(r, "countryCode"),
+		chi.URLParam(r, "citySlug"),
+		chi.URLParam(r, "hotelSlug"),
 	)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.HotelDetailResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateHotel godoc
@@ -167,42 +126,25 @@ func (h *HotelHandler) GetHotel(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
 func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	hotelSlug := chi.URLParam(r, "hotelSlug")
-
 	var req dto.UpdateHotelRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
-	var description *string
-	if req.Description != "" {
-		description = &req.Description
-	}
-
-	location := &hotelv1.UpdateHotelLocationRequest{
-		Latitude:  req.Location.Latitude,
-		Longitude: req.Location.Longitude,
-	}
-
-	resp, err := h.clients.Hotel.UpdateHotel(
-		r.Context(), &hotelv1.UpdateHotelRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			HotelSlug:   hotelSlug,
-			Description: description,
-			Address:     req.Address,
-			Location:    location,
-		},
+	resp, err := h.service.UpdateHotel(
+		r.Context(),
+		chi.URLParam(r, "countryCode"),
+		chi.URLParam(r, "citySlug"),
+		chi.URLParam(r, "hotelSlug"),
+		req,
 	)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UpdateHotelResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateHotelTitle godoc
@@ -217,30 +159,25 @@ func (h *HotelHandler) UpdateHotel(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} dto.HotelResponse
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) {
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	hotelSlug := chi.URLParam(r, "hotelSlug")
-
 	var req dto.UpdateHotelTitleRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		responder.Error(w, http.StatusBadRequest, "invalid request body")
 		return
 	}
 
-	resp, err := h.clients.Hotel.UpdateHotelTitle(
-		r.Context(), &hotelv1.UpdateHotelTitleRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			HotelSlug:   hotelSlug,
-			Title:       req.Title,
-		},
+	resp, err := h.service.UpdateHotelTitle(
+		r.Context(),
+		chi.URLParam(r, "countryCode"),
+		chi.URLParam(r, "citySlug"),
+		chi.URLParam(r, "hotelSlug"),
+		req,
 	)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UpdateHotelTitleResponseFromProto(resp.Hotel))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // DeleteHotel godoc
@@ -252,18 +189,12 @@ func (h *HotelHandler) UpdateHotelTitle(w http.ResponseWriter, r *http.Request) 
 // @Success 204
 // @Router /api/v1/hotels/{countryCode}/{citySlug}/{hotelSlug} [delete]
 func (h *HotelHandler) DeleteHotel(w http.ResponseWriter, r *http.Request) {
-	countryCode := chi.URLParam(r, "countryCode")
-	citySlug := chi.URLParam(r, "citySlug")
-	hotelSlug := chi.URLParam(r, "hotelSlug")
-
-	_, err := h.clients.Hotel.DeleteHotel(
-		r.Context(), &hotelv1.DeleteHotelRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			HotelSlug:   hotelSlug,
-		},
-	)
-	if err != nil {
+	if err := h.service.DeleteHotel(
+		r.Context(),
+		chi.URLParam(r, "countryCode"),
+		chi.URLParam(r, "citySlug"),
+		chi.URLParam(r, "hotelSlug"),
+	); err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
@@ -286,64 +217,24 @@ func (h *HotelHandler) CreateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var description *string
-	if req.Description != "" {
-		description = &req.Description
-	}
-
-	var price float32
-	if req.Price != "" {
-		var p float64
-		if _, err := fmt.Sscanf(req.Price, "%f", &p); err != nil {
-			responder.Error(w, http.StatusBadRequest, "invalid price")
-			return
-		}
-		price = float32(p)
-	}
-
-	if req.CountryCode == "" || req.CitySlug == "" || req.HotelSlug == "" {
-		responder.Error(
-			w,
-			http.StatusBadRequest,
-			"country_code, city_slug, and hotel_slug are required",
-		)
-		return
-	}
-
-	resp, err := h.clients.Room.CreateRoom(
-		r.Context(), &hotelv1.CreateRoomRequest{
-			CountryCode: req.CountryCode,
-			CitySlug:    req.CitySlug,
-			HotelSlug:   req.HotelSlug,
-			Title:       req.Title,
-			Description: description,
-			RoomNumber:  req.RoomNumber,
-			Type:        hotelv1.RoomType(hotelv1.RoomType_value[req.Type]),
-			Price:       price,
-			Capacity:    req.Capacity,
-			AreaSqm:     req.AreaSqm,
-			Floor:       req.Floor,
-			Amenities:   req.Amenities,
-			Images:      req.Images,
-		},
-	)
+	resp, err := h.service.CreateRoom(r.Context(), req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusCreated, mapper.RoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusCreated, resp)
 }
 
 // GetRooms godoc
 // @Summary Get rooms
 // @Tags rooms
 // @Produce json
-// @Param country_code query string true "Country code"
-// @Param city_slug query string true "City slug"
-// @Param hotel_slug query string true "Hotel slug"
+// @Param countryCode query string true "Country code"
+// @Param citySlug query string true "City slug"
+// @Param hotelSlug query string true "Hotel slug"
 // @Param page query int false "Page number"
-// @Param limit query int false "Limit"
+// @Param limit query int false "Page size"
 // @Success 200 {object} dto.RoomsResponse
 // @Router /api/v1/rooms [get]
 func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
@@ -362,31 +253,20 @@ func (h *HotelHandler) GetRooms(w http.ResponseWriter, r *http.Request) {
 		hotelSlug = r.URL.Query().Get("hotel_slug")
 	}
 
-	page := query.ParseUint64(r.URL.Query().Get("page"))
-	if page == 0 {
-		page = h.pagination.DefaultPage
-	}
-
-	limit := query.ParseUint64(r.URL.Query().Get("limit"))
-	if limit == 0 {
-		limit = h.pagination.DefaultPageSize
-	}
-
-	resp, err := h.clients.Room.GetRooms(
-		r.Context(), &hotelv1.GetRoomsRequest{
-			CountryCode: countryCode,
-			CitySlug:    citySlug,
-			HotelSlug:   hotelSlug,
-			Page:        page,
-			Limit:       limit,
-		},
+	resp, err := h.service.GetRooms(
+		r.Context(),
+		countryCode,
+		citySlug,
+		hotelSlug,
+		query.ParseUint64(r.URL.Query().Get("page")),
+		query.ParseUint64(r.URL.Query().Get("limit")),
 	)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.RoomsShortResponseFromProto(resp))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // GetRoom godoc
@@ -403,15 +283,13 @@ func (h *HotelHandler) GetRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := h.clients.Room.GetRoom(
-		r.Context(), &hotelv1.GetRoomRequest{Id: roomID},
-	)
+	resp, err := h.service.GetRoom(r.Context(), roomID)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.RoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateRoom godoc
@@ -436,32 +314,13 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var description string
-	if req.Description != "" {
-		description = req.Description
-	}
-
-	resp, err := h.clients.Room.UpdateRoom(
-		r.Context(), &hotelv1.UpdateRoomRequest{
-			Id:          roomID,
-			Title:       req.Title,
-			RoomNumber:  req.RoomNumber,
-			Type:        hotelv1.RoomType(hotelv1.RoomType_value[req.Type]),
-			Description: description,
-			Price:       req.Price,
-			Capacity:    req.Capacity,
-			AreaSqm:     req.AreaSqm,
-			Floor:       req.Floor,
-			Amenities:   req.Amenities,
-			Images:      req.Images,
-		},
-	)
+	resp, err := h.service.UpdateRoom(r.Context(), roomID, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, mapper.UpdateRoomResponseFromProto(resp.Room))
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // UpdateRoomStatus godoc
@@ -470,7 +329,7 @@ func (h *HotelHandler) UpdateRoom(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param roomId path string true "Room ID"
-// @Param request body dto.UpdateRoomStatusRequest true "Update status request"
+// @Param request body dto.UpdateRoomStatusRequest true "Update room status request"
 // @Success 200 {object} dto.StatusResponse
 // @Router /api/v1/rooms/{roomId}/status [patch]
 func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) {
@@ -486,18 +345,13 @@ func (h *HotelHandler) UpdateRoomStatus(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	resp, err := h.clients.Room.UpdateRoomStatus(
-		r.Context(), &hotelv1.UpdateRoomStatusRequest{
-			Id:     roomID,
-			Status: hotelv1.RoomStatus(hotelv1.RoomStatus_value[req.Status]),
-		},
-	)
+	resp, err := h.service.UpdateRoomStatus(r.Context(), roomID, req)
 	if err != nil {
 		responder.GRPCError(w, err)
 		return
 	}
 
-	responder.JSON(w, http.StatusOK, dto.StatusResponse{Status: resp.Status.String()})
+	responder.JSON(w, http.StatusOK, resp)
 }
 
 // DeleteRoom godoc
@@ -513,10 +367,7 @@ func (h *HotelHandler) DeleteRoom(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := h.clients.Room.DeleteRoom(
-		r.Context(), &hotelv1.DeleteRoomRequest{Id: roomID},
-	)
-	if err != nil {
+	if err := h.service.DeleteRoom(r.Context(), roomID); err != nil {
 		responder.GRPCError(w, err)
 		return
 	}

@@ -10,7 +10,6 @@ import (
 	httpauth "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/auth"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
 // GetUsers godoc
@@ -68,10 +67,6 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 	var req dto.CreateUserRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err = validation.ValidateCreateUserRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -140,10 +135,6 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	var req dto.UpdateUserRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err = validation.ValidateUpdateUserRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -220,10 +211,6 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 	var req dto.UpdateUserRoleRequest
 	if err = c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err = validation.ValidateUpdateUserRoleRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 

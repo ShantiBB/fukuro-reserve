@@ -9,7 +9,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
 // CreateHotel godoc
@@ -25,10 +24,6 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 	var req dto.CreateHotelRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateCreateHotelRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -65,6 +60,17 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 		return
 	}
 
+	countryCode := request.FirstNonEmptyQuery(c, "countryCode", "country_code")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+	citySlug := request.FirstNonEmptyQuery(c, "citySlug", "city_slug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
 	sortBy := request.FirstNonEmptyQuery(c, "sortBy", "sort_by")
 	if sortBy == "" {
 		sortBy = "title"
@@ -72,8 +78,8 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 
 	resp, err := h.service.GetHotels(
 		c.Request.Context(),
-		request.FirstNonEmptyQuery(c, "countryCode", "country_code"),
-		request.FirstNonEmptyQuery(c, "citySlug", "city_slug"),
+		countryCode,
+		citySlug,
 		sortBy,
 		page,
 		limit,
@@ -129,10 +135,6 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
-	if err := validation.ValidateUpdateHotelRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
-		return
-	}
 
 	resp, err := h.service.UpdateHotel(
 		c.Request.Context(),
@@ -165,10 +167,6 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 	var req dto.UpdateHotelTitleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateUpdateHotelTitleRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 

@@ -9,7 +9,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
 // CreateRoom godoc
@@ -25,10 +24,6 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 	var req dto.CreateRoomRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateCreateRoomRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -65,11 +60,27 @@ func (h *HotelHandler) GetRooms(c *gin.Context) {
 		return
 	}
 
+	countryCode := request.FirstNonEmptyQuery(c, "countryCode", "country_code")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+	citySlug := request.FirstNonEmptyQuery(c, "citySlug", "city_slug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+	hotelSlug := request.FirstNonEmptyQuery(c, "hotelSlug", "hotel_slug")
+	if hotelSlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrRoomHotelSlugReq})
+		return
+	}
+
 	resp, err := h.service.GetRooms(
 		c.Request.Context(),
-		request.FirstNonEmptyQuery(c, "countryCode", "country_code"),
-		request.FirstNonEmptyQuery(c, "citySlug", "city_slug"),
-		request.FirstNonEmptyQuery(c, "hotelSlug", "hotel_slug"),
+		countryCode,
+		citySlug,
+		hotelSlug,
 		page,
 		limit,
 	)
@@ -127,10 +138,6 @@ func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
-	if err := validation.ValidateUpdateRoomRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
-		return
-	}
 
 	resp, err := h.service.UpdateRoom(c.Request.Context(), roomID, req)
 	if err != nil {
@@ -161,10 +168,6 @@ func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 	var req dto.UpdateRoomStatusRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateUpdateRoomStatusRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 

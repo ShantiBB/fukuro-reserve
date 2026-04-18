@@ -9,7 +9,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
 // CreateBooking godoc
@@ -25,10 +24,6 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req dto.CreateBookingRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateCreateBookingRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -61,12 +56,6 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 	}
 
 	hotelID := c.Query("hotelId")
-	if hotelID != "" {
-		if err = validation.ValidateUUID(hotelID); err != nil {
-			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidHotelIDFormat})
-			return
-		}
-	}
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -109,10 +98,6 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
-	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
-		return
-	}
 
 	resp, err := h.service.GetBooking(c.Request.Context(), bookingID)
 	if err != nil {
@@ -134,10 +119,6 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
-		return
-	}
-	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 
@@ -163,10 +144,6 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
 		return
 	}
-	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
-		return
-	}
 
 	resp, err := h.service.CancelBooking(c.Request.Context(), bookingID)
 	if err != nil {
@@ -188,10 +165,6 @@ func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
-		return
-	}
-	if err := validation.ValidateUUID(bookingID); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidBookingIDFormat})
 		return
 	}
 

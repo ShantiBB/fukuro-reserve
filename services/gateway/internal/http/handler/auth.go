@@ -8,7 +8,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
-	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/validation"
 )
 
 // Register godoc
@@ -24,10 +23,6 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateRegisterRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -55,10 +50,6 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
-	if err := validation.ValidateLoginRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
-		return
-	}
 
 	resp, err := h.service.Login(c.Request.Context(), req)
 	if err != nil {
@@ -82,10 +73,6 @@ func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
-		return
-	}
-	if err := validation.ValidateRefreshTokenRequest(req); err != nil {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: err.Error()})
 		return
 	}
 

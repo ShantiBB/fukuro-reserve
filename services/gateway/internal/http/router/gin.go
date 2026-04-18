@@ -13,6 +13,10 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/config"
 )
 
+type RouteRegistrar interface {
+	Register(r *gin.RouterGroup)
+}
+
 func New(r *gin.Engine, httpCfg config.HTTPConfig, corsCfg config.CORSConfig, routes ...RouteRegistrar) {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())

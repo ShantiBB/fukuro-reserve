@@ -6,12 +6,21 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 )
 
+type hotelHandler interface {
+	CreateHotel(*gin.Context)
+	GetHotels(*gin.Context)
+	GetHotel(*gin.Context)
+	UpdateHotel(*gin.Context)
+	UpdateHotelTitle(*gin.Context)
+	DeleteHotel(*gin.Context)
+}
+
 type hotelRoutes struct {
-	h       HotelHandler
+	h       hotelHandler
 	pattern string
 }
 
-func NewHotelRoutes(pattern string, h HotelHandler) RouteRegistrar {
+func NewHotelRoutes(pattern string, h hotelHandler) RouteRegistrar {
 	return hotelRoutes{pattern: pattern, h: h}
 }
 

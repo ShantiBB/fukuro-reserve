@@ -6,12 +6,25 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 )
 
+type authHandler interface {
+	Register(*gin.Context)
+	Login(*gin.Context)
+	RefreshToken(*gin.Context)
+	GetUsers(*gin.Context)
+	CreateUser(*gin.Context)
+	GetUser(*gin.Context)
+	UpdateUser(*gin.Context)
+	UpdateUserActivity(*gin.Context)
+	UpdateUserRole(*gin.Context)
+	DeleteUser(*gin.Context)
+}
+
 type authRoutes struct {
-	h       AuthHandler
+	h       authHandler
 	pattern string
 }
 
-func NewAuthRoutes(pattern string, h AuthHandler) RouteRegistrar {
+func NewAuthRoutes(pattern string, h authHandler) RouteRegistrar {
 	return authRoutes{pattern: pattern, h: h}
 }
 

@@ -539,16 +539,6 @@ paths:
         in: query
         name: sort_by
         type: string
-      - default: title
-        description: Alias for sort_by
-        enum:
-        - title
-        - rating
-        - created_at
-        - updated_at
-        in: query
-        name: sortBy
-        type: string
       - default: 1
         description: Page number (starts from 1)
         in: query

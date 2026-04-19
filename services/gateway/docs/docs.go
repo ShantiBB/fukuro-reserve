@@ -650,19 +650,6 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            "title",
-                            "rating",
-                            "created_at",
-                            "updated_at"
-                        ],
-                        "type": "string",
-                        "default": "title",
-                        "description": "Alias for sort_by",
-                        "name": "sortBy",
-                        "in": "query"
-                    },
-                    {
                         "minimum": 1,
                         "type": "integer",
                         "default": 1,

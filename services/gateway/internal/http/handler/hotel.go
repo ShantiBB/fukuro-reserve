@@ -71,7 +71,6 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         sort_by query string false "Sort field" Enums(title,rating,created_at,updated_at) default(title)
-// @Param         sortBy query string false "Alias for sort_by" Enums(title,rating,created_at,updated_at) default(title)
 // @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
 // @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
 // @Success       200 {object} dto.HotelsResponse
@@ -100,7 +99,7 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 		return
 	}
 
-	sortBy := request.FirstNonEmptyQuery(c, "sortBy", "sort_by")
+	sortBy := request.FirstNonEmptyQuery(c, "sort_by")
 	if sortBy == "" {
 		sortBy = "title"
 	}

@@ -34,3 +34,4 @@ http-client.private.env.json
 node_modules
 package-lock.json
 package.json
+AGENTS.md

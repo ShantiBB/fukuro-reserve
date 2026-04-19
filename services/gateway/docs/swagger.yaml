@@ -89,86 +89,120 @@ definitions:
   dto.CreateBookingRequest:
     properties:
       check_in:
+        example: "2026-05-10T14:00:00Z"
         type: string
       check_out:
+        example: "2026-05-13T11:00:00Z"
         type: string
       currency:
+        example: RUB
         type: string
       expected_total_amount:
+        example: "360.00"
         type: string
       guest_email:
+        example: ivan.petrov@example.com
         type: string
       guest_name:
+        example: Ivan Petrov
         type: string
       guest_phone:
+        example: "+79991234567"
         type: string
       hotel_id:
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         type: string
       rooms:
         items:
           $ref: '#/definitions/dto.CreateBookingRoomRequest'
         type: array
       user_id:
+        example: 1
         type: integer
     type: object
   dto.CreateBookingRoomRequest:
     properties:
       adults:
+        example: 2
         type: integer
       children:
+        example: 1
         type: integer
       price_per_night:
+        example: "120.00"
         type: string
       room_id:
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         type: string
     type: object
   dto.CreateHotelBody:
     properties:
       address:
+        example: 1 Chiyoda, Tokyo
         type: string
       description:
+        example: Luxury hotel in central Tokyo
         type: string
       location:
         $ref: '#/definitions/dto.LocationDTO'
       owner_id:
+        example: 1
         type: integer
       title:
+        example: Imperial Hotel Tokyo
         type: string
     type: object
   dto.CreateRoomRequest:
     properties:
       amenities:
+        example:
+        - wifi
+        - tv
+        - air-conditioning
         items:
           type: string
         type: array
       area_sqm:
+        example: 18.5
         type: number
       capacity:
+        example: 2
         type: integer
       description:
+        example: Quiet room with city view
         type: string
       floor:
+        example: 1
         type: integer
       images:
+        example:
+        - https://example.com/rooms/101.jpg
         items:
           type: string
         type: array
       price:
+        example: "150.00"
         type: string
       room_number:
+        example: "101"
         type: string
       title:
+        example: Standard Single Room
         type: string
       type:
+        example: ROOM_TYPE_SINGLE
         type: string
     type: object
   dto.CreateUserRequest:
     properties:
       email:
+        example: manager@example.com
         type: string
       password:
+        example: Passw0rd!123
         type: string
       username:
+        example: manager01
         type: string
     type: object
   dto.HotelResponse:
@@ -221,27 +255,34 @@ definitions:
   dto.LocationDTO:
     properties:
       latitude:
+        example: 35.66
         type: number
       longitude:
+        example: 139.7
         type: number
     type: object
   dto.LoginRequest:
     properties:
       email:
+        example: guest@example.com
         type: string
       password:
+        example: Passw0rd!123
         type: string
     type: object
   dto.RefreshTokenRequest:
     properties:
       refresh_token:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token
         type: string
     type: object
   dto.RegisterRequest:
     properties:
       email:
+        example: guest@example.com
         type: string
       password:
+        example: Passw0rd!123
         type: string
     type: object
   dto.RoomResponse:
@@ -321,15 +362,19 @@ definitions:
   dto.TokenResponse:
     properties:
       access:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access.token
         type: string
       refresh:
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token
         type: string
     type: object
   dto.UpdateHotelRequest:
     properties:
       address:
+        example: 2 Chiyoda, Tokyo
         type: string
       description:
+        example: Renovated rooms and improved amenities
         type: string
       location:
         $ref: '#/definitions/dto.LocationDTO'
@@ -337,65 +382,88 @@ definitions:
   dto.UpdateHotelTitleRequest:
     properties:
       title:
+        example: Imperial Hotel Tokyo Annex
         type: string
     type: object
   dto.UpdateRoomRequest:
     properties:
       amenities:
+        example:
+        - wifi
+        - tv
+        - air-conditioning
+        - coffee-machine
         items:
           type: string
         type: array
       area_sqm:
+        example: 20
         type: number
       capacity:
+        example: 3
         type: integer
       description:
+        example: Refreshed interior and upgraded bed
         type: string
       floor:
+        example: 1
         type: integer
       images:
+        example:
+        - https://example.com/rooms/101-updated.jpg
         items:
           type: string
         type: array
       price:
+        example: "175.00"
         type: string
       room_number:
+        example: "101"
         type: string
       title:
+        example: Standard Double Room
         type: string
       type:
+        example: ROOM_TYPE_DOUBLE
         type: string
     type: object
   dto.UpdateRoomStatusRequest:
     properties:
       status:
+        example: ROOM_STATUS_MAINTENANCE
         type: string
     type: object
   dto.UpdateUserActivityRequest:
     properties:
       is_active:
+        example: true
         type: boolean
     type: object
   dto.UpdateUserActivityResponse:
     properties:
       is_active:
+        example: true
         type: boolean
     type: object
   dto.UpdateUserRequest:
     properties:
       email:
+        example: manager.updated@example.com
         type: string
       username:
+        example: manager02
         type: string
     type: object
   dto.UpdateUserRoleRequest:
     properties:
       role:
+        example: ROLE_ADMIN
         type: string
     type: object
   dto.UpdateUserRoleResponse:
     properties:
       role:
+        example: ROLE_ADMIN
         type: string
     type: object
   dto.UserResponse:
@@ -446,27 +514,52 @@ info:
 paths:
   /{countryCode}/{citySlug}/hotels:
     get:
+      description: Public endpoint. Returns hotels in location with optional sorting
+        and pagination.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
-      - description: Sort field
+      - default: title
+        description: Sort field
+        enum:
+        - title
+        - rating
+        - created_at
+        - updated_at
         in: query
         name: sort_by
         type: string
-      - description: Page number
+      - default: title
+        description: Alias for sort_by
+        enum:
+        - title
+        - rating
+        - created_at
+        - updated_at
         in: query
+        name: sortBy
+        type: string
+      - default: 1
+        description: Page number (starts from 1)
+        in: query
+        minimum: 1
         name: page
         type: integer
-      - description: Limit
+      - default: 10
+        description: Page size
         in: query
+        maximum: 100
+        minimum: 1
         name: limit
         type: integer
       produces:
@@ -476,21 +569,26 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelsResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get hotels
       tags:
       - hotels
     post:
       consumes:
       - application/json
+      description: Creates a hotel in the selected location. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
@@ -508,6 +606,14 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Create a new hotel
@@ -515,18 +621,22 @@ paths:
       - hotels
   /{countryCode}/{citySlug}/hotels/{hotelId}:
     delete:
+      description: Deletes hotel by ID. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
@@ -534,24 +644,40 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Delete hotel
       tags:
       - hotels
     get:
+      description: Public endpoint. Returns hotel details by hotel ID.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
@@ -563,26 +689,36 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get hotel by ID
       tags:
       - hotels
     put:
       consumes:
       - application/json
+      description: Fully updates mutable hotel fields. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
@@ -600,6 +736,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update hotel
@@ -607,28 +755,37 @@ paths:
       - hotels
   /{countryCode}/{citySlug}/hotels/{hotelId}/rooms:
     get:
+      description: Public endpoint. Returns rooms for hotel resolved by hotel ID.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
         type: string
-      - description: Page number
+      - default: 1
+        description: Page number (starts from 1)
         in: query
+        minimum: 1
         name: page
         type: integer
-      - description: Page size
+      - default: 10
+        description: Page size
         in: query
+        maximum: 100
+        minimum: 1
         name: limit
         type: integer
       produces:
@@ -638,26 +795,32 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomsResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get rooms by hotel ID
       tags:
       - rooms
     post:
       consumes:
       - application/json
+      description: Creates a room in the selected hotel. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
@@ -675,6 +838,14 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.RoomResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Create a new room
@@ -682,23 +853,28 @@ paths:
       - rooms
   /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}:
     delete:
+      description: Deletes room by ID. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
         type: string
       - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: roomId
         required: true
@@ -706,29 +882,46 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Delete room
       tags:
       - rooms
     get:
+      description: Public endpoint. Returns room details by hotel ID and room ID.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
         type: string
       - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: roomId
         required: true
@@ -740,31 +933,42 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get room by hotel ID and room ID
       tags:
       - rooms
     put:
       consumes:
       - application/json
+      description: Fully updates room fields. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
         type: string
       - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: roomId
         required: true
@@ -782,6 +986,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update room
@@ -791,23 +1007,28 @@ paths:
     patch:
       consumes:
       - application/json
+      description: Updates room lifecycle status. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
         type: string
       - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: roomId
         required: true
@@ -825,6 +1046,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update room status
@@ -834,18 +1067,22 @@ paths:
     patch:
       consumes:
       - application/json
+      description: Partially updates hotel title and slug. Requires JWT auth.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: hotelId
         required: true
@@ -863,6 +1100,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update hotel title
@@ -870,18 +1119,22 @@ paths:
       - hotels
   /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}:
     get:
+      description: Public endpoint. Returns hotel details by SEO-friendly hotel slug.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel slug
+        example: imperial-hotel-tokyo
         in: path
         name: hotelSlug
         required: true
@@ -893,35 +1146,50 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get hotel by slug
       tags:
       - hotels
   /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms:
     get:
+      description: Public endpoint. Returns rooms for hotel resolved by slug.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel slug
+        example: imperial-hotel-tokyo
         in: path
         name: hotelSlug
         required: true
         type: string
-      - description: Page number
+      - default: 1
+        description: Page number (starts from 1)
         in: query
+        minimum: 1
         name: page
         type: integer
-      - description: Page size
+      - default: 10
+        description: Page size
         in: query
+        maximum: 100
+        minimum: 1
         name: limit
         type: integer
       produces:
@@ -931,30 +1199,37 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomsResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get rooms by hotel slug
       tags:
       - rooms
   /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms/{roomId}:
     get:
+      description: Public endpoint. Returns room details by hotel slug and room ID.
       parameters:
-      - description: Country code
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
         in: path
         name: countryCode
         required: true
         type: string
       - description: City slug
+        example: tokyo
         in: path
         name: citySlug
         required: true
         type: string
       - description: Hotel slug
+        example: imperial-hotel-tokyo
         in: path
         name: hotelSlug
         required: true
         type: string
       - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: roomId
         required: true
@@ -966,8 +1241,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.RoomResponse'
-      security:
-      - Bearer: []
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Get room by hotel slug and room ID
       tags:
       - rooms
@@ -975,6 +1256,8 @@ paths:
     post:
       consumes:
       - application/json
+      description: Public endpoint. Authenticates user credentials and returns access/refresh
+        tokens.
       parameters:
       - description: Login request
         in: body
@@ -993,6 +1276,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Login user
       tags:
       - auth
@@ -1000,6 +1287,7 @@ paths:
     post:
       consumes:
       - application/json
+      description: Public endpoint. Issues a new token pair for a valid refresh token.
       parameters:
       - description: Refresh token request
         in: body
@@ -1018,6 +1306,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Refresh access token
       tags:
       - auth
@@ -1025,6 +1317,8 @@ paths:
     post:
       consumes:
       - application/json
+      description: Public endpoint. Creates a user account and returns access/refresh
+        tokens.
       parameters:
       - description: Register request
         in: body
@@ -1043,18 +1337,28 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       summary: Register a new user
       tags:
       - auth
   /auth/users:
     get:
+      description: Returns users with pagination. Requires JWT auth.
       parameters:
-      - description: Page number
+      - default: 1
+        description: Page number (starts from 1)
         in: query
+        minimum: 1
         name: page
         type: integer
-      - description: Page size
+      - default: 10
+        description: Page size
         in: query
+        maximum: 100
+        minimum: 1
         name: limit
         type: integer
       produces:
@@ -1064,6 +1368,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Get all users
@@ -1072,6 +1384,7 @@ paths:
     post:
       consumes:
       - application/json
+      description: Creates a user account (admin/staff operation). Requires JWT auth.
       parameters:
       - description: Create user request
         in: body
@@ -1086,6 +1399,18 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Create a new user
@@ -1093,24 +1418,42 @@ paths:
       - users
   /auth/users/{id}:
     delete:
+      description: Deletes user by ID. Requires JWT auth.
       parameters:
       - description: User ID
+        example: 1
         in: path
+        minimum: 1
         name: id
         required: true
         type: integer
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Delete user
       tags:
       - users
     get:
+      description: Returns a user by ID. Requires JWT auth.
       parameters:
       - description: User ID
+        example: 1
         in: path
+        minimum: 1
         name: id
         required: true
         type: integer
@@ -1121,6 +1464,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Get user by ID
@@ -1129,9 +1484,12 @@ paths:
     put:
       consumes:
       - application/json
+      description: Updates user profile fields. Requires JWT auth.
       parameters:
       - description: User ID
+        example: 1
         in: path
+        minimum: 1
         name: id
         required: true
         type: integer
@@ -1148,6 +1506,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update user
@@ -1157,9 +1527,12 @@ paths:
     patch:
       consumes:
       - application/json
+      description: Updates active/inactive flag for a user. Requires JWT auth.
       parameters:
       - description: User ID
+        example: 1
         in: path
+        minimum: 1
         name: id
         required: true
         type: integer
@@ -1176,6 +1549,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UpdateUserActivityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update user activity status
@@ -1185,9 +1570,12 @@ paths:
     patch:
       consumes:
       - application/json
+      description: Updates user role. Requires JWT auth.
       parameters:
       - description: User ID
+        example: 1
         in: path
+        minimum: 1
         name: id
         required: true
         type: integer
@@ -1204,6 +1592,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.UpdateUserRoleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Update user role
@@ -1211,25 +1611,36 @@ paths:
       - users
   /bookings:
     get:
+      description: Returns bookings with optional filters and pagination. Requires
+        JWT auth.
       parameters:
-      - description: User ID
+      - description: Filter by user ID
+        example: 1
         in: query
+        minimum: 1
         name: userId
         type: integer
-      - description: Hotel ID
+      - description: Filter by hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
         in: query
         name: hotelId
         type: string
-      - description: Status
+      - description: Filter by booking status
+        example: BOOKING_STATUS_CONFIRMED
         in: query
         name: status
         type: string
-      - description: Page number
+      - default: 1
+        description: Page number (starts from 1)
         in: query
+        minimum: 1
         name: page
         type: integer
-      - description: Limit
+      - default: 10
+        description: Page size
         in: query
+        maximum: 100
+        minimum: 1
         name: limit
         type: integer
       produces:
@@ -1239,6 +1650,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.BookingsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Get all bookings
@@ -1247,6 +1666,8 @@ paths:
     post:
       consumes:
       - application/json
+      description: Creates a booking with guest and room allocation details. Requires
+        JWT auth.
       parameters:
       - description: Create booking request
         in: body
@@ -1261,6 +1682,14 @@ paths:
           description: Created
           schema:
             $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Create a new booking
@@ -1268,8 +1697,10 @@ paths:
       - bookings
   /bookings/{bookingId}:
     delete:
+      description: Deletes a booking by ID. Requires JWT auth.
       parameters:
       - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: bookingId
         required: true
@@ -1277,14 +1708,28 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Delete booking
       tags:
       - bookings
     get:
+      description: Returns a booking by ID. Requires JWT auth.
       parameters:
       - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: bookingId
         required: true
@@ -1296,6 +1741,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Get booking by ID
@@ -1303,17 +1760,33 @@ paths:
       - bookings
   /bookings/{bookingId}/cancel:
     patch:
+      description: Cancels a booking by ID. Requires JWT auth.
       parameters:
       - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: bookingId
         required: true
         type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Cancel booking
@@ -1321,17 +1794,33 @@ paths:
       - bookings
   /bookings/{bookingId}/confirm:
     patch:
+      description: Confirms a booking by ID. Requires JWT auth.
       parameters:
       - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
         in: path
         name: bookingId
         required: true
         type: string
+      produces:
+      - application/json
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/dto.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Confirm booking

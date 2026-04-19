@@ -12,16 +12,19 @@ import (
 )
 
 // CreateHotel godoc
-// @Summary Create a new hotel
-// @Tags hotels
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param request body dto.CreateHotelBody true "Create hotel request"
-// @Success 201 {object} dto.HotelResponse
-// @Router /{countryCode}/{citySlug}/hotels [post]
+// @Summary       Create a new hotel
+// @Description   Creates a hotel in the selected location. Requires JWT auth.
+// @Tags          hotels
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         request body dto.CreateHotelBody true "Create hotel request"
+// @Success       201 {object} dto.HotelResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels [post]
 func (h *HotelHandler) CreateHotel(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {
@@ -61,17 +64,19 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 }
 
 // GetHotels godoc
-// @Summary Get hotels
-// @Tags hotels
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param sort_by query string false "Sort field"
-// @Param page query int false "Page number"
-// @Param limit query int false "Limit"
-// @Success 200 {object} dto.HotelsResponse
-// @Router /{countryCode}/{citySlug}/hotels [get]
+// @Summary       Get hotels
+// @Description   Public endpoint. Returns hotels in location with optional sorting and pagination.
+// @Tags          hotels
+// @Produce       json
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         sort_by query string false "Sort field" Enums(title,rating,created_at,updated_at) default(title)
+// @Param         sortBy query string false "Alias for sort_by" Enums(title,rating,created_at,updated_at) default(title)
+// @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
+// @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
+// @Success       200 {object} dto.HotelsResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels [get]
 func (h *HotelHandler) GetHotels(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -116,16 +121,18 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// GetHotelByID GetHotel godoc
-// @Summary Get hotel by ID
-// @Tags hotels
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelId path string true "Hotel ID"
-// @Success 200 {object} dto.HotelResponse
-// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [get]
+// GetHotelByID godoc
+// @Summary       Get hotel by ID
+// @Description   Public endpoint. Returns hotel details by hotel ID.
+// @Tags          hotels
+// @Produce       json
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       200 {object} dto.HotelResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId} [get]
 func (h *HotelHandler) GetHotelByID(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {
@@ -155,15 +162,17 @@ func (h *HotelHandler) GetHotelByID(c *gin.Context) {
 }
 
 // GetHotelBySlug godoc
-// @Summary Get hotel by slug
-// @Tags hotels
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
-// @Success 200 {object} dto.HotelResponse
-// @Router /{countryCode}/{citySlug}/hotels/slug/{hotelSlug} [get]
+// @Summary       Get hotel by slug
+// @Description   Public endpoint. Returns hotel details by SEO-friendly hotel slug.
+// @Tags          hotels
+// @Produce       json
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelSlug path string true "Hotel slug" example(imperial-hotel-tokyo)
+// @Success       200 {object} dto.HotelResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/slug/{hotelSlug} [get]
 func (h *HotelHandler) GetHotelBySlug(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {
@@ -193,17 +202,21 @@ func (h *HotelHandler) GetHotelBySlug(c *gin.Context) {
 }
 
 // UpdateHotel godoc
-// @Summary Update hotel
-// @Tags hotels
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelId path string true "Hotel ID"
-// @Param request body dto.UpdateHotelRequest true "Update hotel request"
-// @Success 200 {object} dto.HotelResponse
-// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [put]
+// @Summary       Update hotel
+// @Description   Fully updates mutable hotel fields. Requires JWT auth.
+// @Tags          hotels
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         request body dto.UpdateHotelRequest true "Update hotel request"
+// @Success       200 {object} dto.HotelResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId} [put]
 func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {
@@ -243,17 +256,21 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 }
 
 // UpdateHotelTitle godoc
-// @Summary Update hotel title
-// @Tags hotels
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelId path string true "Hotel ID"
-// @Param request body dto.UpdateHotelTitleRequest true "Update hotel title request"
-// @Success 200 {object} dto.HotelResponse
-// @Router /{countryCode}/{citySlug}/hotels/{hotelId}/title [patch]
+// @Summary       Update hotel title
+// @Description   Partially updates hotel title and slug. Requires JWT auth.
+// @Tags          hotels
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         request body dto.UpdateHotelTitleRequest true "Update hotel title request"
+// @Success       200 {object} dto.HotelResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {
@@ -293,14 +310,18 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 }
 
 // DeleteHotel godoc
-// @Summary Delete hotel
-// @Tags hotels
-// @Security Bearer
-// @Param countryCode path string true "Country code"
-// @Param citySlug path string true "City slug"
-// @Param hotelId path string true "Hotel ID"
-// @Success 204
-// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [delete]
+// @Summary       Delete hotel
+// @Description   Deletes hotel by ID. Requires JWT auth.
+// @Tags          hotels
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       204
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId} [delete]
 func (h *HotelHandler) DeleteHotel(c *gin.Context) {
 	countryCode := c.Param("countryCode")
 	if countryCode == "" {

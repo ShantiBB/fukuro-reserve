@@ -41,9 +41,21 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("31.1 list rooms by hotel id anonymous", func(t *testing.T) {
+		var resp dto.RoomsResponse
+		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms?page=1&limit=10", "", nil, &resp)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
 	t.Run("32 list rooms by hotel slug", func(t *testing.T) {
 		var resp dto.RoomsResponse
 		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug+"/rooms?page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("32.1 list rooms by hotel slug anonymous", func(t *testing.T) {
+		var resp dto.RoomsResponse
+		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug+"/rooms?page=1&limit=10", "", nil, &resp)
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
@@ -59,12 +71,36 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("33.1 get room by hotel slug anonymous", func(t *testing.T) {
+		var resp dto.RoomResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug+"/rooms/"+env.Data.RoomID,
+			"",
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
 	t.Run("34 get room by hotel id", func(t *testing.T) {
 		var resp dto.RoomResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
 			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID,
 			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("34.1 get room by hotel id anonymous", func(t *testing.T) {
+		var resp dto.RoomResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID,
+			"",
 			nil,
 			&resp,
 		)

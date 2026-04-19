@@ -11,14 +11,16 @@ import (
 )
 
 // Register godoc
-// @Summary Register a new user
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param request body dto.RegisterRequest true "Register request"
-// @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} responder.ErrorResponse
-// @Router /auth/register [post]
+// @Summary       Register a new user
+// @Description   Public endpoint. Creates a user account and returns access/refresh tokens.
+// @Tags          auth
+// @Accept        json
+// @Produce       json
+// @Param         request body dto.RegisterRequest true "Register request"
+// @Success       200 {object} dto.TokenResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       409 {object} responder.ErrorResponse
+// @Router        /auth/register [post]
 func (h *AuthHandler) Register(c *gin.Context) {
 	var req dto.RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -36,14 +38,16 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 // Login godoc
-// @Summary Login user
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param request body dto.LoginRequest true "Login request"
-// @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} responder.ErrorResponse
-// @Router /auth/login [post]
+// @Summary       Login user
+// @Description   Public endpoint. Authenticates user credentials and returns access/refresh tokens.
+// @Tags          auth
+// @Accept        json
+// @Produce       json
+// @Param         request body dto.LoginRequest true "Login request"
+// @Success       200 {object} dto.TokenResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /auth/login [post]
 func (h *AuthHandler) Login(c *gin.Context) {
 	var req dto.LoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -61,14 +65,16 @@ func (h *AuthHandler) Login(c *gin.Context) {
 }
 
 // RefreshToken godoc
-// @Summary Refresh access token
-// @Tags auth
-// @Accept json
-// @Produce json
-// @Param request body dto.RefreshTokenRequest true "Refresh token request"
-// @Success 200 {object} dto.TokenResponse
-// @Failure 400 {object} responder.ErrorResponse
-// @Router /auth/refresh [post]
+// @Summary       Refresh access token
+// @Description   Public endpoint. Issues a new token pair for a valid refresh token.
+// @Tags          auth
+// @Accept        json
+// @Produce       json
+// @Param         request body dto.RefreshTokenRequest true "Refresh token request"
+// @Success       200 {object} dto.TokenResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /auth/refresh [post]
 func (h *AuthHandler) RefreshToken(c *gin.Context) {
 	var req dto.RefreshTokenRequest
 	if err := c.ShouldBindJSON(&req); err != nil {

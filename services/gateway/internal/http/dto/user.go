@@ -3,30 +3,30 @@ package dto
 import "time"
 
 type CreateUserRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username,omitempty"`
-	Password string `json:"password"`
+	Email    string `json:"email" example:"manager@example.com"`
+	Username string `json:"username,omitempty" example:"manager01"`
+	Password string `json:"password" example:"Passw0rd!123"`
 }
 
 type UpdateUserRequest struct {
-	Email    string `json:"email"`
-	Username string `json:"username"`
+	Email    string `json:"email" example:"manager.updated@example.com"`
+	Username string `json:"username" example:"manager02"`
 }
 
 type UpdateUserActivityRequest struct {
-	IsActive bool `json:"is_active"`
+	IsActive bool `json:"is_active" example:"true"`
 }
 
 type UpdateUserActivityResponse struct {
-	IsActive bool `json:"is_active"`
+	IsActive bool `json:"is_active" example:"true"`
 }
 
 type UpdateUserRoleRequest struct {
-	Role string `json:"role"`
+	Role string `json:"role" example:"ROLE_ADMIN"`
 }
 
 type UpdateUserRoleResponse struct {
-	Role string `json:"role"`
+	Role string `json:"role" example:"ROLE_ADMIN"`
 }
 
 type UserResponse struct {

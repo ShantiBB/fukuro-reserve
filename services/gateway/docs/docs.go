@@ -17,6 +17,7 @@ const docTemplate = `{
     "paths": {
         "/auth/login": {
             "post": {
+                "description": "Public endpoint. Authenticates user credentials and returns access/refresh tokens.",
                 "consumes": [
                     "application/json"
                 ],
@@ -50,12 +51,19 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/auth/refresh": {
             "post": {
+                "description": "Public endpoint. Issues a new token pair for a valid refresh token.",
                 "consumes": [
                     "application/json"
                 ],
@@ -89,12 +97,19 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/auth/register": {
             "post": {
+                "description": "Public endpoint. Creates a user account and returns access/refresh tokens.",
                 "consumes": [
                     "application/json"
                 ],
@@ -128,6 +143,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -139,6 +160,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Returns users with pagination. Requires JWT auth.",
                 "produces": [
                     "application/json"
                 ],
@@ -148,13 +170,18 @@ const docTemplate = `{
                 "summary": "Get all users",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Page number",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 1,
                         "type": "integer",
+                        "default": 10,
                         "description": "Page size",
                         "name": "limit",
                         "in": "query"
@@ -166,6 +193,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UsersResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -175,6 +214,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Creates a user account (admin/staff operation). Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -202,6 +242,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -213,6 +271,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Returns a user by ID. Requires JWT auth.",
                 "produces": [
                     "application/json"
                 ],
@@ -222,7 +281,9 @@ const docTemplate = `{
                 "summary": "Get user by ID",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
+                        "example": 1,
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -235,6 +296,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -244,6 +323,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Updates user profile fields. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -256,7 +336,9 @@ const docTemplate = `{
                 "summary": "Update user",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
+                        "example": 1,
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -278,6 +360,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UserResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -287,13 +387,16 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Deletes user by ID. Requires JWT auth.",
                 "tags": [
                     "users"
                 ],
                 "summary": "Delete user",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
+                        "example": 1,
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -303,6 +406,24 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -314,6 +435,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Updates active/inactive flag for a user. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -326,7 +448,9 @@ const docTemplate = `{
                 "summary": "Update user activity status",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
+                        "example": 1,
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -348,6 +472,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateUserActivityResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -359,6 +501,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Updates user role. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -371,7 +514,9 @@ const docTemplate = `{
                 "summary": "Update user role",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
+                        "example": 1,
                         "description": "User ID",
                         "name": "id",
                         "in": "path",
@@ -393,6 +538,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.UpdateUserRoleResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -404,6 +567,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Returns bookings with optional filters and pagination. Requires JWT auth.",
                 "produces": [
                     "application/json"
                 ],
@@ -413,32 +577,41 @@ const docTemplate = `{
                 "summary": "Get all bookings",
                 "parameters": [
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "User ID",
+                        "example": 1,
+                        "description": "Filter by user ID",
                         "name": "userId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Hotel ID",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Filter by hotel ID",
                         "name": "hotelId",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Status",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
                         "name": "status",
                         "in": "query"
                     },
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Page number",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Limit",
+                        "default": 10,
+                        "description": "Page size",
                         "name": "limit",
                         "in": "query"
                     }
@@ -449,6 +622,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.BookingsResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -458,6 +643,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Creates a booking with guest and room allocation details. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -485,6 +671,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.BookingResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -496,6 +694,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Returns a booking by ID. Requires JWT auth.",
                 "produces": [
                     "application/json"
                 ],
@@ -506,6 +705,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Booking ID",
                         "name": "bookingId",
                         "in": "path",
@@ -518,6 +718,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.BookingResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -527,6 +745,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Deletes a booking by ID. Requires JWT auth.",
                 "tags": [
                     "bookings"
                 ],
@@ -534,6 +753,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Booking ID",
                         "name": "bookingId",
                         "in": "path",
@@ -543,6 +763,24 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -554,6 +792,10 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Cancels a booking by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "bookings"
                 ],
@@ -561,6 +803,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Booking ID",
                         "name": "bookingId",
                         "in": "path",
@@ -572,6 +815,24 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
                         }
                     }
                 }
@@ -584,6 +845,10 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Confirms a booking by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "bookings"
                 ],
@@ -591,6 +856,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Booking ID",
                         "name": "bookingId",
                         "in": "path",
@@ -603,17 +869,31 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.StatusResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns hotels in location with optional sorting and pagination.",
                 "produces": [
                     "application/json"
                 ],
@@ -624,33 +904,60 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "enum": [
+                            "title",
+                            "rating",
+                            "created_at",
+                            "updated_at"
+                        ],
                         "type": "string",
+                        "default": "title",
                         "description": "Sort field",
                         "name": "sort_by",
                         "in": "query"
                     },
                     {
+                        "enum": [
+                            "title",
+                            "rating",
+                            "created_at",
+                            "updated_at"
+                        ],
+                        "type": "string",
+                        "default": "title",
+                        "description": "Alias for sort_by",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Page number",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Limit",
+                        "default": 10,
+                        "description": "Page size",
                         "name": "limit",
                         "in": "query"
                     }
@@ -661,6 +968,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.HotelsResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -670,6 +983,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Creates a hotel in the selected location. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -683,13 +997,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -711,17 +1027,25 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.HotelResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns hotel details by SEO-friendly hotel slug.",
                 "produces": [
                     "application/json"
                 ],
@@ -732,13 +1056,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -746,6 +1072,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "imperial-hotel-tokyo",
                         "description": "Hotel slug",
                         "name": "hotelSlug",
                         "in": "path",
@@ -758,17 +1085,25 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.HotelResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns rooms for hotel resolved by slug.",
                 "produces": [
                     "application/json"
                 ],
@@ -779,13 +1114,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -793,19 +1130,25 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "imperial-hotel-tokyo",
                         "description": "Hotel slug",
                         "name": "hotelSlug",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Page number",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 1,
                         "type": "integer",
+                        "default": 10,
                         "description": "Page size",
                         "name": "limit",
                         "in": "query"
@@ -817,17 +1160,19 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomsResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms/{roomId}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns room details by hotel slug and room ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -838,13 +1183,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -852,6 +1199,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "imperial-hotel-tokyo",
                         "description": "Hotel slug",
                         "name": "hotelSlug",
                         "in": "path",
@@ -859,6 +1207,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -871,17 +1220,25 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/{hotelId}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns hotel details by hotel ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -892,13 +1249,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -906,6 +1265,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -918,6 +1278,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.HotelResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -927,6 +1299,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Fully updates mutable hotel fields. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -940,13 +1313,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -954,6 +1329,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -975,6 +1351,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.HotelResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -984,6 +1378,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Deletes hotel by ID. Requires JWT auth.",
                 "tags": [
                     "hotels"
                 ],
@@ -991,13 +1386,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1005,6 +1402,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1014,17 +1412,31 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns rooms for hotel resolved by hotel ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -1035,13 +1447,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1049,19 +1463,25 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "minimum": 1,
                         "type": "integer",
-                        "description": "Page number",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
                         "name": "page",
                         "in": "query"
                     },
                     {
+                        "maximum": 100,
+                        "minimum": 1,
                         "type": "integer",
+                        "default": 10,
                         "description": "Page size",
                         "name": "limit",
                         "in": "query"
@@ -1073,6 +1493,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomsResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -1082,6 +1508,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Creates a room in the selected hotel. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1095,13 +1522,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1109,6 +1538,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1130,17 +1560,25 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
         },
         "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
+                "description": "Public endpoint. Returns room details by hotel ID and room ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -1151,13 +1589,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1165,6 +1605,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1172,6 +1613,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -1184,6 +1626,18 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -1193,6 +1647,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Fully updates room fields. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1206,13 +1661,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1220,6 +1677,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1227,6 +1685,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -1248,6 +1707,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.RoomResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },
@@ -1257,6 +1734,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Deletes room by ID. Requires JWT auth.",
                 "tags": [
                     "rooms"
                 ],
@@ -1264,13 +1742,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1278,6 +1758,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1285,6 +1766,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -1294,6 +1776,24 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -1305,6 +1805,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Updates room lifecycle status. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1318,13 +1819,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1332,6 +1835,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1339,6 +1843,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -1360,6 +1865,24 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/dto.StatusResponse"
                         }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             }
@@ -1371,6 +1894,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
+                "description": "Partially updates hotel title and slug. Requires JWT auth.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1384,13 +1908,15 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Country code",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
                         "name": "countryCode",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
+                        "example": "tokyo",
                         "description": "City slug",
                         "name": "citySlug",
                         "in": "path",
@@ -1398,6 +1924,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
                         "description": "Hotel ID",
                         "name": "hotelId",
                         "in": "path",
@@ -1418,6 +1945,24 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
                         }
                     }
                 }
@@ -1560,28 +2105,36 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "check_in": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-05-10T14:00:00Z"
                 },
                 "check_out": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2026-05-13T11:00:00Z"
                 },
                 "currency": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "RUB"
                 },
                 "expected_total_amount": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "360.00"
                 },
                 "guest_email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ivan.petrov@example.com"
                 },
                 "guest_name": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Ivan Petrov"
                 },
                 "guest_phone": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "+79991234567"
                 },
                 "hotel_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "0f8fad5b-d9cb-469f-a165-70867728950e"
                 },
                 "rooms": {
                     "type": "array",
@@ -1590,7 +2143,8 @@ const docTemplate = `{
                     }
                 },
                 "user_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },
@@ -1598,16 +2152,20 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "adults": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "children": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "price_per_night": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "120.00"
                 },
                 "room_id": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1f8fad5b-d9cb-469f-a165-70867728950e"
                 }
             }
         },
@@ -1615,19 +2173,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "1 Chiyoda, Tokyo"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Luxury hotel in central Tokyo"
                 },
                 "location": {
                     "$ref": "#/definitions/dto.LocationDTO"
                 },
                 "owner_id": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Imperial Hotel Tokyo"
                 }
             }
         },
@@ -1638,37 +2200,53 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "wifi",
+                        "tv",
+                        "air-conditioning"
+                    ]
                 },
                 "area_sqm": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 18.5
                 },
                 "capacity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 2
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Quiet room with city view"
                 },
                 "floor": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "images": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "https://example.com/rooms/101.jpg"
+                    ]
                 },
                 "price": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "150.00"
                 },
                 "room_number": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "101"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Standard Single Room"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ROOM_TYPE_SINGLE"
                 }
             }
         },
@@ -1676,13 +2254,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "manager@example.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Passw0rd!123"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "manager01"
                 }
             }
         },
@@ -1762,10 +2343,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "latitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 35.66
                 },
                 "longitude": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 139.7
                 }
             }
         },
@@ -1773,10 +2356,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "guest@example.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Passw0rd!123"
                 }
             }
         },
@@ -1784,7 +2369,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "refresh_token": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token"
                 }
             }
         },
@@ -1792,10 +2378,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "guest@example.com"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Passw0rd!123"
                 }
             }
         },
@@ -1916,10 +2504,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "access": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access.token"
                 },
                 "refresh": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token"
                 }
             }
         },
@@ -1927,10 +2517,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "2 Chiyoda, Tokyo"
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Renovated rooms and improved amenities"
                 },
                 "location": {
                     "$ref": "#/definitions/dto.LocationDTO"
@@ -1941,7 +2533,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Imperial Hotel Tokyo Annex"
                 }
             }
         },
@@ -1952,37 +2545,54 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "wifi",
+                        "tv",
+                        "air-conditioning",
+                        "coffee-machine"
+                    ]
                 },
                 "area_sqm": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 20
                 },
                 "capacity": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 3
                 },
                 "description": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Refreshed interior and upgraded bed"
                 },
                 "floor": {
-                    "type": "integer"
+                    "type": "integer",
+                    "example": 1
                 },
                 "images": {
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": [
+                        "https://example.com/rooms/101-updated.jpg"
+                    ]
                 },
                 "price": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "175.00"
                 },
                 "room_number": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "101"
                 },
                 "title": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "Standard Double Room"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ROOM_TYPE_DOUBLE"
                 }
             }
         },
@@ -1990,7 +2600,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "status": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ROOM_STATUS_MAINTENANCE"
                 }
             }
         },
@@ -1998,7 +2609,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "is_active": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -2006,7 +2618,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "is_active": {
-                    "type": "boolean"
+                    "type": "boolean",
+                    "example": true
                 }
             }
         },
@@ -2014,10 +2627,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "email": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "manager.updated@example.com"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "manager02"
                 }
             }
         },
@@ -2025,7 +2640,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ROLE_ADMIN"
                 }
             }
         },
@@ -2033,7 +2649,8 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "role": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "ROLE_ADMIN"
                 }
             }
         },

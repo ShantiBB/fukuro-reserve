@@ -26,14 +26,15 @@ func NewHotelRoutes(pattern string, h hotelHandler) RouteRegistrar {
 }
 
 func (hr hotelRoutes) Register(r *gin.RouterGroup) {
-	locationHotels := r.Group("/:countryCode/:citySlug/hotels")
-	locationHotels.Use(middleware.AuthMiddleware())
+	publicHotels := r.Group("/:countryCode/:citySlug/hotels")
+	publicHotels.GET("", hr.h.GetHotels)
+	publicHotels.GET("/slug/:hotelSlug", hr.h.GetHotelBySlug)
+	publicHotels.GET("/:hotelId", hr.h.GetHotelByID)
 
-	locationHotels.POST("", hr.h.CreateHotel)
-	locationHotels.GET("", hr.h.GetHotels)
-	locationHotels.GET("/slug/:hotelSlug", hr.h.GetHotelBySlug)
-	locationHotels.GET("/:hotelId", hr.h.GetHotelByID)
-	locationHotels.PUT("/:hotelId", hr.h.UpdateHotel)
-	locationHotels.PATCH("/:hotelId/title", hr.h.UpdateHotelTitle)
-	locationHotels.DELETE("/:hotelId", hr.h.DeleteHotel)
+	protectedHotels := r.Group("/:countryCode/:citySlug/hotels")
+	protectedHotels.Use(middleware.AuthMiddleware())
+	protectedHotels.POST("", hr.h.CreateHotel)
+	protectedHotels.PUT("/:hotelId", hr.h.UpdateHotel)
+	protectedHotels.PATCH("/:hotelId/title", hr.h.UpdateHotelTitle)
+	protectedHotels.DELETE("/:hotelId", hr.h.DeleteHotel)
 }

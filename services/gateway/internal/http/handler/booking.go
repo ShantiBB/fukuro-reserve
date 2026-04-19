@@ -12,14 +12,17 @@ import (
 )
 
 // CreateBooking godoc
-// @Summary Create a new booking
-// @Tags bookings
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param request body dto.CreateBookingRequest true "Create booking request"
-// @Success 201 {object} dto.BookingResponse
-// @Router /bookings [post]
+// @Summary       Create a new booking
+// @Description   Creates a booking with guest and room allocation details. Requires JWT auth.
+// @Tags          bookings
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         request body dto.CreateBookingRequest true "Create booking request"
+// @Success       201 {object} dto.BookingResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	var req dto.CreateBookingRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -37,17 +40,20 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 }
 
 // GetBookings godoc
-// @Summary Get all bookings
-// @Tags bookings
-// @Produce json
-// @Security Bearer
-// @Param userId query int false "User ID"
-// @Param hotelId query string false "Hotel ID"
-// @Param status query string false "Status"
-// @Param page query int false "Page number"
-// @Param limit query int false "Limit"
-// @Success 200 {object} dto.BookingsResponse
-// @Router /bookings [get]
+// @Summary       Get all bookings
+// @Description   Returns bookings with optional filters and pagination. Requires JWT auth.
+// @Tags          bookings
+// @Produce       json
+// @Security      Bearer
+// @Param         userId query int false "Filter by user ID" minimum(1) example(1)
+// @Param         hotelId query string false "Filter by hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         status query string false "Filter by booking status" example(BOOKING_STATUS_CONFIRMED)
+// @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
+// @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
+// @Success       200 {object} dto.BookingsResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /bookings [get]
 func (h *BookingHandler) GetBookings(c *gin.Context) {
 	userID, err := request.OptionalPositiveInt64Query(c, "userId")
 	if err != nil {
@@ -85,13 +91,17 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 }
 
 // GetBooking godoc
-// @Summary Get booking by ID
-// @Tags bookings
-// @Produce json
-// @Security Bearer
-// @Param bookingId path string true "Booking ID"
-// @Success 200 {object} dto.BookingResponse
-// @Router /bookings/{bookingId} [get]
+// @Summary       Get booking by ID
+// @Description   Returns a booking by ID. Requires JWT auth.
+// @Tags          bookings
+// @Produce       json
+// @Security      Bearer
+// @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       200 {object} dto.BookingResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /bookings/{bookingId} [get]
 func (h *BookingHandler) GetBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -109,12 +119,17 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 }
 
 // ConfirmBooking godoc
-// @Summary Confirm booking
-// @Tags bookings
-// @Security Bearer
-// @Param bookingId path string true "Booking ID"
-// @Success 200 {object} dto.StatusResponse
-// @Router /bookings/{bookingId}/confirm [patch]
+// @Summary       Confirm booking
+// @Description   Confirms a booking by ID. Requires JWT auth.
+// @Tags          bookings
+// @Produce       json
+// @Security      Bearer
+// @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       200 {object} dto.StatusResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -132,12 +147,17 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 }
 
 // CancelBooking godoc
-// @Summary Cancel booking
-// @Tags bookings
-// @Security Bearer
-// @Param bookingId path string true "Booking ID"
-// @Success 200 {object} dto.StatusResponse
-// @Router /bookings/{bookingId}/cancel [patch]
+// @Summary       Cancel booking
+// @Description   Cancels a booking by ID. Requires JWT auth.
+// @Tags          bookings
+// @Produce       json
+// @Security      Bearer
+// @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       200 {object} dto.StatusResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {
@@ -155,12 +175,16 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 }
 
 // DeleteBooking godoc
-// @Summary Delete booking
-// @Tags bookings
-// @Security Bearer
-// @Param bookingId path string true "Booking ID"
-// @Success 204
-// @Router /bookings/{bookingId} [delete]
+// @Summary       Delete booking
+// @Description   Deletes a booking by ID. Requires JWT auth.
+// @Tags          bookings
+// @Security      Bearer
+// @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
+// @Success       204
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /bookings/{bookingId} [delete]
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	bookingID := c.Param("bookingId")
 	if bookingID == "" {

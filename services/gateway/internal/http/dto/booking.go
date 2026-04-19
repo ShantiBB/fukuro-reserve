@@ -3,23 +3,23 @@ package dto
 import "time"
 
 type CreateBookingRoomRequest struct {
-	RoomId        string `json:"room_id"`
-	PricePerNight string `json:"price_per_night"`
-	Adults        uint32 `json:"adults"`
-	Children      uint32 `json:"children"`
+	RoomId        string `json:"room_id" example:"1f8fad5b-d9cb-469f-a165-70867728950e"`
+	PricePerNight string `json:"price_per_night" example:"120.00"`
+	Adults        uint32 `json:"adults" example:"2"`
+	Children      uint32 `json:"children" example:"1"`
 }
 
 type CreateBookingRequest struct {
-	CheckIn             time.Time                   `json:"check_in"`
-	CheckOut            time.Time                   `json:"check_out"`
-	HotelId             string                      `json:"hotel_id"`
-	GuestName           string                      `json:"guest_name"`
-	GuestEmail          string                      `json:"guest_email,omitempty"`
-	GuestPhone          string                      `json:"guest_phone,omitempty"`
-	Currency            string                      `json:"currency"`
-	ExpectedTotalAmount string                      `json:"expected_total_amount"`
+	CheckIn             time.Time                   `json:"check_in" example:"2026-05-10T14:00:00Z"`
+	CheckOut            time.Time                   `json:"check_out" example:"2026-05-13T11:00:00Z"`
+	HotelId             string                      `json:"hotel_id" example:"0f8fad5b-d9cb-469f-a165-70867728950e"`
+	GuestName           string                      `json:"guest_name" example:"Ivan Petrov"`
+	GuestEmail          string                      `json:"guest_email,omitempty" example:"ivan.petrov@example.com"`
+	GuestPhone          string                      `json:"guest_phone,omitempty" example:"+79991234567"`
+	Currency            string                      `json:"currency" example:"RUB"`
+	ExpectedTotalAmount string                      `json:"expected_total_amount" example:"360.00"`
 	Rooms               []*CreateBookingRoomRequest `json:"rooms"`
-	UserId              int64                       `json:"user_id"`
+	UserId              int64                       `json:"user_id" example:"1"`
 }
 
 type BookingRoomResponse struct {

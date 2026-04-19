@@ -37,6 +37,12 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("21.1 list hotels anonymous", func(t *testing.T) {
+		var resp dto.HotelsResponse
+		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels?sort_by=title&page=1&limit=10", "", nil, &resp)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
 	t.Run("22 get hotel by id", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
@@ -49,12 +55,36 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("22.1 get hotel by id anonymous", func(t *testing.T) {
+		var resp dto.HotelResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
+			"",
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
 	t.Run("23 get hotel by slug", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
 			"/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug,
 			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("23.1 get hotel by slug anonymous", func(t *testing.T) {
+		var resp dto.HotelResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug,
+			"",
 			nil,
 			&resp,
 		)

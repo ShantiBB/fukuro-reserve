@@ -27,19 +27,18 @@ func NewRoomRoutes(pattern string, h roomHandler) RouteRegistrar {
 }
 
 func (rr roomRoutes) Register(r *gin.RouterGroup) {
-	slugRooms := r.Group("/:countryCode/:citySlug/hotels/slug/:hotelSlug/rooms")
-	slugRooms.Use(middleware.AuthMiddleware())
+	slugRoomsPublic := r.Group("/:countryCode/:citySlug/hotels/slug/:hotelSlug/rooms")
+	slugRoomsPublic.GET("", rr.h.GetRoomsByHotelSlug)
+	slugRoomsPublic.GET("/:roomId", rr.h.GetRoomByHotelSlug)
 
-	idRooms := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms")
-	idRooms.Use(middleware.AuthMiddleware())
+	idRoomsPublic := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms")
+	idRoomsPublic.GET("", rr.h.GetRoomsByHotelID)
+	idRoomsPublic.GET("/:roomId", rr.h.GetRoomByHotelID)
 
-	slugRooms.GET("", rr.h.GetRoomsByHotelSlug)
-	slugRooms.GET("/:roomId", rr.h.GetRoomByHotelSlug)
-
-	idRooms.POST("", rr.h.CreateRoom)
-	idRooms.GET("", rr.h.GetRoomsByHotelID)
-	idRooms.GET("/:roomId", rr.h.GetRoomByHotelID)
-	idRooms.PUT("/:roomId", rr.h.UpdateRoom)
-	idRooms.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)
-	idRooms.DELETE("/:roomId", rr.h.DeleteRoom)
+	idRoomsProtected := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms")
+	idRoomsProtected.Use(middleware.AuthMiddleware())
+	idRoomsProtected.POST("", rr.h.CreateRoom)
+	idRoomsProtected.PUT("/:roomId", rr.h.UpdateRoom)
+	idRoomsProtected.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)
+	idRoomsProtected.DELETE("/:roomId", rr.h.DeleteRoom)
 }

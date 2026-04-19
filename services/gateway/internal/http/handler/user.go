@@ -13,14 +13,17 @@ import (
 )
 
 // GetUsers godoc
-// @Summary Get all users
-// @Tags users
-// @Produce json
-// @Security Bearer
-// @Param page query int false "Page number"
-// @Param limit query int false "Page size"
-// @Success 200 {object} dto.UsersResponse
-// @Router /auth/users [get]
+// @Summary       Get all users
+// @Description   Returns users with pagination. Requires JWT auth.
+// @Tags          users
+// @Produce       json
+// @Security      Bearer
+// @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
+// @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
+// @Success       200 {object} dto.UsersResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /auth/users [get]
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -49,14 +52,18 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 }
 
 // CreateUser godoc
-// @Summary Create a new user
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param request body dto.CreateUserRequest true "Create user request"
-// @Success 201 {object} dto.UserResponse
-// @Router /auth/users [post]
+// @Summary       Create a new user
+// @Description   Creates a user account (admin/staff operation). Requires JWT auth.
+// @Tags          users
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         request body dto.CreateUserRequest true "Create user request"
+// @Success       201 {object} dto.UserResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       409 {object} responder.ErrorResponse
+// @Router        /auth/users [post]
 func (h *AuthHandler) CreateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -80,13 +87,17 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 }
 
 // GetUser godoc
-// @Summary Get user by ID
-// @Tags users
-// @Produce json
-// @Security Bearer
-// @Param id path int true "User ID"
-// @Success 200 {object} dto.UserResponse
-// @Router /auth/users/{id} [get]
+// @Summary       Get user by ID
+// @Description   Returns a user by ID. Requires JWT auth.
+// @Tags          users
+// @Produce       json
+// @Security      Bearer
+// @Param         id path int true "User ID" minimum(1) example(1)
+// @Success       200 {object} dto.UserResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/{id} [get]
 func (h *AuthHandler) GetUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -110,15 +121,19 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 }
 
 // UpdateUser godoc
-// @Summary Update user
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param id path int true "User ID"
-// @Param request body dto.UpdateUserRequest true "Update user request"
-// @Success 200 {object} dto.UserResponse
-// @Router /auth/users/{id} [put]
+// @Summary       Update user
+// @Description   Updates user profile fields. Requires JWT auth.
+// @Tags          users
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         id path int true "User ID" minimum(1) example(1)
+// @Param         request body dto.UpdateUserRequest true "Update user request"
+// @Success       200 {object} dto.UserResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/{id} [put]
 func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -148,15 +163,19 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 }
 
 // UpdateUserActivity godoc
-// @Summary Update user activity status
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param id path int true "User ID"
-// @Param request body dto.UpdateUserActivityRequest true "Update activity request"
-// @Success 200 {object} dto.UpdateUserActivityResponse
-// @Router /auth/users/{id}/activity [patch]
+// @Summary       Update user activity status
+// @Description   Updates active/inactive flag for a user. Requires JWT auth.
+// @Tags          users
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         id path int true "User ID" minimum(1) example(1)
+// @Param         request body dto.UpdateUserActivityRequest true "Update activity request"
+// @Success       200 {object} dto.UpdateUserActivityResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/{id}/activity [patch]
 func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -186,15 +205,19 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 }
 
 // UpdateUserRole godoc
-// @Summary Update user role
-// @Tags users
-// @Accept json
-// @Produce json
-// @Security Bearer
-// @Param id path int true "User ID"
-// @Param request body dto.UpdateUserRoleRequest true "Update role request"
-// @Success 200 {object} dto.UpdateUserRoleResponse
-// @Router /auth/users/{id}/role [patch]
+// @Summary       Update user role
+// @Description   Updates user role. Requires JWT auth.
+// @Tags          users
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         id path int true "User ID" minimum(1) example(1)
+// @Param         request body dto.UpdateUserRoleRequest true "Update role request"
+// @Success       200 {object} dto.UpdateUserRoleResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/{id}/role [patch]
 func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -224,12 +247,16 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 }
 
 // DeleteUser godoc
-// @Summary Delete user
-// @Tags users
-// @Security Bearer
-// @Param id path int true "User ID"
-// @Success 204
-// @Router /auth/users/{id} [delete]
+// @Summary       Delete user
+// @Description   Deletes user by ID. Requires JWT auth.
+// @Tags          users
+// @Security      Bearer
+// @Param         id path int true "User ID" minimum(1) example(1)
+// @Success       204
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/{id} [delete]
 func (h *AuthHandler) DeleteUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {

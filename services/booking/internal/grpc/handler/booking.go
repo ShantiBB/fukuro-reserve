@@ -11,7 +11,6 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/grpc/utils/helper"
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/grpc/utils/mapper"
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/repository/models"
-	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/utils/consts"
 )
 
 func (h *Handler) CreateBooking(
@@ -24,12 +23,12 @@ func (h *Handler) CreateBooking(
 
 	booking, err := mapper.CreateBookingRequestToDomain(req)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	rooms, err := mapper.CreateBookingRoomsToDomain(req.Rooms)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	created, err := h.svc.BookingCreate(ctx, booking, rooms)
@@ -47,13 +46,13 @@ func (h *Handler) GetBookings(
 	ctx context.Context,
 	req *bookingv1.GetBookingsRequest,
 ) (*bookingv1.GetBookingsResponse, error) {
-	if err := h.validator.Validate(req); err != nil {
-		return nil, helper.HandleValidationErr(err)
+	if req.Page == 0 || req.Limit == 0 || req.Limit > 100 {
+		return nil, status.Error(codes.InvalidArgument, "invalid pagination")
 	}
 
 	bookingRef, err := mapper.GetBookingsRequestToDomain(req)
 	if err != nil {
-		return nil, consts.ErrInvalidHotelID
+		return nil, helper.HandleDomainErr(err)
 	}
 
 	bookingList, err := h.svc.GetBookings(ctx, bookingRef, req.Page, req.Limit)
@@ -70,6 +69,57 @@ func (h *Handler) GetBookings(
 	}, nil
 }
 
+func (h *Handler) GetUnavailableRooms(
+	ctx context.Context,
+	req *bookingv1.GetUnavailableRoomsRequest,
+) (*bookingv1.GetUnavailableRoomsResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	bookingRef, checkIn, checkOut, err := mapper.GetUnavailableRoomsRequestToDomain(req)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	roomIDs, err := h.svc.GetUnavailableRoomIDs(ctx, bookingRef, checkIn, checkOut)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	resp := &bookingv1.GetUnavailableRoomsResponse{
+		RoomIds: make([]string, len(roomIDs)),
+	}
+	for i, roomID := range roomIDs {
+		resp.RoomIds[i] = roomID.String()
+	}
+
+	return resp, nil
+}
+
+func (h *Handler) QuoteBooking(
+	ctx context.Context,
+	req *bookingv1.QuoteBookingRequest,
+) (*bookingv1.QuoteBookingResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	rooms, err := mapper.CreateBookingRoomsToDomain(req.Rooms)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	quote, err := h.svc.QuoteBooking(ctx, req.CheckIn.AsTime(), req.CheckOut.AsTime(), req.Currency, rooms)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return mapper.BookingQuoteToProto(quote), nil
+}
+
 func (h *Handler) GetBooking(
 	ctx context.Context,
 	req *bookingv1.GetBookingRequest,
@@ -80,10 +130,11 @@ func (h *Handler) GetBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
-	booking, err := h.svc.GetBookingById(ctx, bookingId)
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	booking, err := h.svc.GetBookingById(ctx, bookingRef, bookingId)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
@@ -91,6 +142,30 @@ func (h *Handler) GetBooking(
 
 	return &bookingv1.GetBookingResponse{
 		Booking: mapper.BookingToProto(booking),
+	}, nil
+}
+
+func (h *Handler) UpdateBookingGuestInfo(
+	ctx context.Context,
+	req *bookingv1.UpdateBookingGuestInfoRequest,
+) (*bookingv1.UpdateBookingGuestInfoResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	bookingRef, bookingID, booking, err := mapper.UpdateBookingGuestInfoRequestToDomain(req)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	updated, err := h.svc.UpdateBookingGuestInfo(ctx, bookingRef, bookingID, booking)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &bookingv1.UpdateBookingGuestInfoResponse{
+		Booking: mapper.BookingToProto(updated),
 	}, nil
 }
 
@@ -104,10 +179,11 @@ func (h *Handler) ConfirmBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.UpdateBookingStatus(ctx, bookingRef, bookingId, models.BookingStatusConfirmed); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}
@@ -127,10 +203,11 @@ func (h *Handler) CancelBookingStatus(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.UpdateBookingStatus(ctx, bookingRef, bookingId, models.BookingStatusCancelled); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}
@@ -150,10 +227,11 @@ func (h *Handler) DeleteBooking(
 
 	bookingId, err := mapper.GetBookingRequestToDomain(req.Id)
 	if err != nil {
-		return nil, consts.ErrInvalidBookingID
+		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.DeleteBookingByID(ctx, bookingRef, bookingId); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package booking.v1;
+
+option go_package = "api/booking/v1;bookingv1";
+
+import "google/protobuf/timestamp.proto";
+import "buf/validate/validate.proto";
+
+message GetUnavailableRoomsRequest {
+  string country_code = 1 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 2 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+  string hotel_id = 3 [
+    (buf.validate.field).string.uuid = true
+  ];
+  google.protobuf.Timestamp check_in = 4 [
+    (buf.validate.field).required = true
+  ];
+  google.protobuf.Timestamp check_out = 5 [
+    (buf.validate.field).required = true
+  ];
+  option (buf.validate.message).cel = {
+    id: "availability.dates.order"
+    message: "check_out must be after check_in"
+    expression: "this.check_out > this.check_in"
+  };
+}
+
+message GetUnavailableRoomsResponse {
+  repeated string room_ids = 1;
+}

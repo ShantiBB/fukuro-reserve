@@ -27,6 +27,20 @@ const (
 		FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3`
 
+	GetHotelByID = `
+		SELECT id,
+			   title,
+			   owner_id,
+			   description,
+			   address,
+			   longitude,
+			   latitude,
+			   rating,
+			   created_at,
+			   updated_at
+		FROM hotel
+		WHERE id = $1 AND country_code = $2 AND city_slug = $3`
+
 	GetHotels = `
 		SELECT id,
 			   title,
@@ -54,6 +68,16 @@ const (
 		WHERE country_code = $5 AND city_slug = $6 AND slug = $7
 		RETURNING id, slug;`
 
+	UpdateHotelByID = `
+		UPDATE hotel
+		SET
+		  description = $1,
+		  address = $2,
+		  location = ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography,
+		  updated_at = now()
+		WHERE id = $5 AND country_code = $6 AND city_slug = $7
+		RETURNING id, slug;`
+
 	UpdateHotelTitleBySlug = `
 		UPDATE hotel
 		SET
@@ -63,9 +87,22 @@ const (
 		WHERE country_code = $3 AND city_slug = $4 AND slug = $5
 		RETURNING id, slug;`
 
+	UpdateHotelTitleByID = `
+		UPDATE hotel
+		SET
+		  title = $1,
+		  slug = $2,
+		  updated_at = now()
+		WHERE id = $3 AND country_code = $4 AND city_slug = $5
+		RETURNING id, slug;`
+
 	DeleteHotelBySlug = `
 		DELETE FROM hotel 
 		WHERE country_code = $1 AND city_slug = $2 AND slug = $3;`
+
+	DeleteHotelByID = `
+		DELETE FROM hotel 
+		WHERE id = $1 AND country_code = $2 AND city_slug = $3;`
 
 	UpdateHotelRating = `
 		UPDATE hotel 

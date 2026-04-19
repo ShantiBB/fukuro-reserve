@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+import "buf/validate/validate.proto";
+import "hotel/v1/models/room.proto";
+
+option go_package = "api/hotel/v1;hotelv1";
+
+message GetRoomsByHotelIDRequest {
+  string hotel_id = 1 [(buf.validate.field).string.uuid = true];
+  uint64 page = 2 [(buf.validate.field).uint64.gte = 1];
+  uint64 limit = 3 [(buf.validate.field).uint64 = {
+    gte: 1
+    lte: 100
+  }];
+  string country_code = 4 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 5 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+}
+
+message GetRoomsByHotelIDResponse {
+  repeated RoomShort rooms = 1;
+  uint64 total_count = 2;
+  uint64 page = 3;
+  uint64 limit = 4;
+}

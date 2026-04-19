@@ -42,6 +42,12 @@ message UpdateRoomRequest {
   repeated string images = 11 [
     (buf.validate.field).required = true
   ];
+  string country_code = 12 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 13 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
 }
 
 message UpdateRoomResponse {

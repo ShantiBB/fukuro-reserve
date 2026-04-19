@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 
@@ -23,6 +25,8 @@ func CreateBookingRequestToDomain(req *bookingv1.CreateBookingRequest) (*models.
 	b := &models.CreateBooking{
 		UserID:              req.UserId,
 		HotelID:             hotelID,
+		CountryCode:         req.CountryCode,
+		CitySlug:            req.CitySlug,
 		CheckIn:             req.CheckIn.AsTime(),
 		CheckOut:            req.CheckOut.AsTime(),
 		GuestName:           req.GuestName,
@@ -37,17 +41,83 @@ func CreateBookingRequestToDomain(req *bookingv1.CreateBookingRequest) (*models.
 
 func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.BookingRef, error) {
 	bookingRef := models.BookingRef{
-		UserID: req.UserId,
-		Status: BookingStatusToDomain(req.Status),
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		UserID:      req.UserId,
+		Status:      BookingStatusToDomain(req.Status),
+	}
+
+	if req.HotelId == "" {
+		if req.RoomId == "" {
+			return bookingRef, nil
+		}
+	} else {
+		hotelID, err := uuid.Parse(req.HotelId)
+		if err != nil {
+			return models.BookingRef{}, consts.ErrInvalidHotelID
+		}
+		bookingRef.HotelID = hotelID
+	}
+
+	if req.RoomId != "" {
+		roomID, err := uuid.Parse(req.RoomId)
+		if err != nil {
+			return models.BookingRef{}, consts.ErrInvalidBookingRoomID
+		}
+		bookingRef.RoomID = roomID
+	}
+
+	return bookingRef, nil
+}
+
+func GetUnavailableRoomsRequestToDomain(req *bookingv1.GetUnavailableRoomsRequest) (models.BookingRef, time.Time, time.Time, error) {
+	hotelID, err := uuid.Parse(req.HotelId)
+	if err != nil {
+		return models.BookingRef{}, time.Time{}, time.Time{}, consts.ErrInvalidHotelID
+	}
+
+	return models.BookingRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelID:     hotelID,
+	}, req.CheckIn.AsTime(), req.CheckOut.AsTime(), nil
+}
+
+func UpdateBookingGuestInfoRequestToDomain(req *bookingv1.UpdateBookingGuestInfoRequest) (models.BookingRef, uuid.UUID, *models.UpdateBooking, error) {
+	bookingID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return models.BookingRef{}, uuid.UUID{}, nil, consts.ErrInvalidBookingID
 	}
 
 	hotelID, err := uuid.Parse(req.HotelId)
 	if err != nil {
-		return models.BookingRef{}, consts.ErrInvalidHotelID
+		return models.BookingRef{}, uuid.UUID{}, nil, consts.ErrInvalidHotelID
 	}
-	bookingRef.HotelID = hotelID
 
-	return bookingRef, nil
+	bookingRef := models.BookingRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelID:     hotelID,
+	}
+	booking := &models.UpdateBooking{
+		GuestName:  req.GuestName,
+		GuestEmail: req.GuestEmail,
+		GuestPhone: req.GuestPhone,
+	}
+
+	return bookingRef, bookingID, booking, nil
+}
+
+type bookingLocationRefGetter interface {
+	GetCountryCode() string
+	GetCitySlug() string
+}
+
+func BookingLocationRefToDomain[T bookingLocationRefGetter](req T) models.BookingRef {
+	return models.BookingRef{
+		CountryCode: req.GetCountryCode(),
+		CitySlug:    req.GetCitySlug(),
+	}
 }
 
 func GetBookingRequestToDomain(idStr string) (uuid.UUID, error) {

@@ -22,6 +22,15 @@ message GetBookingsRequest {
   uint64 limit = 5 [
     (buf.validate.field).uint64 = {gte: 1, lte: 100}
   ];
+  string country_code = 6 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 7 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+  string room_id = 8 [
+    (buf.validate.field).string.uuid = true
+  ];
 }
 
 message GetBookingsResponse {

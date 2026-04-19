@@ -67,3 +67,40 @@ func BookingStatusToProto(s models.BookingStatus) bookingv1.BookingStatus {
 		return bookingv1.BookingStatus_BOOKING_STATUS_UNSPECIFIED
 	}
 }
+
+func BookingQuoteToProto(quote *models.BookingQuote) *bookingv1.QuoteBookingResponse {
+	if quote == nil {
+		return nil
+	}
+
+	return &bookingv1.QuoteBookingResponse{
+		CheckIn:     timestamppb.New(quote.CheckIn),
+		CheckOut:    timestamppb.New(quote.CheckOut),
+		Currency:    quote.Currency,
+		TotalAmount: quote.TotalAmount.String(),
+		Nights:      quote.Nights,
+		Rooms:       BookingQuoteRoomsToProto(quote.Rooms),
+	}
+}
+
+func BookingQuoteRoomsToProto(rooms []*models.BookingQuoteRoom) []*bookingv1.QuoteBookingRoom {
+	result := make([]*bookingv1.QuoteBookingRoom, len(rooms))
+	for i, room := range rooms {
+		result[i] = BookingQuoteRoomToProto(room)
+	}
+	return result
+}
+
+func BookingQuoteRoomToProto(room *models.BookingQuoteRoom) *bookingv1.QuoteBookingRoom {
+	if room == nil {
+		return nil
+	}
+
+	return &bookingv1.QuoteBookingRoom{
+		RoomId:        room.RoomID.String(),
+		Adults:        room.Adults,
+		Children:      room.Children,
+		PricePerNight: room.PricePerNight.String(),
+		TotalAmount:   room.TotalAmount.String(),
+	}
+}

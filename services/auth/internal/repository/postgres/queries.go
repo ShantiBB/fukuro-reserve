@@ -12,7 +12,7 @@ const (
     WHERE id = $1`
 
 	SelectUserCredentialsByEmail = `
-    SELECT id, role, password
+    SELECT id, role, password, is_active
     FROM users 
     WHERE email = $1`
 

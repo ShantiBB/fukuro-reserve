@@ -59,6 +59,21 @@ func CreateRoomRequestToDomain(req *hotelv1.CreateRoomRequest) *models.CreateRoo
 	}
 }
 
+func CreateRoomByHotelIDRequestToDomain(req *hotelv1.CreateRoomByHotelIDRequest) *models.CreateRoom {
+	return &models.CreateRoom{
+		Description: req.Description,
+		Title:       req.Title,
+		RoomNumber:  req.RoomNumber,
+		Type:        roomTypeToDomain(req.Type),
+		Price:       decimal.NewFromFloat(float64(req.Price)),
+		Amenities:   req.Amenities,
+		Images:      req.Images,
+		Capacity:    int(req.Capacity),
+		AreaSqm:     float64(req.AreaSqm),
+		Floor:       int(req.Floor),
+	}
+}
+
 func UpdateRoomRequestToDomain(req *hotelv1.UpdateRoomRequest) (*models.UpdateRoom, error) {
 	price, err := decimal.NewFromString(req.Price)
 	if err != nil {

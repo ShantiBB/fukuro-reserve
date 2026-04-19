@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package booking.v1;
+
+option go_package = "api/booking/v1;bookingv1";
+
+import "buf/validate/validate.proto";
+import "booking/v1/models/booking.proto";
+
+message UpdateBookingGuestInfoRequest {
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string country_code = 2 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 3 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
+  string hotel_id = 4 [
+    (buf.validate.field).string.uuid = true
+  ];
+  optional string guest_name = 5 [
+    (buf.validate.field).string.min_len = 1
+  ];
+  optional string guest_email = 6 [
+    (buf.validate.field).string.email = true
+  ];
+  optional string guest_phone = 7 [
+    (buf.validate.field).string = {min_len: 5, max_len: 32}
+  ];
+  option (buf.validate.message).cel = {
+    id: "booking_guest_info.update_has_fields"
+    message: "at least one guest field must be provided"
+    expression: "has(this.guest_name) || has(this.guest_email) || has(this.guest_phone)"
+  };
+}
+
+message UpdateBookingGuestInfoResponse {
+  Booking booking = 1;
+}

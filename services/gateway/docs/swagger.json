@@ -1,0 +1,3427 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "REST API Gateway for Fukuro Reserve microservices.",
+        "title": "Swagger Gateway API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "description": "Public endpoint. Authenticates user credentials and returns access/refresh tokens.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Login request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/refresh": {
+            "post": {
+                "description": "Public endpoint. Issues a new token pair for a valid refresh token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Refresh access token",
+                "parameters": [
+                    {
+                        "description": "Refresh token request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RefreshTokenRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/register": {
+            "post": {
+                "description": "Public endpoint. Creates a user account and returns access/refresh tokens.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Register a new user",
+                "parameters": [
+                    {
+                        "description": "Register request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.RegisterRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.TokenResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns users with pagination. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get all users",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UsersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a user account (admin/staff operation). Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "Create user request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns current user profile by access token. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/me/bookings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns bookings for the current user. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Get current user bookings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Filter by country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "Filter by city slug",
+                        "name": "citySlug",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns a user by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user by ID",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates user profile fields. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update user request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes user by ID. Requires JWT auth.",
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/activity": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates active/inactive flag for a user. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user activity status",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update activity request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserActivityRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserActivityResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}/role": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates user role. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user role",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update role request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateUserRoleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels": {
+            "get": {
+                "description": "Public endpoint. Returns hotels in location with optional sorting and pagination.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotels",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "title",
+                            "rating",
+                            "created_at",
+                            "updated_at"
+                        ],
+                        "type": "string",
+                        "default": "title",
+                        "description": "Sort field",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a hotel in the selected location. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Create a new hotel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create hotel request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateHotelBody"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}": {
+            "get": {
+                "description": "Public endpoint. Returns hotel details by SEO-friendly hotel slug.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "imperial-hotel-tokyo",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms": {
+            "get": {
+                "description": "Public endpoint. Returns rooms for hotel resolved by slug.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get rooms by hotel slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "imperial-hotel-tokyo",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms/{roomId}": {
+            "get": {
+                "description": "Public endpoint. Returns room details by hotel slug and room ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get room by hotel slug and room ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "imperial-hotel-tokyo",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}": {
+            "get": {
+                "description": "Public endpoint. Returns hotel details by hotel ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fully updates mutable hotel fields. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Update hotel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update hotel request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateHotelRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes hotel by ID. Requires JWT auth.",
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Delete hotel",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns bookings with optional filters and pagination. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Get all bookings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Filter by user ID",
+                        "name": "userId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a booking with guest and room allocation details. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Create a new booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create booking request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/quote": {
+            "post": {
+                "description": "Calculates booking price for requested rooms and dates without creating a booking.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Quote booking price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Quote booking request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QuoteBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.QuoteBookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns a booking by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Get booking by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Booking ID",
+                        "name": "bookingId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes a booking by ID. Requires JWT auth.",
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Delete booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Booking ID",
+                        "name": "bookingId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/cancel": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Cancels a booking by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Cancel booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Booking ID",
+                        "name": "bookingId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/confirm": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Confirms a booking by ID. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Confirm booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Booking ID",
+                        "name": "bookingId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/guest-info": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates guest contact fields for a booking. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Update booking guest info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Booking ID",
+                        "name": "bookingId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update booking guest info request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateBookingGuestInfoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms": {
+            "get": {
+                "description": "Public endpoint. Returns rooms for hotel resolved by hotel ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get rooms by hotel ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Creates a room in the selected hotel. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Create a new room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create room request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.CreateRoomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/availability": {
+            "get": {
+                "description": "Returns rooms available for the requested date range.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get available hotel rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-05-10",
+                        "description": "Check-in date in YYYY-MM-DD format",
+                        "name": "check_in",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-05-13",
+                        "description": "Check-out date in YYYY-MM-DD format",
+                        "name": "check_out",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AvailabilityResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}": {
+            "get": {
+                "description": "Public endpoint. Returns room details by hotel ID and room ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get room by hotel ID and room ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Fully updates room fields. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Update room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update room request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRoomRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Deletes room by ID. Requires JWT auth.",
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Delete room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns bookings for a specific room. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get room bookings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Updates room lifecycle status. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Update room status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update room status request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateRoomStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/title": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Partially updates hotel title and slug. Requires JWT auth.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Update hotel title",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update hotel title request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateHotelTitleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.AvailabilityResponse": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RoomShortResponse"
+                    }
+                }
+            }
+        },
+        "dto.BookingResponse": {
+            "type": "object",
+            "properties": {
+                "booking_rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.BookingRoomResponse"
+                    }
+                },
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "expected_total_amount": {
+                    "type": "string"
+                },
+                "final_total_amount": {
+                    "type": "string"
+                },
+                "guest_email": {
+                    "type": "string"
+                },
+                "guest_name": {
+                    "type": "string"
+                },
+                "guest_phone": {
+                    "type": "string"
+                },
+                "hotel_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.BookingRoomResponse": {
+            "type": "object",
+            "properties": {
+                "adults": {
+                    "type": "integer"
+                },
+                "children": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "price_per_night": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.BookingShortResponse": {
+            "type": "object",
+            "properties": {
+                "booking_rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.BookingRoomResponse"
+                    }
+                },
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "expected_total_amount": {
+                    "type": "string"
+                },
+                "final_total_amount": {
+                    "type": "string"
+                },
+                "guest_email": {
+                    "type": "string"
+                },
+                "guest_name": {
+                    "type": "string"
+                },
+                "guest_phone": {
+                    "type": "string"
+                },
+                "hotel_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.BookingsResponse": {
+            "type": "object",
+            "properties": {
+                "bookings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.BookingShortResponse"
+                    }
+                }
+            }
+        },
+        "dto.CreateBookingRequest": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string",
+                    "example": "2026-05-10T14:00:00Z"
+                },
+                "check_out": {
+                    "type": "string",
+                    "example": "2026-05-13T11:00:00Z"
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "RUB"
+                },
+                "expected_total_amount": {
+                    "type": "string",
+                    "example": "360.00"
+                },
+                "guest_email": {
+                    "type": "string",
+                    "example": "ivan.petrov@example.com"
+                },
+                "guest_name": {
+                    "type": "string",
+                    "example": "Ivan Petrov"
+                },
+                "guest_phone": {
+                    "type": "string",
+                    "example": "+79991234567"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateBookingRoomRequest"
+                    }
+                },
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
+                }
+            }
+        },
+        "dto.CreateBookingRoomRequest": {
+            "type": "object",
+            "properties": {
+                "adults": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "children": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "price_per_night": {
+                    "type": "string",
+                    "example": "120.00"
+                },
+                "room_id": {
+                    "type": "string",
+                    "example": "1f8fad5b-d9cb-469f-a165-70867728950e"
+                }
+            }
+        },
+        "dto.CreateHotelBody": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "1 Chiyoda, Tokyo"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Luxury hotel in central Tokyo"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.LocationDTO"
+                },
+                "owner_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Imperial Hotel Tokyo"
+                }
+            }
+        },
+        "dto.CreateRoomRequest": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "wifi",
+                        "tv",
+                        "air-conditioning"
+                    ]
+                },
+                "area_sqm": {
+                    "type": "number",
+                    "example": 18.5
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Quiet room with city view"
+                },
+                "floor": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://example.com/rooms/101.jpg"
+                    ]
+                },
+                "price": {
+                    "type": "string",
+                    "example": "150.00"
+                },
+                "room_number": {
+                    "type": "string",
+                    "example": "101"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Standard Single Room"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "ROOM_TYPE_SINGLE"
+                }
+            }
+        },
+        "dto.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "manager@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "Passw0rd!123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "manager01"
+                }
+            }
+        },
+        "dto.HotelResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "hotel_slug": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.LocationDTO"
+                },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.HotelShortResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "hotel_slug": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.LocationDTO"
+                },
+                "owner_id": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.HotelsResponse": {
+            "type": "object",
+            "properties": {
+                "hotels": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.HotelShortResponse"
+                    }
+                }
+            }
+        },
+        "dto.LocationDTO": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "example": 35.66
+                },
+                "longitude": {
+                    "type": "number",
+                    "example": 139.7
+                }
+            }
+        },
+        "dto.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "guest@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "Passw0rd!123"
+                }
+            }
+        },
+        "dto.QuoteBookingRequest": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string",
+                    "example": "2026-05-10T14:00:00Z"
+                },
+                "check_out": {
+                    "type": "string",
+                    "example": "2026-05-13T11:00:00Z"
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "RUB"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateBookingRoomRequest"
+                    }
+                }
+            }
+        },
+        "dto.QuoteBookingResponse": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "nights": {
+                    "type": "integer"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.QuoteBookingRoomResponse"
+                    }
+                },
+                "total_amount": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.QuoteBookingRoomResponse": {
+            "type": "object",
+            "properties": {
+                "adults": {
+                    "type": "integer"
+                },
+                "children": {
+                    "type": "integer"
+                },
+                "price_per_night": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "total_amount": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RefreshTokenRequest": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token"
+                }
+            }
+        },
+        "dto.RegisterRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "guest@example.com"
+                },
+                "password": {
+                    "type": "string",
+                    "example": "Passw0rd!123"
+                }
+            }
+        },
+        "dto.RoomResponse": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "floor": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "string"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoomShortResponse": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "area_sqm": {
+                    "type": "number"
+                },
+                "capacity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "price": {
+                    "type": "string"
+                },
+                "room_number": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.RoomsResponse": {
+            "type": "object",
+            "properties": {
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RoomShortResponse"
+                    }
+                }
+            }
+        },
+        "dto.StatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "access": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.access.token"
+                },
+                "refresh": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token"
+                }
+            }
+        },
+        "dto.UpdateBookingGuestInfoRequest": {
+            "type": "object",
+            "properties": {
+                "guest_email": {
+                    "type": "string",
+                    "example": "ivan.petrov@example.com"
+                },
+                "guest_name": {
+                    "type": "string",
+                    "example": "Ivan Petrov"
+                },
+                "guest_phone": {
+                    "type": "string",
+                    "example": "+79991234567"
+                }
+            }
+        },
+        "dto.UpdateHotelRequest": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "2 Chiyoda, Tokyo"
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Renovated rooms and improved amenities"
+                },
+                "location": {
+                    "$ref": "#/definitions/dto.LocationDTO"
+                }
+            }
+        },
+        "dto.UpdateHotelTitleRequest": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "example": "Imperial Hotel Tokyo Annex"
+                }
+            }
+        },
+        "dto.UpdateRoomRequest": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "wifi",
+                        "tv",
+                        "air-conditioning",
+                        "coffee-machine"
+                    ]
+                },
+                "area_sqm": {
+                    "type": "number",
+                    "example": 20
+                },
+                "capacity": {
+                    "type": "integer",
+                    "example": 3
+                },
+                "description": {
+                    "type": "string",
+                    "example": "Refreshed interior and upgraded bed"
+                },
+                "floor": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "example": [
+                        "https://example.com/rooms/101-updated.jpg"
+                    ]
+                },
+                "price": {
+                    "type": "string",
+                    "example": "175.00"
+                },
+                "room_number": {
+                    "type": "string",
+                    "example": "101"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "Standard Double Room"
+                },
+                "type": {
+                    "type": "string",
+                    "example": "ROOM_TYPE_DOUBLE"
+                }
+            }
+        },
+        "dto.UpdateRoomStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "ROOM_STATUS_MAINTENANCE"
+                }
+            }
+        },
+        "dto.UpdateUserActivityRequest": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "dto.UpdateUserActivityResponse": {
+            "type": "object",
+            "properties": {
+                "is_active": {
+                    "type": "boolean",
+                    "example": true
+                }
+            }
+        },
+        "dto.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "example": "manager.updated@example.com"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "manager02"
+                }
+            }
+        },
+        "dto.UpdateUserRoleRequest": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "example": "USER_ROLE_USER, USER_ROLE_MODERATOR, USER_ROLE_ADMIN"
+                }
+            }
+        },
+        "dto.UpdateUserRoleResponse": {
+            "type": "object",
+            "properties": {
+                "role": {
+                    "type": "string",
+                    "example": "ROLE_ADMIN"
+                }
+            }
+        },
+        "dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_active": {
+                    "type": "boolean"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UsersResponse": {
+            "type": "object",
+            "properties": {
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.UserResponse"
+                    }
+                }
+            }
+        },
+        "responder.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "details": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/responder.ErrorResponseDetails"
+                    }
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "responder.ErrorResponseDetails": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

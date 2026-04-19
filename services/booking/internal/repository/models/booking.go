@@ -12,6 +12,8 @@ type CreateBooking struct {
 	CheckOut            time.Time
 	GuestEmail          *string
 	GuestPhone          *string
+	CountryCode         string
+	CitySlug            string
 	GuestName           string
 	Currency            string
 	ExpectedTotalAmount decimal.Decimal
@@ -68,10 +70,30 @@ type BookingList struct {
 	TotalCount uint64
 }
 
+type BookingQuoteRoom struct {
+	PricePerNight decimal.Decimal
+	TotalAmount   decimal.Decimal
+	RoomID        uuid.UUID
+	Adults        uint32
+	Children      uint32
+}
+
+type BookingQuote struct {
+	CheckIn     time.Time
+	CheckOut    time.Time
+	Currency    string
+	TotalAmount decimal.Decimal
+	Rooms       []*BookingQuoteRoom
+	Nights      uint32
+}
+
 type BookingRef struct {
-	Status  BookingStatus
-	UserID  int64
-	HotelID uuid.UUID
+	CountryCode string
+	CitySlug    string
+	Status      BookingStatus
+	UserID      int64
+	HotelID     uuid.UUID
+	RoomID      uuid.UUID
 }
 
 func (b *CreateBooking) ToRead() *Booking {

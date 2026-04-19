@@ -14,3 +14,12 @@ func ParseRoomID(roomID string) (uuid.UUID, error) {
 
 	return id, nil
 }
+
+func ParseHotelID(hotelID string) (uuid.UUID, error) {
+	id, err := uuid.Parse(hotelID)
+	if err != nil {
+		return uuid.UUID{}, consts.ErrInvalidHotelID
+	}
+
+	return id, nil
+}

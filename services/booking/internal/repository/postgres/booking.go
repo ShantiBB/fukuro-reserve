@@ -24,6 +24,8 @@ func (r *Repository) CreateBooking(ctx context.Context, tx pgx.Tx, b *models.Cre
 	err := db.QueryRow(
 		ctx,
 		query.CreateBooking,
+		b.CountryCode,
+		b.CitySlug,
 		b.UserID,
 		b.HotelID,
 		b.CheckIn,
@@ -56,12 +58,35 @@ func (r *Repository) GetBookingsByHotelInfo(
 ) (*models.BookingList, error) {
 	db := r.executor(tx)
 
+	var userID any
+	if bookingRef.UserID > 0 {
+		userID = bookingRef.UserID
+	}
+
+	var hotelID any
+	if bookingRef.HotelID != uuid.Nil {
+		hotelID = bookingRef.HotelID
+	}
+
+	var statusFilter any
+	if bookingRef.Status != models.BookingStatusUnspecified {
+		statusFilter = bookingRef.Status
+	}
+
+	var roomID any
+	if bookingRef.RoomID != uuid.Nil {
+		roomID = bookingRef.RoomID
+	}
+
 	rows, err := db.Query(
 		ctx,
 		query.GetBookingsByHotelInfo,
-		bookingRef.UserID,
-		bookingRef.HotelID,
-		bookingRef.Status,
+		userID,
+		hotelID,
+		statusFilter,
+		bookingRef.CountryCode,
+		bookingRef.CitySlug,
+		roomID,
 		limit,
 		offset,
 	)
@@ -110,9 +135,12 @@ func (r *Repository) GetBookingsByHotelInfo(
 	if err = db.QueryRow(
 		ctx,
 		query.GetBookingCountRows,
-		bookingRef.UserID,
-		bookingRef.HotelID,
-		bookingRef.Status,
+		userID,
+		hotelID,
+		statusFilter,
+		bookingRef.CountryCode,
+		bookingRef.CitySlug,
+		roomID,
 	).Scan(&bookingList.TotalCount); err != nil {
 		return nil, err
 	}
@@ -120,11 +148,16 @@ func (r *Repository) GetBookingsByHotelInfo(
 	return bookingList, nil
 }
 
-func (r *Repository) GetBookingByID(ctx context.Context, tx pgx.Tx, bookingID uuid.UUID) (*models.Booking, error) {
+func (r *Repository) GetBookingByID(
+	ctx context.Context,
+	tx pgx.Tx,
+	bookingRef models.BookingRef,
+	bookingID uuid.UUID,
+) (*models.Booking, error) {
 	db := r.executor(tx)
 
 	var b models.Booking
-	err := db.QueryRow(ctx, query.GetBookingByID, bookingID).Scan(
+	err := db.QueryRow(ctx, query.GetBookingByID, bookingID, bookingRef.CountryCode, bookingRef.CitySlug).Scan(
 		&b.ID,
 		&b.UserID,
 		&b.HotelID,
@@ -153,6 +186,7 @@ func (r *Repository) GetBookingByID(ctx context.Context, tx pgx.Tx, bookingID uu
 func (r *Repository) UpdateBookingGuestInfoByID(
 	ctx context.Context,
 	tx pgx.Tx,
+	bookingRef models.BookingRef,
 	id uuid.UUID,
 	b *models.UpdateBooking,
 ) error {
@@ -162,6 +196,9 @@ func (r *Repository) UpdateBookingGuestInfoByID(
 		ctx,
 		query.UpdateBookingGuestInfoByID,
 		id,
+		bookingRef.CountryCode,
+		bookingRef.CitySlug,
+		bookingRef.HotelID,
 		b.GuestName,
 		b.GuestEmail,
 		b.GuestPhone,
@@ -179,13 +216,14 @@ func (r *Repository) UpdateBookingGuestInfoByID(
 func (r *Repository) UpdateBookingStatusByID(
 	ctx context.Context,
 	tx pgx.Tx,
+	bookingRef models.BookingRef,
 	id uuid.UUID,
 	status models.BookingStatus,
 ) (time.Time, error) {
 	db := r.executor(tx)
 
 	var checkOut time.Time
-	err := db.QueryRow(ctx, query.UpdateBookingStatusByID, id, status).Scan(&checkOut)
+	err := db.QueryRow(ctx, query.UpdateBookingStatusByID, id, status, bookingRef.CountryCode, bookingRef.CitySlug).Scan(&checkOut)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return time.Time{}, consts.ErrBookingNotFound
@@ -196,10 +234,10 @@ func (r *Repository) UpdateBookingStatusByID(
 	return checkOut, nil
 }
 
-func (r *Repository) DeleteBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error {
+func (r *Repository) DeleteBookingByID(ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID) error {
 	db := r.executor(tx)
 
-	row, err := db.Exec(ctx, query.DeleteBookingByID, id)
+	row, err := db.Exec(ctx, query.DeleteBookingByID, id, bookingRef.CountryCode, bookingRef.CitySlug)
 	if err != nil {
 		return err
 	}

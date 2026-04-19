@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ShantiBB/fukuro-reserve/services/hotel/internal/repository/models"
+	"github.com/google/uuid"
 
 	"github.com/gosimple/slug"
 )
@@ -44,8 +45,25 @@ func (s *Service) GetHotelBySlug(ctx context.Context, ref models.HotelRef) (*mod
 	return h, nil
 }
 
+func (s *Service) GetHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) (*models.Hotel, error) {
+	h, err := s.repo.SelectHotelByID(ctx, ref, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return h, nil
+}
+
 func (s *Service) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h models.UpdateHotel) error {
 	if err := s.repo.UpdateHotelBySlug(ctx, ref, h); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) UpdateHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID, h models.UpdateHotel) error {
+	if err := s.repo.UpdateHotelByID(ctx, ref, id, h); err != nil {
 		return err
 	}
 
@@ -65,8 +83,30 @@ func (s *Service) UpdateHotelTitleBySlug(
 	return h, nil
 }
 
+func (s *Service) UpdateHotelTitleByID(
+	ctx context.Context,
+	ref models.HotelRef,
+	id uuid.UUID,
+	h models.UpdateHotelTitle,
+) (models.UpdateHotelTitle, error) {
+	h.HotelSlug = slug.Make(h.Title)
+	if err := s.repo.UpdateHotelTitleByID(ctx, ref, id, h); err != nil {
+		return models.UpdateHotelTitle{}, err
+	}
+
+	return h, nil
+}
+
 func (s *Service) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error {
 	if err := s.repo.DeleteHotelBySlug(ctx, ref); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) DeleteHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) error {
+	if err := s.repo.DeleteHotelByID(ctx, ref, id); err != nil {
 		return err
 	}
 

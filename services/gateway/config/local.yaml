@@ -1,0 +1,58 @@
+# app environment: local, dev, test, prod
+env: local
+
+# gin mode: debug, test, release
+gin_mode: test
+
+# log level: debug, info, warn, error
+log_level: debug
+
+http:
+  host: 0.0.0.0
+  port: 8080
+  health_path: /health
+  api_prefix: /api/v1
+  read_timeout_sec: 15
+  write_timeout_sec: 15
+  idle_timeout_sec: 60
+  request_timeout_sec: 60
+  shutdown_timeout_sec: 30
+
+pagination:
+  default_page: 1
+  default_page_size: 100
+
+cors:
+  allowed_origins:
+    - "*"
+  allowed_methods:
+    - GET
+    - POST
+    - PUT
+    - PATCH
+    - DELETE
+    - OPTIONS
+  allowed_headers:
+    - Accept
+    - Authorization
+    - Content-Type
+    - X-CSRF-Token
+  exposed_headers:
+    - Link
+  allow_credentials: true
+  max_age: 300
+
+jwt:
+  access_secret: "b97f56e9cf04a5f51da1bc7ab16d5ccaac5f490a76b445c0b6514a4e34806ea4"
+
+auth:
+  host: localhost
+  port: 8081
+
+hotel:
+  host: localhost
+  port: 8082
+
+booking:
+  host: localhost
+  port: 8083

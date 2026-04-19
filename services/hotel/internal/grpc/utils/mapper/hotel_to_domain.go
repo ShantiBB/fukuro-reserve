@@ -1,8 +1,11 @@
 package mapper
 
 import (
+	"github.com/google/uuid"
+
 	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/hotel/internal/repository/models"
+	"github.com/ShantiBB/fukuro-reserve/services/hotel/pkg/lib/utils/consts"
 )
 
 type locationGetter interface {
@@ -14,6 +17,11 @@ type hotelRefGetter interface {
 	GetCountryCode() string
 	GetCitySlug() string
 	GetHotelSlug() string
+}
+
+type locationRefGetter interface {
+	GetCountryCode() string
+	GetCitySlug() string
 }
 
 func locationRequestToDomain[T locationGetter](req T) models.Location {
@@ -28,6 +36,13 @@ func GetHotelRefRequestToDomain[T hotelRefGetter](req T) models.HotelRef {
 		CountryCode: req.GetCountryCode(),
 		CitySlug:    req.GetCitySlug(),
 		HotelSlug:   req.GetHotelSlug(),
+	}
+}
+
+func GetLocationRefRequestToDomain[T locationRefGetter](req T) models.HotelRef {
+	return models.HotelRef{
+		CountryCode: req.GetCountryCode(),
+		CitySlug:    req.GetCitySlug(),
 	}
 }
 
@@ -59,8 +74,31 @@ func UpdateHotelRequestToDomain(req *hotelv1.UpdateHotelRequest) models.UpdateHo
 	}
 }
 
+func UpdateHotelByIDRequestToDomain(req *hotelv1.UpdateHotelByIDRequest) models.UpdateHotel {
+	return models.UpdateHotel{
+		Description: req.Description,
+		Address:     req.Address,
+		Location:    locationRequestToDomain(req.Location),
+	}
+}
+
 func UpdateHotelTitleRequestToDomain(req *hotelv1.UpdateHotelTitleRequest) models.UpdateHotelTitle {
 	return models.UpdateHotelTitle{
 		Title: req.Title,
 	}
+}
+
+func UpdateHotelTitleByIDRequestToDomain(req *hotelv1.UpdateHotelTitleByIDRequest) models.UpdateHotelTitle {
+	return models.UpdateHotelTitle{
+		Title: req.Title,
+	}
+}
+
+func GetHotelByIDRequestToDomain(id string) (uuid.UUID, error) {
+	hotelID, err := uuid.Parse(id)
+	if err != nil {
+		return uuid.Nil, consts.ErrInvalidHotelID
+	}
+
+	return hotelID, nil
 }

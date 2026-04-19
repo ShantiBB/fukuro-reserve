@@ -20,6 +20,12 @@ var (
 	errBookingRoomNotFound  = domainErr{consts.MsgBookingRoomNotFound, codes.NotFound}
 	errRoomLockAlreadyExist = domainErr{consts.MsgRoomLockAlreadyExist, codes.AlreadyExists}
 	errPriceChanged         = domainErr{consts.MsgPriceChanged, codes.FailedPrecondition}
+	errInvalidHotelID       = domainErr{consts.MsgInvalidHotelID, codes.InvalidArgument}
+	errInvalidBookingID     = domainErr{consts.MsgInvalidBookingID, codes.InvalidArgument}
+	errInvalidBookingRoomID = domainErr{consts.MsgInvalidBookingRoomID, codes.InvalidArgument}
+	errInvalidPricePerNight = domainErr{consts.MsgInvalidPricePerNightID, codes.InvalidArgument}
+	errInvalidExpectedTotal = domainErr{consts.MsgInvalidExpectedTotalAmountID, codes.InvalidArgument}
+	errInvalidBookingStatus = domainErr{consts.MsgInvalidBookingStatus, codes.InvalidArgument}
 	errInternalServer       = domainErr{consts.MsgInternalServer, codes.Internal}
 )
 
@@ -38,13 +44,25 @@ func HandleDomainErr(err error) error {
 		domErr = errRoomLockAlreadyExist
 	case errors.Is(err, consts.ErrPriceChanged):
 		domErr = errPriceChanged
+	case errors.Is(err, consts.ErrInvalidHotelID):
+		domErr = errInvalidHotelID
+	case errors.Is(err, consts.ErrInvalidBookingID):
+		domErr = errInvalidBookingID
+	case errors.Is(err, consts.ErrInvalidBookingRoomID):
+		domErr = errInvalidBookingRoomID
+	case errors.Is(err, consts.ErrInvalidPricePerNightID):
+		domErr = errInvalidPricePerNight
+	case errors.Is(err, consts.ErrInvalidExpectedTotalAmountID):
+		domErr = errInvalidExpectedTotal
+	case errors.Is(err, consts.ErrInvalidBookingStatus):
+		domErr = errInvalidBookingStatus
 	default:
 		domErr = errInternalServer
 	}
 
 	ei := &errdetails.ErrorInfo{
 		Reason: domErr.message,
-		Domain: "user-service",
+		Domain: "booking-service",
 	}
 
 	st, _ := status.New(domErr.code, "operation failed").WithDetails(ei)

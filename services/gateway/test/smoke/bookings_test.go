@@ -1,0 +1,493 @@
+package smoke
+
+import (
+	"net/http"
+	"testing"
+	"time"
+
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	"github.com/ShantiBB/fukuro-reserve/services/gateway/test/smoke/fixtures"
+)
+
+func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
+	t.Helper()
+
+	checkIn := time.Now().UTC().Add(14 * 24 * time.Hour).Truncate(time.Second)
+	checkOut := checkIn.Add(48 * time.Hour)
+	basePath := bookingsBasePath(env)
+
+	t.Run("39 quote booking", func(t *testing.T) {
+		var resp dto.QuoteBookingResponse
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			quoteBookingPath(env),
+			"",
+			dto.QuoteBookingRequest{
+				CheckIn:  checkIn,
+				CheckOut: checkOut,
+				Currency: "USD",
+				Rooms: []*dto.CreateBookingRoomRequest{
+					{RoomId: env.Data.RoomID, Adults: 2, Children: 1, PricePerNight: "175.00"},
+				},
+			},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Nights != 2 {
+			t.Fatalf("unexpected quote nights: got=%d want=%d", resp.Nights, 2)
+		}
+		assertDecimalString(t, resp.TotalAmount, "350")
+		if len(resp.Rooms) != 1 {
+			t.Fatalf("unexpected quote rooms count: got=%d want=%d", len(resp.Rooms), 1)
+		}
+		if resp.Rooms[0].RoomId != env.Data.RoomID {
+			t.Fatalf("unexpected quote room id: got=%q want=%q", resp.Rooms[0].RoomId, env.Data.RoomID)
+		}
+		assertDecimalString(t, resp.Rooms[0].TotalAmount, "350")
+	})
+
+	t.Run("40 create booking", func(t *testing.T) {
+		var resp dto.BookingResponse
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			basePath,
+			env.Data.OwnerAccess,
+			dto.CreateBookingRequest{
+				UserId:              env.Data.OwnerID,
+				CheckIn:             checkIn,
+				CheckOut:            checkOut,
+				GuestName:           "HTTP Booker",
+				GuestEmail:          env.Data.OwnerEmail,
+				GuestPhone:          "+79990000055",
+				Currency:            "USD",
+				ExpectedTotalAmount: "350.00",
+				Rooms: []*dto.CreateBookingRoomRequest{
+					{RoomId: env.Data.RoomID, Adults: 2, Children: 1, PricePerNight: "175.00"},
+				},
+			},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusCreated, body)
+		assertBookingResponseFields(t, &resp, env)
+		assertBookingStatusEnum(t, resp.Status)
+		if resp.Status != "BOOKING_STATUS_PENDING" {
+			t.Fatalf("unexpected booking status: got=%q want=%q", resp.Status, "BOOKING_STATUS_PENDING")
+		}
+		env.Data.BookingID = resp.Id
+	})
+
+	t.Run("41 list bookings all", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if len(resp.Bookings) == 0 {
+			t.Fatalf("bookings list is empty")
+		}
+		for _, booking := range resp.Bookings {
+			assertBookingShortFields(t, booking)
+			assertBookingStatusEnum(t, booking.Status)
+		}
+	})
+
+	t.Run("41.1 list bookings wrong location filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationBookingsBasePath(env)+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) != nil {
+			t.Fatalf("booking from another location found in response")
+		}
+	})
+
+	t.Run("41.2 list room bookings", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			roomBookingsBasePath(env)+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("booking not found in room bookings response")
+		}
+		assertBookingShortFields(t, booking)
+		assertBookingStatusEnum(t, booking.Status)
+	})
+
+	t.Run("41.3 list room bookings wrong location filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationRoomBookingsBasePath(env)+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) != nil {
+			t.Fatalf("room booking from another location found in response")
+		}
+	})
+
+	t.Run("41.4 availability excludes locked room", func(t *testing.T) {
+		var resp dto.AvailabilityResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			availabilityPath(env, checkIn, checkOut),
+			"",
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.CheckIn.IsZero() || resp.CheckOut.IsZero() {
+			t.Fatalf("availability response has zero dates: %+v", resp)
+		}
+		if findRoomByID(resp.Rooms, env.Data.RoomID) != nil {
+			t.Fatalf("locked room found in availability response")
+		}
+	})
+
+	t.Run("41.5 availability wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationAvailabilityPath(env, checkIn, checkOut),
+			"",
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "hotel not found")
+	})
+
+	t.Run("42 list bookings by user", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?userId="+mustQueryUserID(env.Data.OwnerID)+"&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if len(resp.Bookings) == 0 {
+			t.Fatalf("bookings list by user is empty")
+		}
+		for _, booking := range resp.Bookings {
+			assertBookingShortFields(t, booking)
+			assertBookingStatusEnum(t, booking.Status)
+			if booking.UserId != env.Data.OwnerID {
+				t.Fatalf("unexpected booking.user_id: got=%d want=%d", booking.UserId, env.Data.OwnerID)
+			}
+		}
+	})
+
+	t.Run("43 list bookings by user and hotel", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?userId="+mustQueryUserID(env.Data.OwnerID)+"&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if len(resp.Bookings) == 0 {
+			t.Fatalf("bookings list by user+hotel is empty")
+		}
+		for _, booking := range resp.Bookings {
+			assertBookingShortFields(t, booking)
+			assertBookingStatusEnum(t, booking.Status)
+			if booking.UserId != env.Data.OwnerID {
+				t.Fatalf("unexpected booking.user_id: got=%d want=%d", booking.UserId, env.Data.OwnerID)
+			}
+			if booking.HotelId != env.Data.HotelID {
+				t.Fatalf("unexpected booking.hotel_id: got=%q want=%q", booking.HotelId, env.Data.HotelID)
+			}
+		}
+	})
+
+	t.Run("43.1 list current user bookings", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			myBookingsBasePath()+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("booking not found in current user bookings response")
+		}
+		assertBookingShortFields(t, booking)
+		if booking.UserId != env.Data.OwnerID {
+			t.Fatalf("unexpected my booking user_id: got=%d want=%d", booking.UserId, env.Data.OwnerID)
+		}
+	})
+
+	t.Run("43.2 list current user bookings by location query", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			myBookingsBasePath()+"?countryCode=jp&citySlug=tokyo&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) == nil {
+			t.Fatalf("booking not found in current user bookings location-filtered response")
+		}
+	})
+
+	t.Run("43.3 list current user bookings by wrong location query filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			myBookingsBasePath()+"?countryCode=us&citySlug=osaka&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) != nil {
+			t.Fatalf("my booking from another location found in response")
+		}
+	})
+
+	t.Run("44 get booking", func(t *testing.T) {
+		var resp dto.BookingResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			bookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		assertBookingResponseFields(t, &resp, env)
+		assertBookingStatusEnum(t, resp.Status)
+		if resp.Id != env.Data.BookingID {
+			t.Fatalf("unexpected booking id: got=%q want=%q", resp.Id, env.Data.BookingID)
+		}
+		if resp.Status != "BOOKING_STATUS_PENDING" {
+			t.Fatalf("unexpected booking status before confirm: got=%q want=%q", resp.Status, "BOOKING_STATUS_PENDING")
+		}
+	})
+
+	t.Run("44.1 update booking guest info", func(t *testing.T) {
+		newGuestName := "HTTP Booker Updated"
+		newGuestEmail := "updated-" + env.Data.OwnerEmail
+		newGuestPhone := "+79990000077"
+
+		var resp dto.BookingResponse
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			bookingsByIDPath(env, env.Data.BookingID)+"/guest-info",
+			env.Data.OwnerAccess,
+			dto.UpdateBookingGuestInfoRequest{
+				GuestName:  stringPtr(newGuestName),
+				GuestEmail: stringPtr(newGuestEmail),
+				GuestPhone: stringPtr(newGuestPhone),
+			},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		assertBookingResponseFields(t, &resp, env)
+		if resp.GuestName != newGuestName {
+			t.Fatalf("unexpected guest_name after update: got=%q want=%q", resp.GuestName, newGuestName)
+		}
+		if resp.GuestEmail != newGuestEmail {
+			t.Fatalf("unexpected guest_email after update: got=%q want=%q", resp.GuestEmail, newGuestEmail)
+		}
+		if resp.GuestPhone != newGuestPhone {
+			t.Fatalf("unexpected guest_phone after update: got=%q want=%q", resp.GuestPhone, newGuestPhone)
+		}
+	})
+
+	t.Run("44.2 update booking guest info wrong location not found", func(t *testing.T) {
+		newGuestName := "Wrong Location Booker"
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID)+"/guest-info",
+			env.Data.OwnerAccess,
+			dto.UpdateBookingGuestInfoRequest{
+				GuestName: stringPtr(newGuestName),
+			},
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+
+	t.Run("44.3 get booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+
+	t.Run("44.4 list bookings filtered by pending status", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?status=BOOKING_STATUS_PENDING&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("pending booking not found in filtered response")
+		}
+		assertBookingShortFields(t, booking)
+		if booking.Status != "BOOKING_STATUS_PENDING" {
+			t.Fatalf("unexpected filtered booking status: got=%q want=%q", booking.Status, "BOOKING_STATUS_PENDING")
+		}
+	})
+
+	t.Run("44.3 confirm booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID)+"/confirm",
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+
+	t.Run("45 confirm booking", func(t *testing.T) {
+		var resp dto.StatusResponse
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			bookingsByIDPath(env, env.Data.BookingID)+"/confirm",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Status != "BOOKING_STATUS_CONFIRMED" {
+			t.Fatalf("unexpected confirm status: got=%q want=%q", resp.Status, "BOOKING_STATUS_CONFIRMED")
+		}
+	})
+
+	t.Run("45.1 list bookings filtered by confirmed status", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?status=BOOKING_STATUS_CONFIRMED&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("confirmed booking not found in filtered response")
+		}
+		assertBookingShortFields(t, booking)
+		if booking.Status != "BOOKING_STATUS_CONFIRMED" {
+			t.Fatalf("unexpected filtered booking status: got=%q want=%q", booking.Status, "BOOKING_STATUS_CONFIRMED")
+		}
+	})
+
+	t.Run("46 cancel booking", func(t *testing.T) {
+		var resp dto.StatusResponse
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			bookingsByIDPath(env, env.Data.BookingID)+"/cancel",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Status != "BOOKING_STATUS_CANCELLED" {
+			t.Fatalf("unexpected cancel status: got=%q want=%q", resp.Status, "BOOKING_STATUS_CANCELLED")
+		}
+	})
+
+	t.Run("47 get booking after cancel", func(t *testing.T) {
+		var resp dto.BookingResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			bookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		assertBookingResponseFields(t, &resp, env)
+		assertBookingStatusEnum(t, resp.Status)
+		if resp.Status != "BOOKING_STATUS_CANCELLED" {
+			t.Fatalf("unexpected booking status after cancel: got=%q want=%q", resp.Status, "BOOKING_STATUS_CANCELLED")
+		}
+	})
+
+	t.Run("48 list bookings filtered by cancelled status", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?status=BOOKING_STATUS_CANCELLED&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("cancelled booking not found in filtered response")
+		}
+		assertBookingShortFields(t, booking)
+		if booking.Status != "BOOKING_STATUS_CANCELLED" {
+			t.Fatalf("unexpected filtered booking status: got=%q want=%q", booking.Status, "BOOKING_STATUS_CANCELLED")
+		}
+	})
+
+	t.Run("49 list bookings with unknown status defaults to unspecified filter", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			basePath+"?status=BOOKING_STATUS_UNKNOWN&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("booking not found when unknown status query is used")
+		}
+		assertBookingShortFields(t, booking)
+		assertBookingStatusEnum(t, booking.Status)
+	})
+
+	t.Run("49.1 delete booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodDelete,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+}

@@ -51,6 +51,45 @@ func (r *Repository) InsertRoom(
 	return newRoom, nil
 }
 
+func (r *Repository) InsertRoomByHotelID(
+	ctx context.Context,
+	hotelRef models.HotelRef,
+	hotelID uuid.UUID,
+	room *models.CreateRoom,
+) (*models.Room, error) {
+	newRoom := room.ToRead()
+	err := r.db.QueryRow(
+		ctx, query.InsertRoomByHotelIDQuery,
+		hotelID,
+		hotelRef.CountryCode,
+		hotelRef.CitySlug,
+		room.Title,
+		room.Description,
+		room.RoomNumber,
+		room.Type,
+		room.Price,
+		room.Capacity,
+		room.AreaSqm,
+		room.Floor,
+		room.Amenities,
+		room.Images,
+	).Scan(
+		&newRoom.ID,
+		&newRoom.Status,
+		&newRoom.CreatedAt,
+		&newRoom.UpdatedAt,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, consts.ErrUniqueRoomField
+		}
+		return nil, err
+	}
+
+	return newRoom, nil
+}
+
 func (r *Repository) SelectRooms(
 	ctx context.Context,
 	hotelRef models.HotelRef,
@@ -112,9 +151,63 @@ func (r *Repository) SelectRooms(
 	return roomList, nil
 }
 
-func (r *Repository) SelectRoomByID(ctx context.Context, roomID uuid.UUID) (*models.Room, error) {
+func (r *Repository) SelectRoomsByHotelID(
+	ctx context.Context,
+	hotelRef models.HotelRef,
+	hotelID uuid.UUID,
+	limit uint64,
+	offset uint64,
+) (*models.RoomList, error) {
+	rows, err := r.db.Query(ctx, query.SelectRoomsByHotelID, hotelID, hotelRef.CountryCode, hotelRef.CitySlug, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	values := make([]models.RoomShort, limit)
+	var room models.RoomShort
+	var totalCount, idx uint64
+	for rows.Next() {
+		err = rows.Scan(
+			&room.ID,
+			&room.Title,
+			&room.RoomNumber,
+			&room.Type,
+			&room.Status,
+			&room.Price,
+			&room.Capacity,
+			&room.AreaSqm,
+			&room.Amenities,
+			&room.Images,
+			&totalCount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		values[idx] = room
+		idx++
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	values = values[:idx]
+
+	roomList := &models.RoomList{
+		Rooms:      make([]*models.RoomShort, len(values)),
+		TotalCount: totalCount,
+	}
+	for i := range values {
+		roomList.Rooms[i] = &values[i]
+	}
+
+	return roomList, nil
+}
+
+func (r *Repository) SelectRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID) (*models.Room, error) {
 	room := &models.Room{ID: roomID}
-	err := r.db.QueryRow(ctx, query.SelectRoomByID, roomID).Scan(
+	err := r.db.QueryRow(ctx, query.SelectRoomByID, roomID, hotelRef.CountryCode, hotelRef.CitySlug).Scan(
 		&room.Title,
 		&room.Description,
 		&room.RoomNumber,
@@ -139,7 +232,7 @@ func (r *Repository) SelectRoomByID(ctx context.Context, roomID uuid.UUID) (*mod
 	return room, nil
 }
 
-func (r *Repository) UpdateRoomByID(ctx context.Context, roomID uuid.UUID, room *models.UpdateRoom) error {
+func (r *Repository) UpdateRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID, room *models.UpdateRoom) error {
 	row, err := r.db.Exec(
 		ctx, query.UpdateRoomByID,
 		roomID,
@@ -153,6 +246,8 @@ func (r *Repository) UpdateRoomByID(ctx context.Context, roomID uuid.UUID, room 
 		room.Floor,
 		room.Amenities,
 		room.Images,
+		hotelRef.CountryCode,
+		hotelRef.CitySlug,
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -168,8 +263,8 @@ func (r *Repository) UpdateRoomByID(ctx context.Context, roomID uuid.UUID, room 
 	return nil
 }
 
-func (r *Repository) UpdateRoomStatusByID(ctx context.Context, roomID uuid.UUID, room models.UpdateRoomStatus) error {
-	row, err := r.db.Exec(ctx, query.UpdateRoomStatusByID, roomID, room.Status)
+func (r *Repository) UpdateRoomStatusByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID, room models.UpdateRoomStatus) error {
+	row, err := r.db.Exec(ctx, query.UpdateRoomStatusByID, roomID, room.Status, hotelRef.CountryCode, hotelRef.CitySlug)
 	if err != nil {
 		return err
 	}
@@ -180,8 +275,8 @@ func (r *Repository) UpdateRoomStatusByID(ctx context.Context, roomID uuid.UUID,
 	return nil
 }
 
-func (r *Repository) DeleteRoomByID(ctx context.Context, roomID uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.DeleteRoomByID, roomID)
+func (r *Repository) DeleteRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID) error {
+	row, err := r.db.Exec(ctx, query.DeleteRoomByID, roomID, hotelRef.CountryCode, hotelRef.CitySlug)
 	if err != nil {
 		return err
 	}

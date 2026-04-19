@@ -26,7 +26,7 @@ var File_booking_v1_booking_service_proto protoreflect.FileDescriptor
 const file_booking_v1_booking_service_proto_rawDesc = "" +
 	"\n" +
 	" booking/v1/booking_service.proto\x12\n" +
-	"booking.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a#booking/v1/rpc/create_booking.proto\x1a!booking/v1/rpc/get_bookings.proto\x1a booking/v1/rpc/get_booking.proto\x1a+booking/v1/rpc/confirm_booking_status.proto\x1a*booking/v1/rpc/cancel_booking_status.proto\x1a#booking/v1/rpc/delete_booking.proto2\xac\x04\n" +
+	"booking.v1\x1a\x1bgoogle/protobuf/empty.proto\x1a#booking/v1/rpc/create_booking.proto\x1a!booking/v1/rpc/get_bookings.proto\x1a booking/v1/rpc/get_booking.proto\x1a+booking/v1/rpc/confirm_booking_status.proto\x1a*booking/v1/rpc/cancel_booking_status.proto\x1a#booking/v1/rpc/delete_booking.proto\x1a*booking/v1/rpc/get_unavailable_rooms.proto\x1a\"booking/v1/rpc/quote_booking.proto\x1a.booking/v1/rpc/update_booking_guest_info.proto2\xd8\x06\n" +
 	"\x0eBookingService\x12T\n" +
 	"\rCreateBooking\x12 .booking.v1.CreateBookingRequest\x1a!.booking.v1.CreateBookingResponse\x12N\n" +
 	"\vGetBookings\x12\x1e.booking.v1.GetBookingsRequest\x1a\x1f.booking.v1.GetBookingsResponse\x12K\n" +
@@ -34,21 +34,30 @@ const file_booking_v1_booking_service_proto_rawDesc = "" +
 	"GetBooking\x12\x1d.booking.v1.GetBookingRequest\x1a\x1e.booking.v1.GetBookingResponse\x12i\n" +
 	"\x14ConfirmBookingStatus\x12'.booking.v1.ConfirmBookingStatusRequest\x1a(.booking.v1.ConfirmBookingStatusResponse\x12f\n" +
 	"\x13CancelBookingStatus\x12&.booking.v1.CancelBookingStatusRequest\x1a'.booking.v1.CancelBookingStatusResponse\x12T\n" +
-	"\rDeleteBooking\x12 .booking.v1.DeleteBookingRequest\x1a!.booking.v1.DeleteBookingResponseB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
+	"\rDeleteBooking\x12 .booking.v1.DeleteBookingRequest\x1a!.booking.v1.DeleteBookingResponse\x12f\n" +
+	"\x13GetUnavailableRooms\x12&.booking.v1.GetUnavailableRoomsRequest\x1a'.booking.v1.GetUnavailableRoomsResponse\x12Q\n" +
+	"\fQuoteBooking\x12\x1f.booking.v1.QuoteBookingRequest\x1a .booking.v1.QuoteBookingResponse\x12o\n" +
+	"\x16UpdateBookingGuestInfo\x12).booking.v1.UpdateBookingGuestInfoRequest\x1a*.booking.v1.UpdateBookingGuestInfoResponseB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
 
 var file_booking_v1_booking_service_proto_goTypes = []any{
-	(*CreateBookingRequest)(nil),         // 0: booking.v1.CreateBookingRequest
-	(*GetBookingsRequest)(nil),           // 1: booking.v1.GetBookingsRequest
-	(*GetBookingRequest)(nil),            // 2: booking.v1.GetBookingRequest
-	(*ConfirmBookingStatusRequest)(nil),  // 3: booking.v1.ConfirmBookingStatusRequest
-	(*CancelBookingStatusRequest)(nil),   // 4: booking.v1.CancelBookingStatusRequest
-	(*DeleteBookingRequest)(nil),         // 5: booking.v1.DeleteBookingRequest
-	(*CreateBookingResponse)(nil),        // 6: booking.v1.CreateBookingResponse
-	(*GetBookingsResponse)(nil),          // 7: booking.v1.GetBookingsResponse
-	(*GetBookingResponse)(nil),           // 8: booking.v1.GetBookingResponse
-	(*ConfirmBookingStatusResponse)(nil), // 9: booking.v1.ConfirmBookingStatusResponse
-	(*CancelBookingStatusResponse)(nil),  // 10: booking.v1.CancelBookingStatusResponse
-	(*DeleteBookingResponse)(nil),        // 11: booking.v1.DeleteBookingResponse
+	(*CreateBookingRequest)(nil),           // 0: booking.v1.CreateBookingRequest
+	(*GetBookingsRequest)(nil),             // 1: booking.v1.GetBookingsRequest
+	(*GetBookingRequest)(nil),              // 2: booking.v1.GetBookingRequest
+	(*ConfirmBookingStatusRequest)(nil),    // 3: booking.v1.ConfirmBookingStatusRequest
+	(*CancelBookingStatusRequest)(nil),     // 4: booking.v1.CancelBookingStatusRequest
+	(*DeleteBookingRequest)(nil),           // 5: booking.v1.DeleteBookingRequest
+	(*GetUnavailableRoomsRequest)(nil),     // 6: booking.v1.GetUnavailableRoomsRequest
+	(*QuoteBookingRequest)(nil),            // 7: booking.v1.QuoteBookingRequest
+	(*UpdateBookingGuestInfoRequest)(nil),  // 8: booking.v1.UpdateBookingGuestInfoRequest
+	(*CreateBookingResponse)(nil),          // 9: booking.v1.CreateBookingResponse
+	(*GetBookingsResponse)(nil),            // 10: booking.v1.GetBookingsResponse
+	(*GetBookingResponse)(nil),             // 11: booking.v1.GetBookingResponse
+	(*ConfirmBookingStatusResponse)(nil),   // 12: booking.v1.ConfirmBookingStatusResponse
+	(*CancelBookingStatusResponse)(nil),    // 13: booking.v1.CancelBookingStatusResponse
+	(*DeleteBookingResponse)(nil),          // 14: booking.v1.DeleteBookingResponse
+	(*GetUnavailableRoomsResponse)(nil),    // 15: booking.v1.GetUnavailableRoomsResponse
+	(*QuoteBookingResponse)(nil),           // 16: booking.v1.QuoteBookingResponse
+	(*UpdateBookingGuestInfoResponse)(nil), // 17: booking.v1.UpdateBookingGuestInfoResponse
 }
 var file_booking_v1_booking_service_proto_depIdxs = []int32{
 	0,  // 0: booking.v1.BookingService.CreateBooking:input_type -> booking.v1.CreateBookingRequest
@@ -57,14 +66,20 @@ var file_booking_v1_booking_service_proto_depIdxs = []int32{
 	3,  // 3: booking.v1.BookingService.ConfirmBookingStatus:input_type -> booking.v1.ConfirmBookingStatusRequest
 	4,  // 4: booking.v1.BookingService.CancelBookingStatus:input_type -> booking.v1.CancelBookingStatusRequest
 	5,  // 5: booking.v1.BookingService.DeleteBooking:input_type -> booking.v1.DeleteBookingRequest
-	6,  // 6: booking.v1.BookingService.CreateBooking:output_type -> booking.v1.CreateBookingResponse
-	7,  // 7: booking.v1.BookingService.GetBookings:output_type -> booking.v1.GetBookingsResponse
-	8,  // 8: booking.v1.BookingService.GetBooking:output_type -> booking.v1.GetBookingResponse
-	9,  // 9: booking.v1.BookingService.ConfirmBookingStatus:output_type -> booking.v1.ConfirmBookingStatusResponse
-	10, // 10: booking.v1.BookingService.CancelBookingStatus:output_type -> booking.v1.CancelBookingStatusResponse
-	11, // 11: booking.v1.BookingService.DeleteBooking:output_type -> booking.v1.DeleteBookingResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	6,  // 6: booking.v1.BookingService.GetUnavailableRooms:input_type -> booking.v1.GetUnavailableRoomsRequest
+	7,  // 7: booking.v1.BookingService.QuoteBooking:input_type -> booking.v1.QuoteBookingRequest
+	8,  // 8: booking.v1.BookingService.UpdateBookingGuestInfo:input_type -> booking.v1.UpdateBookingGuestInfoRequest
+	9,  // 9: booking.v1.BookingService.CreateBooking:output_type -> booking.v1.CreateBookingResponse
+	10, // 10: booking.v1.BookingService.GetBookings:output_type -> booking.v1.GetBookingsResponse
+	11, // 11: booking.v1.BookingService.GetBooking:output_type -> booking.v1.GetBookingResponse
+	12, // 12: booking.v1.BookingService.ConfirmBookingStatus:output_type -> booking.v1.ConfirmBookingStatusResponse
+	13, // 13: booking.v1.BookingService.CancelBookingStatus:output_type -> booking.v1.CancelBookingStatusResponse
+	14, // 14: booking.v1.BookingService.DeleteBooking:output_type -> booking.v1.DeleteBookingResponse
+	15, // 15: booking.v1.BookingService.GetUnavailableRooms:output_type -> booking.v1.GetUnavailableRoomsResponse
+	16, // 16: booking.v1.BookingService.QuoteBooking:output_type -> booking.v1.QuoteBookingResponse
+	17, // 17: booking.v1.BookingService.UpdateBookingGuestInfo:output_type -> booking.v1.UpdateBookingGuestInfoResponse
+	9,  // [9:18] is the sub-list for method output_type
+	0,  // [0:9] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name
@@ -81,6 +96,9 @@ func file_booking_v1_booking_service_proto_init() {
 	file_booking_v1_rpc_confirm_booking_status_proto_init()
 	file_booking_v1_rpc_cancel_booking_status_proto_init()
 	file_booking_v1_rpc_delete_booking_proto_init()
+	file_booking_v1_rpc_get_unavailable_rooms_proto_init()
+	file_booking_v1_rpc_quote_booking_proto_init()
+	file_booking_v1_rpc_update_booking_guest_info_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

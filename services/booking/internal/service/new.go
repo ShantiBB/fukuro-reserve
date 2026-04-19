@@ -19,12 +19,14 @@ type BookingRepository interface {
 	GetBookingsByHotelInfo(
 		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, limit uint64, offset uint64,
 	) (*models.BookingList, error)
-	GetBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) (*models.Booking, error)
-	UpdateBookingGuestInfoByID(ctx context.Context, tx pgx.Tx, id uuid.UUID, b *models.UpdateBooking) error
+	GetBookingByID(ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID) (*models.Booking, error)
+	UpdateBookingGuestInfoByID(
+		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID, b *models.UpdateBooking,
+	) error
 	UpdateBookingStatusByID(
-		ctx context.Context, tx pgx.Tx, id uuid.UUID, status models.BookingStatus,
+		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID, status models.BookingStatus,
 	) (time.Time, error)
-	DeleteBookingByID(ctx context.Context, tx pgx.Tx, id uuid.UUID) error
+	DeleteBookingByID(ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID) error
 }
 
 type BookingRoomRepository interface {
@@ -41,6 +43,13 @@ type BookingRoomRepository interface {
 
 type RoomLockRepository interface {
 	CreateRoomLocks(ctx context.Context, tx pgx.Tx, locks []*models.CreateRoomLock) ([]*models.RoomLockDetail, error)
+	GetUnavailableRoomIDs(
+		ctx context.Context,
+		tx pgx.Tx,
+		bookingRef models.BookingRef,
+		checkIn time.Time,
+		checkOut time.Time,
+	) ([]uuid.UUID, error)
 	UpdateRoomLocksActivityByID(
 		ctx context.Context, tx pgx.Tx, id uuid.UUID, roomLock *models.RoomLockActivity,
 	) error

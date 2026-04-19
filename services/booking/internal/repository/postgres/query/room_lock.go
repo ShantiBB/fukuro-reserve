@@ -21,6 +21,17 @@ const (
 		FROM input
 		RETURNING id, room_id, booking_id, is_active, created_at;`
 
+	GetUnavailableRoomIDs = `
+		SELECT DISTINCT rl.room_id
+		FROM room_lock rl
+		JOIN booking b ON b.id = rl.booking_id
+		WHERE b.country_code = $1
+		  AND b.city_slug = $2
+		  AND b.hotel_id = $3
+		  AND rl.is_active = TRUE
+		  AND rl.stay_range && daterange($4::date, $5::date, '[)')
+		ORDER BY rl.room_id;`
+
 	UpdateRoomLocksActivityByID = `
 		UPDATE room_lock
 		SET

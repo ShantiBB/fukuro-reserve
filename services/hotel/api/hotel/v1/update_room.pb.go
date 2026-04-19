@@ -35,6 +35,8 @@ type UpdateRoomRequest struct {
 	Floor         int64                  `protobuf:"varint,9,opt,name=floor,proto3" json:"floor,omitempty"`
 	Amenities     []string               `protobuf:"bytes,10,rep,name=amenities,proto3" json:"amenities,omitempty"`
 	Images        []string               `protobuf:"bytes,11,rep,name=images,proto3" json:"images,omitempty"`
+	CountryCode   string                 `protobuf:"bytes,12,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                 `protobuf:"bytes,13,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -146,6 +148,20 @@ func (x *UpdateRoomRequest) GetImages() []string {
 	return nil
 }
 
+func (x *UpdateRoomRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *UpdateRoomRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
+	}
+	return ""
+}
+
 type UpdateRoomResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Room          *UpdateRoom            `protobuf:"bytes,1,opt,name=room,proto3" json:"room,omitempty"`
@@ -194,7 +210,7 @@ var File_hotel_v1_rpc_room_update_room_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_rpc_room_update_room_proto_rawDesc = "" +
 	"\n" +
-	"#hotel/v1/rpc/room/update_room.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1ahotel/v1/models/room.proto\x1a\x1ehotel/v1/enums/room_type.proto\"\x97\x03\n" +
+	"#hotel/v1/rpc/room/update_room.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1ahotel/v1/models/room.proto\x1a\x1ehotel/v1/enums/room_type.proto\"\x8b\x04\n" +
 	"\x11UpdateRoomRequest\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x1c\n" +
 	"\x05title\x18\x02 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\x05title\x12(\n" +
@@ -208,7 +224,10 @@ const file_hotel_v1_rpc_room_update_room_proto_rawDesc = "" +
 	"\x05floor\x18\t \x01(\x03B\x06\xbaH\x03\xc8\x01\x01R\x05floor\x12$\n" +
 	"\tamenities\x18\n" +
 	" \x03(\tB\x06\xbaH\x03\xc8\x01\x01R\tamenities\x12\x1e\n" +
-	"\x06images\x18\v \x03(\tB\x06\xbaH\x03\xc8\x01\x01R\x06images\">\n" +
+	"\x06images\x18\v \x03(\tB\x06\xbaH\x03\xc8\x01\x01R\x06images\x124\n" +
+	"\fcountry_code\x18\f \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\r \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\">\n" +
 	"\x12UpdateRoomResponse\x12(\n" +
 	"\x04room\x18\x01 \x01(\v2\x14.hotel.v1.UpdateRoomR\x04roomB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"
 

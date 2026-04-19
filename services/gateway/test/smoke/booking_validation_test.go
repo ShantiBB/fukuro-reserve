@@ -22,7 +22,6 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		checkOut := checkIn.Add(48 * time.Hour)
 		validBody := map[string]any{
 			"user_id":               env.Data.OwnerID,
-			"hotel_id":              env.Data.HotelID,
 			"check_in":              checkIn.Format(time.RFC3339),
 			"check_out":             checkOut.Format(time.RFC3339),
 			"guest_name":            "Booking Validation",
@@ -46,10 +45,14 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			assertValidationFields(t, env, http.MethodPost, createPath, env.Data.OwnerAccess, body, "user_id")
 		})
 
-		t.Run("create booking hotel_id uuid", func(t *testing.T) {
-			body := cloneMap(validBody)
-			body["hotel_id"] = "not-a-uuid"
-			assertValidationFields(t, env, http.MethodPost, createPath, env.Data.OwnerAccess, body, "hotel_id")
+		t.Run("create booking hotel_id uuid from path", func(t *testing.T) {
+			assertValidationFields(t, env,
+				http.MethodPost,
+				"/api/v1/jp/tokyo/hotels/not-a-uuid/rooms/"+env.Data.RoomID+"/bookings",
+				env.Data.OwnerAccess,
+				validBody,
+				"hotel_id",
+			)
 		})
 
 		t.Run("create booking check_in gt_now", func(t *testing.T) {
@@ -252,7 +255,6 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 
 		createReq := dto.CreateBookingRequest{
 			UserId:              env.Data.OwnerID,
-			HotelId:             env.Data.HotelID,
 			CheckIn:             checkIn,
 			CheckOut:            checkOut,
 			GuestName:           "Booking Error Case",
@@ -267,6 +269,11 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 
 		t.Run("401 missing authorization header", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=10", "", nil, nil)
+			env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
+		})
+
+		t.Run("401 missing authorization header on create booking", func(t *testing.T) {
+			status, body := env.RequestJSON(http.MethodPost, createPath, "", createReq, nil)
 			env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
 		})
 

@@ -12,7 +12,6 @@ type CreateBookingRoomRequest struct {
 type CreateBookingRequest struct {
 	CheckIn             time.Time                   `json:"check_in" example:"2026-05-10T14:00:00Z"`
 	CheckOut            time.Time                   `json:"check_out" example:"2026-05-13T11:00:00Z"`
-	HotelId             string                      `json:"hotel_id" example:"0f8fad5b-d9cb-469f-a165-70867728950e"`
 	GuestName           string                      `json:"guest_name" example:"Ivan Petrov"`
 	GuestEmail          string                      `json:"guest_email,omitempty" example:"ivan.petrov@example.com"`
 	GuestPhone          string                      `json:"guest_phone,omitempty" example:"+79991234567"`

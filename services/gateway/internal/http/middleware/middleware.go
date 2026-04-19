@@ -87,3 +87,40 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// RoleMiddleware allows request only for users with one of the allowed roles.
+// Requires AuthMiddleware to run before it.
+func RoleMiddleware(allowedRoles ...string) gin.HandlerFunc {
+	allowed := make(map[string]struct{}, len(allowedRoles))
+	for _, role := range allowedRoles {
+		normalized := strings.ToUpper(strings.TrimSpace(role))
+		if normalized == "" {
+			continue
+		}
+		allowed[normalized] = struct{}{}
+	}
+
+	return func(c *gin.Context) {
+		rawRole, ok := c.Get(string(UserRoleKey))
+		if !ok {
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidTokenClaims})
+			c.Abort()
+			return
+		}
+
+		role, ok := rawRole.(string)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidTokenClaims})
+			c.Abort()
+			return
+		}
+
+		if _, ok = allowed[strings.ToUpper(strings.TrimSpace(role))]; !ok {
+			c.JSON(http.StatusForbidden, &responder.ErrorResponse{Error: consts.ErrForbidden})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}

@@ -29,7 +29,7 @@ import (
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
-	_, _, _, ok := bookingScopeFromPath(c, false)
+	hotelID, _, _, ok := bookingScopeFromPath(c, false)
 	if !ok {
 		return
 	}
@@ -39,7 +39,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
-	resp, err := h.service.CreateBooking(c.Request.Context(), req)
+	resp, err := h.service.CreateBooking(c.Request.Context(), hotelID, req)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return

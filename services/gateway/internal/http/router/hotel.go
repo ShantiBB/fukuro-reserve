@@ -31,10 +31,13 @@ func (hr hotelRoutes) Register(r *gin.RouterGroup) {
 	publicHotels.GET("/slug/:hotelSlug", hr.h.GetHotelBySlug)
 	publicHotels.GET("/:hotelId", hr.h.GetHotelByID)
 
-	protectedHotels := r.Group("/:countryCode/:citySlug/hotels")
-	protectedHotels.Use(middleware.AuthMiddleware())
-	protectedHotels.POST("", hr.h.CreateHotel)
-	protectedHotels.PUT("/:hotelId", hr.h.UpdateHotel)
-	protectedHotels.PATCH("/:hotelId/title", hr.h.UpdateHotelTitle)
-	protectedHotels.DELETE("/:hotelId", hr.h.DeleteHotel)
+	moderatedHotels := r.Group("/:countryCode/:citySlug/hotels")
+	moderatedHotels.Use(
+		middleware.AuthMiddleware(),
+		middleware.RoleMiddleware("USER_ROLE_MODERATOR", "USER_ROLE_ADMIN"),
+	)
+	moderatedHotels.POST("", hr.h.CreateHotel)
+	moderatedHotels.PUT("/:hotelId", hr.h.UpdateHotel)
+	moderatedHotels.PATCH("/:hotelId/title", hr.h.UpdateHotelTitle)
+	moderatedHotels.DELETE("/:hotelId", hr.h.DeleteHotel)
 }

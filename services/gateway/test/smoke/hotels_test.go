@@ -31,6 +31,39 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.Data.HotelSlug = resp.HotelSlug
 	})
 
+	t.Run("20.1 create hotel as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels",
+			env.Data.ManagedAccess,
+			dto.CreateHotelBody{},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
+	t.Run("20.2 create hotel anonymous unauthorized", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels",
+			"",
+			dto.CreateHotelBody{},
+			nil,
+		)
+		env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
+	})
+
+	t.Run("20.3 create hotel as admin allowed by role", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels",
+			env.Data.AdminAccess,
+			dto.CreateHotelBody{},
+			nil,
+		)
+		env.RequireStatus(status, http.StatusBadRequest, body)
+	})
+
 	t.Run("21 list hotels", func(t *testing.T) {
 		var resp dto.HotelsResponse
 		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels?sort_by=title&page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
@@ -107,6 +140,17 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("24.1 update hotel as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPut,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
+			env.Data.ManagedAccess,
+			dto.UpdateHotelRequest{},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
 	t.Run("25 rename hotel", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
@@ -120,6 +164,17 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		if resp.HotelSlug != "" {
 			env.Data.HotelSlug = resp.HotelSlug
 		}
+	})
+
+	t.Run("25.1 rename hotel as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/title",
+			env.Data.ManagedAccess,
+			dto.UpdateHotelTitleRequest{Title: env.Data.HotelTitle},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
 	})
 
 	t.Run("26 get renamed hotel by id", func(t *testing.T) {
@@ -144,5 +199,16 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 			&resp,
 		)
 		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("27.1 delete hotel as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodDelete,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
+			env.Data.ManagedAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
 	})
 }

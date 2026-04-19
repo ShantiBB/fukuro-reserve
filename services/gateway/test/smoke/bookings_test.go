@@ -24,7 +24,6 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 			env.Data.OwnerAccess,
 			dto.CreateBookingRequest{
 				UserId:              env.Data.OwnerID,
-				HotelId:             env.Data.HotelID,
 				CheckIn:             checkIn,
 				CheckOut:            checkOut,
 				GuestName:           "HTTP Booker",

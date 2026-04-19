@@ -13,7 +13,7 @@ import (
 
 // CreateRoom godoc
 // @Summary       Create a new room
-// @Description   Creates a room in the selected hotel. Requires JWT auth.
+// @Description   Creates a room in the selected hotel. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.
 // @Tags          rooms
 // @Accept        json
 // @Produce       json
@@ -25,6 +25,7 @@ import (
 // @Success       201 {object} dto.RoomResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
+// @Failure       403 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms [post]
 func (h *HotelHandler) CreateRoom(c *gin.Context) {
 	countryCode := c.Param("countryCode")

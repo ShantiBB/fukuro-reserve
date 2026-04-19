@@ -688,7 +688,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Creates a hotel in the selected location. Requires JWT auth.",
+                "description": "Creates a hotel in the selected location. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.",
                 "consumes": [
                     "application/json"
                 ],
@@ -741,6 +741,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
@@ -1213,7 +1219,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Creates a room in the selected hotel. Requires JWT auth.",
+                "description": "Creates a room in the selected hotel. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1274,6 +1280,12 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
@@ -2358,10 +2370,6 @@ const docTemplate = `{
                 "guest_phone": {
                     "type": "string",
                     "example": "+79991234567"
-                },
-                "hotel_id": {
-                    "type": "string",
-                    "example": "0f8fad5b-d9cb-469f-a165-70867728950e"
                 },
                 "rooms": {
                     "type": "array",

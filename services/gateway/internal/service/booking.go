@@ -10,7 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 )
 
-func (s *Booking) CreateBooking(ctx context.Context, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
+func (s *Booking) CreateBooking(ctx context.Context, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
 	var guestEmail *string
 	if req.GuestEmail != "" {
 		guestEmail = &req.GuestEmail
@@ -33,7 +33,7 @@ func (s *Booking) CreateBooking(ctx context.Context, req dto.CreateBookingReques
 
 	resp, err := s.clients.Booking.CreateBooking(ctx, &bookingv1.CreateBookingRequest{
 		UserId:              req.UserId,
-		HotelId:             req.HotelId,
+		HotelId:             hotelID,
 		CheckIn:             timestamppb.New(req.CheckIn),
 		CheckOut:            timestamppb.New(req.CheckOut),
 		GuestName:           req.GuestName,

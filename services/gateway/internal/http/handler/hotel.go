@@ -13,7 +13,7 @@ import (
 
 // CreateHotel godoc
 // @Summary       Create a new hotel
-// @Description   Creates a hotel in the selected location. Requires JWT auth.
+// @Description   Creates a hotel in the selected location. Requires JWT auth and role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.
 // @Tags          hotels
 // @Accept        json
 // @Produce       json
@@ -24,6 +24,7 @@ import (
 // @Success       201 {object} dto.HotelResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
+// @Failure       403 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels [post]
 func (h *HotelHandler) CreateHotel(c *gin.Context) {
 	countryCode := c.Param("countryCode")

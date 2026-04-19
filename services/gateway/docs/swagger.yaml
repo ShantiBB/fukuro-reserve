@@ -109,9 +109,6 @@ definitions:
       guest_phone:
         example: "+79991234567"
         type: string
-      hotel_id:
-        example: 0f8fad5b-d9cb-469f-a165-70867728950e
-        type: string
       rooms:
         items:
           $ref: '#/definitions/dto.CreateBookingRoomRequest'
@@ -569,7 +566,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a hotel in the selected location. Requires JWT auth.
+      description: Creates a hotel in the selected location. Requires JWT auth and
+        role USER_ROLE_MODERATOR or USER_ROLE_ADMIN.
       parameters:
       - description: Country code (ISO 3166-1 alpha-2)
         example: jp
@@ -602,6 +600,10 @@ paths:
             $ref: '#/definitions/responder.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
       security:
@@ -795,7 +797,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a room in the selected hotel. Requires JWT auth.
+      description: Creates a room in the selected hotel. Requires JWT auth and role
+        USER_ROLE_MODERATOR or USER_ROLE_ADMIN.
       parameters:
       - description: Country code (ISO 3166-1 alpha-2)
         example: jp
@@ -834,6 +837,10 @@ paths:
             $ref: '#/definitions/responder.ErrorResponse'
         "401":
           description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "403":
+          description: Forbidden
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
       security:

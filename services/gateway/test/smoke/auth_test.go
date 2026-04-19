@@ -103,6 +103,22 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		env.Data.ManagedID = resp.Id
 	})
 
+	t.Run("14.1 login managed user", func(t *testing.T) {
+		var resp dto.TokenResponse
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/auth/login",
+			"",
+			dto.LoginRequest{Email: env.Data.ManagedEmail, Password: env.Data.Password},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Access == "" {
+			t.Fatalf("managed login token response is invalid: %+v", resp)
+		}
+		env.Data.ManagedAccess = resp.Access
+	})
+
 	t.Run("15 update owner activity as admin", func(t *testing.T) {
 		var resp dto.UpdateUserActivityResponse
 		status, body := env.RequestJSON(
@@ -176,5 +192,21 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		if resp.Role != "USER_ROLE_MODERATOR" {
 			t.Fatalf("unexpected role update response: %+v", resp)
 		}
+	})
+
+	t.Run("19.1 login owner after role change", func(t *testing.T) {
+		var resp dto.TokenResponse
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/auth/login",
+			"",
+			dto.LoginRequest{Email: env.Data.OwnerEmail, Password: env.Data.Password},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Access == "" {
+			t.Fatalf("owner re-login token response is invalid: %+v", resp)
+		}
+		env.Data.OwnerAccess = resp.Access
 	})
 }

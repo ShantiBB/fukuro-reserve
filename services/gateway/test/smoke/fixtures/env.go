@@ -39,6 +39,7 @@ type RuntimeData struct {
 	Password          string
 	OwnerAccess       string
 	AdminAccess       string
+	ManagedAccess     string
 	BookingID         string
 	RoomID            string
 	HotelID           string

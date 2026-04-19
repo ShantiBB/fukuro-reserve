@@ -271,6 +271,47 @@ func runAuthValidationSmoke(t *testing.T, env *fixtures.Env) {
 			}, nil)
 			env.RequireError(status, http.StatusForbidden, body, "forbidden")
 		})
+
+		t.Run("inactive user cannot get tokens", func(t *testing.T) {
+			t.Run("deactivate owner", func(t *testing.T) {
+				var resp map[string]any
+				status, body := env.RequestJSON(
+					http.MethodPatch,
+					ownerIDPath+"/activity",
+					env.Data.AdminAccess,
+					map[string]any{"is_active": false},
+					&resp,
+				)
+				env.RequireStatus(status, http.StatusOK, body)
+			})
+
+			t.Run("403 inactive user login forbidden", func(t *testing.T) {
+				status, body := env.RequestJSON(http.MethodPost, "/api/v1/auth/login", "", map[string]any{
+					"email":    env.Data.OwnerEmail,
+					"password": env.Data.Password,
+				}, nil)
+				env.RequireError(status, http.StatusForbidden, body, "forbidden")
+			})
+
+			t.Run("403 inactive user refresh forbidden", func(t *testing.T) {
+				status, body := env.RequestJSON(http.MethodPost, "/api/v1/auth/refresh", "", map[string]any{
+					"refresh_token": env.Data.OwnerRefresh,
+				}, nil)
+				env.RequireError(status, http.StatusForbidden, body, "forbidden")
+			})
+
+			t.Run("reactivate owner", func(t *testing.T) {
+				var resp map[string]any
+				status, body := env.RequestJSON(
+					http.MethodPatch,
+					ownerIDPath+"/activity",
+					env.Data.AdminAccess,
+					map[string]any{"is_active": true},
+					&resp,
+				)
+				env.RequireStatus(status, http.StatusOK, body)
+			})
+		})
 	})
 }
 

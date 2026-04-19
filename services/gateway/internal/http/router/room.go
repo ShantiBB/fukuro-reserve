@@ -35,10 +35,13 @@ func (rr roomRoutes) Register(r *gin.RouterGroup) {
 	idRoomsPublic.GET("", rr.h.GetRoomsByHotelID)
 	idRoomsPublic.GET("/:roomId", rr.h.GetRoomByHotelID)
 
-	idRoomsProtected := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms")
-	idRoomsProtected.Use(middleware.AuthMiddleware())
-	idRoomsProtected.POST("", rr.h.CreateRoom)
-	idRoomsProtected.PUT("/:roomId", rr.h.UpdateRoom)
-	idRoomsProtected.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)
-	idRoomsProtected.DELETE("/:roomId", rr.h.DeleteRoom)
+	moderatedRooms := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms")
+	moderatedRooms.Use(
+		middleware.AuthMiddleware(),
+		middleware.RoleMiddleware("USER_ROLE_MODERATOR", "USER_ROLE_ADMIN"),
+	)
+	moderatedRooms.POST("", rr.h.CreateRoom)
+	moderatedRooms.PUT("/:roomId", rr.h.UpdateRoom)
+	moderatedRooms.PATCH("/:roomId/status", rr.h.UpdateRoomStatus)
+	moderatedRooms.DELETE("/:roomId", rr.h.DeleteRoom)
 }

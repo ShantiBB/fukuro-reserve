@@ -35,6 +35,39 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 		env.Data.RoomID = resp.Id
 	})
 
+	t.Run("30.1 create room as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms",
+			env.Data.ManagedAccess,
+			dto.CreateRoomRequest{},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
+	t.Run("30.2 create room anonymous unauthorized", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms",
+			"",
+			dto.CreateRoomRequest{},
+			nil,
+		)
+		env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
+	})
+
+	t.Run("30.3 create room as admin allowed by role", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms",
+			env.Data.AdminAccess,
+			dto.CreateRoomRequest{},
+			nil,
+		)
+		env.RequireStatus(status, http.StatusBadRequest, body)
+	})
+
 	t.Run("31 list rooms by hotel id", func(t *testing.T) {
 		var resp dto.RoomsResponse
 		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms?page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
@@ -130,6 +163,17 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("35.1 update room as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPut,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID,
+			env.Data.ManagedAccess,
+			dto.UpdateRoomRequest{},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
 	t.Run("36 update room status", func(t *testing.T) {
 		var resp dto.StatusResponse
 		status, body := env.RequestJSON(
@@ -140,5 +184,27 @@ func runRoomsSmoke(t *testing.T, env *fixtures.Env) {
 			&resp,
 		)
 		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("36.1 update room status as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID+"/status",
+			env.Data.ManagedAccess,
+			dto.UpdateRoomStatusRequest{Status: "ROOM_STATUS_AVAILABLE"},
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
+	t.Run("36.2 delete room as user forbidden", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodDelete,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID,
+			env.Data.ManagedAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusForbidden, body, "forbidden")
 	})
 }

@@ -22,7 +22,7 @@ type UpdateUserActivityResponse struct {
 }
 
 type UpdateUserRoleRequest struct {
-	Role string `json:"role" example:"ROLE_ADMIN"`
+	Role string `json:"role" example:"USER_ROLE_USER, USER_ROLE_MODERATOR, USER_ROLE_ADMIN"`
 }
 
 type UpdateUserRoleResponse struct {

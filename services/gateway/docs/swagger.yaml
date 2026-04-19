@@ -1736,6 +1736,10 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/responder.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
       summary: Get all users

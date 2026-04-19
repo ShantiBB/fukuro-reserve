@@ -197,12 +197,12 @@ func runAuthValidationSmoke(t *testing.T, env *fixtures.Env) {
 			env.RequireError(status, http.StatusUnauthorized, body, "invalid token")
 		})
 
-		t.Run("403 invalid credentials from auth grpc login", func(t *testing.T) {
+		t.Run("401 invalid credentials from auth grpc login", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodPost, "/api/v1/auth/login", "", map[string]any{
 				"email":    env.Data.OwnerEmail,
 				"password": env.Data.Password + "_wrong",
 			}, nil)
-			env.RequireError(status, http.StatusForbidden, body, "invalid credentials")
+			env.RequireError(status, http.StatusUnauthorized, body, "invalid credentials")
 		})
 
 		t.Run("401 invalid refresh token from auth grpc", func(t *testing.T) {

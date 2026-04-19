@@ -25,6 +25,9 @@ func (s *Service) LoginByEmail(ctx context.Context, user *models.CreateUser) (*j
 	userCred, err := s.repo.SelectUserCredentialsByEmail(ctx, user.Email)
 	if err != nil {
 		slog.Error("failed login user", "err:", err.Error())
+		if errors.Is(err, consts.ErrUserNotFound) {
+			return nil, consts.ErrInvalidCredentials
+		}
 		return nil, err
 	}
 

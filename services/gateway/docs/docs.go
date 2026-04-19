@@ -205,6 +205,12 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
                     }
                 }
             },

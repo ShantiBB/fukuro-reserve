@@ -23,6 +23,7 @@ import (
 // @Success       200 {object} dto.UsersResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
+// @Failure       403 {object} responder.ErrorResponse
 // @Router        /auth/users [get]
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)

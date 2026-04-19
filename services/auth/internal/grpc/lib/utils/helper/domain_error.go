@@ -20,7 +20,7 @@ var (
 	errUniqueUserField     = domainErr{consts.MsgUniqueUserField, codes.AlreadyExists}
 	errInvalidID           = domainErr{consts.MsgInvalidID, codes.InvalidArgument}
 	errPasswordHashing     = domainErr{consts.MsgPasswordHashing, codes.InvalidArgument}
-	errInvalidCredentials  = domainErr{consts.MsgInvalidCredentials, codes.PermissionDenied}
+	errInvalidCredentials  = domainErr{consts.MsgInvalidCredentials, codes.Unauthenticated}
 	errInvalidBearer       = domainErr{consts.MsgInvalidBearer, codes.Unauthenticated}
 	errInvalidRefreshToken = domainErr{consts.MsgInvalidToken, codes.Unauthenticated}
 	errInvalidUnauthorized = domainErr{consts.MsgUnauthorized, codes.Unauthenticated}

@@ -23,7 +23,7 @@ import (
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       403 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/me [get]
+// @Router        /users/me [get]
 func (h *AuthHandler) GetMe(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -63,7 +63,7 @@ func (h *AuthHandler) GetMe(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       403 {object} responder.ErrorResponse
-// @Router        /auth/users [get]
+// @Router        /users [get]
 func (h *AuthHandler) GetUsers(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -103,7 +103,7 @@ func (h *AuthHandler) GetUsers(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       409 {object} responder.ErrorResponse
-// @Router        /auth/users [post]
+// @Router        /users [post]
 func (h *AuthHandler) CreateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -137,7 +137,7 @@ func (h *AuthHandler) CreateUser(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/{id} [get]
+// @Router        /users/{id} [get]
 func (h *AuthHandler) GetUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -173,7 +173,7 @@ func (h *AuthHandler) GetUser(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/{id} [put]
+// @Router        /users/{id} [put]
 func (h *AuthHandler) UpdateUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -215,7 +215,7 @@ func (h *AuthHandler) UpdateUser(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/{id}/activity [patch]
+// @Router        /users/{id}/activity [patch]
 func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -257,7 +257,7 @@ func (h *AuthHandler) UpdateUserActivity(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/{id}/role [patch]
+// @Router        /users/{id}/role [patch]
 func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {
@@ -296,7 +296,7 @@ func (h *AuthHandler) UpdateUserRole(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /auth/users/{id} [delete]
+// @Router        /users/{id} [delete]
 func (h *AuthHandler) DeleteUser(c *gin.Context) {
 	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
 	if err != nil {

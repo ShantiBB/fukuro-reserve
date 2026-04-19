@@ -1970,7 +1970,7 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /auth/users:
+  /users:
     get:
       description: Returns users with pagination. Requires JWT auth.
       parameters:
@@ -2046,7 +2046,7 @@ paths:
       summary: Create a new user
       tags:
       - users
-  /auth/users/{id}:
+  /users/{id}:
     delete:
       description: Deletes user by ID. Requires JWT auth.
       parameters:
@@ -2153,7 +2153,7 @@ paths:
       summary: Update user
       tags:
       - users
-  /auth/users/{id}/activity:
+  /users/{id}/activity:
     patch:
       consumes:
       - application/json
@@ -2196,7 +2196,7 @@ paths:
       summary: Update user activity status
       tags:
       - users
-  /auth/users/{id}/role:
+  /users/{id}/role:
     patch:
       consumes:
       - application/json
@@ -2239,7 +2239,7 @@ paths:
       summary: Update user role
       tags:
       - users
-  /auth/users/me:
+  /users/me:
     get:
       description: Returns current user profile by access token. Requires JWT auth.
       produces:
@@ -2315,9 +2315,9 @@ paths:
             $ref: '#/definitions/responder.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get my bookings
+      summary: Get current user bookings
       tags:
-      - users
+      - bookings
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

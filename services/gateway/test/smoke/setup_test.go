@@ -95,7 +95,7 @@ func runSetupSmoke(t *testing.T, env *fixtures.Env) {
 			var resp dto.UsersResponse
 			status, body := env.RequestJSON(
 				http.MethodGet,
-				"/api/v1/auth/users?page=1&limit=100",
+				"/api/v1/users?page=1&limit=100",
 				env.Data.AdminAccess,
 				nil,
 				&resp,

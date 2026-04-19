@@ -142,10 +142,10 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// GetMyBookings godoc
-// @Summary       Get my bookings
+// GetCurrentUserBookings godoc
+// @Summary       Get current user bookings
 // @Description   Returns bookings for the current user. Requires JWT auth.
-// @Tags          users
+// @Tags          bookings
 // @Produce       json
 // @Security      Bearer
 // @Param         countryCode query string false "Filter by country code (ISO 3166-1 alpha-2)" example(jp)
@@ -157,7 +157,7 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Router        /users/me/bookings [get]
-func (h *BookingHandler) GetMyBookings(c *gin.Context) {
+func (h *BookingHandler) GetCurrentUserBookings(c *gin.Context) {
 	userID, ok := userIDFromContext(c)
 	if !ok {
 		return

@@ -153,7 +153,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/users": {
+        "/users": {
             "get": {
                 "security": [
                     {
@@ -270,7 +270,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/users/me": {
+        "/users/me": {
             "get": {
                 "security": [
                     {
@@ -313,7 +313,84 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/users/{id}": {
+        "/users/me/bookings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns bookings for the current user. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Get current user bookings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Filter by country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "Filter by city slug",
+                        "name": "citySlug",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
             "get": {
                 "security": [
                     {
@@ -477,7 +554,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/users/{id}/activity": {
+        "/users/{id}/activity": {
             "patch": {
                 "security": [
                     {
@@ -543,7 +620,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/users/{id}/role": {
+        "/users/{id}/role": {
             "patch": {
                 "security": [
                     {
@@ -602,83 +679,6 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/responder.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/users/me/bookings": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Returns bookings for the current user. Requires JWT auth.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get my bookings",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "example": "jp",
-                        "description": "Filter by country code (ISO 3166-1 alpha-2)",
-                        "name": "countryCode",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "tokyo",
-                        "description": "Filter by city slug",
-                        "name": "citySlug",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "example": "BOOKING_STATUS_CONFIRMED",
-                        "description": "Filter by booking status",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page number (starts from 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "maximum": 100,
-                        "minimum": 1,
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Page size",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.BookingsResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/responder.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/responder.ErrorResponse"
                         }

@@ -20,7 +20,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 	t.Run("10 users list as owner forbidden", func(t *testing.T) {
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/auth/users?page=1&limit=10",
+			"/api/v1/users?page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			nil,
@@ -32,7 +32,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UsersResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/auth/users?page=1&limit=10",
+			"/api/v1/users?page=1&limit=10",
 			env.Data.AdminAccess,
 			nil,
 			&resp,
@@ -55,7 +55,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UserResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10),
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10),
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -73,7 +73,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UserResponse
 		status, body := env.RequestJSON(
 			http.MethodPut,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10),
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10),
 			env.Data.OwnerAccess,
 			dto.UpdateUserRequest{Email: env.Data.OwnerEmail, Username: env.Data.OwnerUsername},
 			&resp,
@@ -88,7 +88,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UserResponse
 		status, body := env.RequestJSON(
 			http.MethodPost,
-			"/api/v1/auth/users",
+			"/api/v1/users",
 			env.Data.AdminAccess,
 			dto.CreateUserRequest{Email: env.Data.ManagedEmail, Username: env.Data.ManagedUsername, Password: env.Data.Password},
 			&resp,
@@ -123,7 +123,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UpdateUserActivityResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/activity",
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/activity",
 			env.Data.AdminAccess,
 			dto.UpdateUserActivityRequest{IsActive: true},
 			&resp,
@@ -138,7 +138,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UpdateUserRoleResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
 			env.Data.AdminAccess,
 			dto.UpdateUserRoleRequest{Role: "USER_ROLE_MODERATOR"},
 			&resp,
@@ -153,7 +153,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UpdateUserRoleResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
 			env.Data.AdminAccess,
 			dto.UpdateUserRoleRequest{Role: "USER_ROLE_USER"},
 			&resp,
@@ -168,7 +168,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UpdateUserRoleResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
 			env.Data.AdminAccess,
 			dto.UpdateUserRoleRequest{Role: "USER_ROLE_ADMIN"},
 			&resp,
@@ -183,7 +183,7 @@ func runAuthSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.UpdateUserRoleResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/auth/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
+			"/api/v1/users/"+strconv.FormatInt(env.Data.OwnerID, 10)+"/role",
 			env.Data.AdminAccess,
 			dto.UpdateUserRoleRequest{Role: "USER_ROLE_MODERATOR"},
 			&resp,

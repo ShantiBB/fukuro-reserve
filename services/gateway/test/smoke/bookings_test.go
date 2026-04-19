@@ -219,7 +219,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("43.1 list my bookings", func(t *testing.T) {
+	t.Run("43.1 list current user bookings", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
@@ -231,7 +231,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
 		if booking == nil {
-			t.Fatalf("booking not found in my bookings response")
+			t.Fatalf("booking not found in current user bookings response")
 		}
 		assertBookingShortFields(t, booking)
 		if booking.UserId != env.Data.OwnerID {
@@ -239,7 +239,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("43.2 list my bookings by location query", func(t *testing.T) {
+	t.Run("43.2 list current user bookings by location query", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
@@ -250,11 +250,11 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		)
 		env.RequireStatus(status, http.StatusOK, body)
 		if findBookingByIDInResponse(&resp, env.Data.BookingID) == nil {
-			t.Fatalf("booking not found in my bookings location-filtered response")
+			t.Fatalf("booking not found in current user bookings location-filtered response")
 		}
 	})
 
-	t.Run("43.3 list my bookings by wrong location query filtered out", func(t *testing.T) {
+	t.Run("43.3 list current user bookings by wrong location query filtered out", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,

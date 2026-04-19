@@ -249,17 +249,17 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")
 		})
 
-		t.Run("get my bookings page numeric in gateway parser", func(t *testing.T) {
+		t.Run("get current user bookings page numeric in gateway parser", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, myBookingsBasePath()+"?page=bad&limit=10", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "page must be a positive integer")
 		})
 
-		t.Run("get my bookings limit numeric in gateway parser", func(t *testing.T) {
+		t.Run("get current user bookings limit numeric in gateway parser", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, myBookingsBasePath()+"?page=1&limit=bad", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "limit must be a positive integer")
 		})
 
-		t.Run("get my bookings limit lte 100", func(t *testing.T) {
+		t.Run("get current user bookings limit lte 100", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, myBookingsBasePath()+"?page=1&limit=101", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")
 		})
@@ -524,7 +524,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			env.RequireError(status, http.StatusUnauthorized, body, "invalid token")
 		})
 
-		t.Run("401 missing authorization header on my bookings", func(t *testing.T) {
+		t.Run("401 missing authorization header on current user bookings", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, myBookingsBasePath()+"?page=1&limit=10", "", nil, nil)
 			env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
 		})

@@ -10,7 +10,7 @@ type bookingHandler interface {
 	CreateBooking(*gin.Context)
 	QuoteBooking(*gin.Context)
 	GetBookings(*gin.Context)
-	GetMyBookings(*gin.Context)
+	GetCurrentUserBookings(*gin.Context)
 	GetRoomBookings(*gin.Context)
 	GetAvailability(*gin.Context)
 	GetBooking(*gin.Context)
@@ -35,7 +35,7 @@ func (br bookingRoutes) Register(r *gin.RouterGroup) {
 
 	myBookings := r.Group("/users/me/bookings")
 	myBookings.Use(middleware.AuthMiddleware())
-	myBookings.GET("", br.h.GetMyBookings)
+	myBookings.GET("", br.h.GetCurrentUserBookings)
 
 	bookings := r.Group("/:countryCode/:citySlug/hotels/:hotelId/bookings")
 	bookings.Use(middleware.AuthMiddleware())

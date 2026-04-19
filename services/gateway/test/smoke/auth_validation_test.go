@@ -20,7 +20,7 @@ func runAuthValidationSmoke(t *testing.T, env *fixtures.Env) {
 		registerPath := "/api/v1/auth/register"
 		loginPath := "/api/v1/auth/login"
 		refreshPath := "/api/v1/auth/refresh"
-		usersPath := "/api/v1/auth/users"
+		usersPath := "/api/v1/users"
 		ownerIDPath := usersPath + "/" + strconv.FormatInt(env.Data.OwnerID, 10)
 
 		t.Run("register email required", func(t *testing.T) {
@@ -184,7 +184,7 @@ func runAuthValidationSmoke(t *testing.T, env *fixtures.Env) {
 	})
 
 	t.Run("auth grpc domain errors and statuses", func(t *testing.T) {
-		usersPath := "/api/v1/auth/users"
+		usersPath := "/api/v1/users"
 		ownerIDPath := usersPath + "/" + strconv.FormatInt(env.Data.OwnerID, 10)
 
 		t.Run("401 missing authorization header", func(t *testing.T) {

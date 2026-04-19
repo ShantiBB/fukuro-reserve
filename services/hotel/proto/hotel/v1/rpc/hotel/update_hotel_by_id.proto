@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "buf/validate/validate.proto";
+import "hotel/v1/models/hotel.proto";
+import "hotel/v1/rpc/hotel/update_hotel.proto";
+
+message UpdateHotelByIDRequest {
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  optional string description = 2;
+  string address = 3 [
+    (buf.validate.field).required = true
+  ];
+  UpdateHotelLocationRequest location = 4 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message UpdateHotelByIDResponse {
+  UpdateHotel hotel = 1;
+}

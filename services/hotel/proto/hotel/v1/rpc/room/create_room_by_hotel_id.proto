@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "buf/validate/validate.proto";
+import "hotel/v1/enums/room_type.proto";
+import "hotel/v1/models/room.proto";
+
+message CreateRoomByHotelIDRequest {
+  string hotel_id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string title = 2 [
+    (buf.validate.field).required = true
+  ];
+  optional string description = 3;
+  string room_number = 4 [
+    (buf.validate.field).required = true
+  ];
+  RoomType type = 5 [
+    (buf.validate.field).required = true
+  ];
+  float price = 6 [
+    (buf.validate.field).required = true
+  ];
+  int32 capacity = 7 [
+    (buf.validate.field).required = true
+  ];
+  double area_sqm = 8 [
+    (buf.validate.field).required = true
+  ];
+  int32 floor = 9 [
+    (buf.validate.field).required = true
+  ];
+  repeated string amenities = 10;
+  repeated string images = 11;
+}
+
+message CreateRoomByHotelIDResponse {
+  Room room = 1;
+}

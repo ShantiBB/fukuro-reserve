@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package hotel.v1;
+
+option go_package = "api/hotel/v1;hotelv1";
+
+import "buf/validate/validate.proto";
+import "hotel/v1/models/hotel.proto";
+
+message UpdateHotelTitleByIDRequest {
+  string id = 1 [
+    (buf.validate.field).string.uuid = true
+  ];
+  string title = 2 [
+    (buf.validate.field).required = true
+  ];
+}
+
+message UpdateHotelTitleByIDResponse {
+  UpdateHotelTitle hotel = 1;
+}

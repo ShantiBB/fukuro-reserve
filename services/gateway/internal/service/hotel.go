@@ -11,6 +11,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+const (
+	int32Min = -1 << 31
+	int32Max = 1<<31 - 1
+)
+
 func (s *Hotel) CreateHotel(ctx context.Context, req dto.CreateHotelRequest) (*dto.HotelResponse, error) {
 	var description *string
 	if req.Description != "" {
@@ -148,6 +153,15 @@ func (s *Hotel) CreateRoomByHotelID(ctx context.Context, hotelID string, req dto
 		price = float32(p)
 	}
 
+	capacity, err := toInt32(req.Capacity, "capacity")
+	if err != nil {
+		return nil, err
+	}
+	floor, err := toInt32(req.Floor, "floor")
+	if err != nil {
+		return nil, err
+	}
+
 	resp, err := s.clients.Room.CreateRoomByHotelID(ctx, &hotelv1.CreateRoomByHotelIDRequest{
 		HotelId:     hotelID,
 		Title:       req.Title,
@@ -155,9 +169,9 @@ func (s *Hotel) CreateRoomByHotelID(ctx context.Context, hotelID string, req dto
 		RoomNumber:  req.RoomNumber,
 		Type:        hotelv1.RoomType(hotelv1.RoomType_value[req.Type]),
 		Price:       price,
-		Capacity:    int32(req.Capacity),
+		Capacity:    capacity,
 		AreaSqm:     float64(req.AreaSqm),
-		Floor:       int32(req.Floor),
+		Floor:       floor,
 		Amenities:   req.Amenities,
 		Images:      req.Images,
 	})
@@ -255,4 +269,11 @@ func (s *Hotel) UpdateRoomStatus(ctx context.Context, roomID string, req dto.Upd
 func (s *Hotel) DeleteRoom(ctx context.Context, roomID string) error {
 	_, err := s.clients.Room.DeleteRoom(ctx, &hotelv1.DeleteRoomRequest{Id: roomID})
 	return err
+}
+
+func toInt32(v int64, field string) (int32, error) {
+	if v < int32Min || v > int32Max {
+		return 0, status.Errorf(codes.InvalidArgument, "%s is out of range", field)
+	}
+	return int32(v), nil
 }

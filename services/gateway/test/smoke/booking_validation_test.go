@@ -16,7 +16,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 	t.Helper()
 
 	t.Run("booking grpc validation matrix", func(t *testing.T) {
-		createPath := "/api/v1/bookings"
+		createPath := bookingsBasePath(env)
 
 		checkIn := time.Now().UTC().Add(72 * time.Hour).Truncate(time.Second)
 		checkOut := checkIn.Add(48 * time.Hour)
@@ -191,7 +191,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		})
 
 		t.Run("get bookings userId positive may be normalized by gateway", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?userId=0&page=1&limit=10", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?userId=0&page=1&limit=10", env.Data.OwnerAccess, nil, nil)
 			if status == http.StatusBadRequest {
 				env.RequireError(status, http.StatusBadRequest, body, "userId must be a positive integer")
 				return
@@ -202,43 +202,43 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		})
 
 		t.Run("get bookings page numeric in gateway parser", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=bad&limit=10", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=bad&limit=10", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "page must be a positive integer")
 		})
 
 		t.Run("get bookings limit numeric in gateway parser", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=1&limit=bad", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=bad", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "limit must be a positive integer")
 		})
 
 		t.Run("get bookings hotel_id uuid", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?hotelId=not-a-uuid&page=1&limit=10", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/not-a-uuid/rooms/"+env.Data.RoomID+"/bookings?page=1&limit=10", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid hotel ID")
 		})
 
 		t.Run("get bookings limit lte 100", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=1&limit=101", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=101", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")
 		})
 
 		t.Run("get booking id uuid", func(t *testing.T) {
-			assertValidationFields(t, env, http.MethodGet, "/api/v1/bookings/not-a-uuid", env.Data.OwnerAccess, nil, "id")
+			assertValidationFields(t, env, http.MethodGet, createPath+"/not-a-uuid", env.Data.OwnerAccess, nil, "id")
 		})
 
 		t.Run("confirm booking id uuid", func(t *testing.T) {
-			assertValidationFields(t, env, http.MethodPatch, "/api/v1/bookings/not-a-uuid/confirm", env.Data.OwnerAccess, nil, "id")
+			assertValidationFields(t, env, http.MethodPatch, createPath+"/not-a-uuid/confirm", env.Data.OwnerAccess, nil, "id")
 		})
 
 		t.Run("cancel booking id uuid", func(t *testing.T) {
-			assertValidationFields(t, env, http.MethodPatch, "/api/v1/bookings/not-a-uuid/cancel", env.Data.OwnerAccess, nil, "id")
+			assertValidationFields(t, env, http.MethodPatch, createPath+"/not-a-uuid/cancel", env.Data.OwnerAccess, nil, "id")
 		})
 
 		t.Run("delete booking id uuid", func(t *testing.T) {
-			assertValidationFields(t, env, http.MethodDelete, "/api/v1/bookings/not-a-uuid", env.Data.OwnerAccess, nil, "id")
+			assertValidationFields(t, env, http.MethodDelete, createPath+"/not-a-uuid", env.Data.OwnerAccess, nil, "id")
 		})
 
 		t.Run("gateway normalization for get_bookings page and limit zero", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=0&limit=0", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=0&limit=0", env.Data.OwnerAccess, nil, nil)
 			if status == http.StatusBadRequest {
 				t.Fatalf("not reachable via gateway normalization: get_bookings.page >= 1, get_bookings.limit >= 1; body=%s", string(body))
 			}
@@ -246,6 +246,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 	})
 
 	t.Run("booking grpc domain errors and statuses", func(t *testing.T) {
+		createPath := bookingsBasePath(env)
 		checkIn := time.Now().UTC().Add(30 * 24 * time.Hour).Truncate(time.Second)
 		checkOut := checkIn.Add(48 * time.Hour)
 
@@ -265,12 +266,12 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		}
 
 		t.Run("401 missing authorization header", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=1&limit=10", "", nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=10", "", nil, nil)
 			env.RequireError(status, http.StatusUnauthorized, body, "authorization header is required")
 		})
 
 		t.Run("401 invalid jwt token", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings?page=1&limit=10", "invalid.token.value", nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=10", "invalid.token.value", nil, nil)
 			env.RequireError(status, http.StatusUnauthorized, body, "invalid token")
 		})
 
@@ -278,14 +279,14 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			req := createReq
 			req.ExpectedTotalAmount = "1.00"
 
-			status, body := env.RequestJSON(http.MethodPost, "/api/v1/bookings", env.Data.OwnerAccess, req, nil)
+			status, body := env.RequestJSON(http.MethodPost, createPath, env.Data.OwnerAccess, req, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "expected total amount does not match calculated total")
 		})
 
 		var conflictBookingID string
 		t.Run("create booking for conflict setup", func(t *testing.T) {
 			var resp dto.BookingResponse
-			status, body := env.RequestJSON(http.MethodPost, "/api/v1/bookings", env.Data.OwnerAccess, createReq, &resp)
+			status, body := env.RequestJSON(http.MethodPost, createPath, env.Data.OwnerAccess, createReq, &resp)
 			env.RequireStatus(status, http.StatusCreated, body)
 			conflictBookingID = resp.Id
 			if resp.Status != "BOOKING_STATUS_PENDING" {
@@ -294,33 +295,33 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		})
 
 		t.Run("409 room lock already exists", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodPost, "/api/v1/bookings", env.Data.OwnerAccess, createReq, nil)
+			status, body := env.RequestJSON(http.MethodPost, createPath, env.Data.OwnerAccess, createReq, nil)
 			env.RequireError(status, http.StatusConflict, body, "room lock already exists")
 		})
 
 		t.Run("cleanup conflict setup booking", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodDelete, "/api/v1/bookings/"+conflictBookingID, env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodDelete, bookingsByIDPath(env, conflictBookingID), env.Data.OwnerAccess, nil, nil)
 			env.RequireStatus(status, http.StatusNoContent, body)
 		})
 
 		unknownBookingID := uuid.NewString()
 		t.Run("404 get unknown booking", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/bookings/"+unknownBookingID, env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, bookingsByIDPath(env, unknownBookingID), env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusNotFound, body, "booking not found")
 		})
 
 		t.Run("404 confirm unknown booking", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodPatch, "/api/v1/bookings/"+unknownBookingID+"/confirm", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodPatch, bookingsByIDPath(env, unknownBookingID)+"/confirm", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusNotFound, body, "booking not found")
 		})
 
 		t.Run("404 cancel unknown booking", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodPatch, "/api/v1/bookings/"+unknownBookingID+"/cancel", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodPatch, bookingsByIDPath(env, unknownBookingID)+"/cancel", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusNotFound, body, "booking not found")
 		})
 
 		t.Run("404 delete unknown booking", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodDelete, "/api/v1/bookings/"+unknownBookingID, env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodDelete, bookingsByIDPath(env, unknownBookingID), env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusNotFound, body, "booking not found")
 		})
 	})

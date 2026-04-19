@@ -27,26 +27,24 @@ type ValidationErrorDetail struct {
 }
 
 type RuntimeData struct {
-	Password          string
-	AdminEmail        string
+	HotelTitleRenamed string
+	OwnerRefresh      string
 	AdminPassword     string
 	OwnerEmail        string
 	ManagedEmail      string
 	OwnerUsername     string
 	ManagedUsername   string
 	HotelTitle        string
-	HotelTitleRenamed string
-
-	OwnerAccess  string
-	OwnerRefresh string
-	AdminAccess  string
-
-	OwnerID   int64
-	ManagedID int64
-	HotelID   string
-	HotelSlug string
-	RoomID    string
-	BookingID string
+	AdminEmail        string
+	Password          string
+	OwnerAccess       string
+	AdminAccess       string
+	BookingID         string
+	RoomID            string
+	HotelID           string
+	HotelSlug         string
+	ManagedID         int64
+	OwnerID           int64
 }
 
 type Env struct {

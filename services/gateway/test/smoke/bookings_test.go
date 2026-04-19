@@ -14,12 +14,13 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 
 	checkIn := time.Now().UTC().Add(14 * 24 * time.Hour).Truncate(time.Second)
 	checkOut := checkIn.Add(48 * time.Hour)
+	basePath := bookingsBasePath(env)
 
 	t.Run("40 create booking", func(t *testing.T) {
 		var resp dto.BookingResponse
 		status, body := env.RequestJSON(
 			http.MethodPost,
-			"/api/v1/bookings",
+			basePath,
 			env.Data.OwnerAccess,
 			dto.CreateBookingRequest{
 				UserId:              env.Data.OwnerID,
@@ -50,7 +51,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?page=1&limit=10",
+			basePath+"?page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -69,7 +70,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?userId="+mustQueryUserID(env.Data.OwnerID)+"&page=1&limit=10",
+			basePath+"?userId="+mustQueryUserID(env.Data.OwnerID)+"&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -91,7 +92,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?userId="+mustQueryUserID(env.Data.OwnerID)+"&hotelId="+env.Data.HotelID+"&page=1&limit=10",
+			basePath+"?userId="+mustQueryUserID(env.Data.OwnerID)+"&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -116,7 +117,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings/"+env.Data.BookingID,
+			bookingsByIDPath(env, env.Data.BookingID),
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -136,7 +137,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?status=BOOKING_STATUS_PENDING&page=1&limit=10",
+			basePath+"?status=BOOKING_STATUS_PENDING&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -156,7 +157,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.StatusResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/bookings/"+env.Data.BookingID+"/confirm",
+			bookingsByIDPath(env, env.Data.BookingID)+"/confirm",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -171,7 +172,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?status=BOOKING_STATUS_CONFIRMED&page=1&limit=10",
+			basePath+"?status=BOOKING_STATUS_CONFIRMED&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -191,7 +192,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.StatusResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/bookings/"+env.Data.BookingID+"/cancel",
+			bookingsByIDPath(env, env.Data.BookingID)+"/cancel",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -206,7 +207,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings/"+env.Data.BookingID,
+			bookingsByIDPath(env, env.Data.BookingID),
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -223,7 +224,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?status=BOOKING_STATUS_CANCELLED&page=1&limit=10",
+			basePath+"?status=BOOKING_STATUS_CANCELLED&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -243,7 +244,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/bookings?status=BOOKING_STATUS_UNKNOWN&page=1&limit=10",
+			basePath+"?status=BOOKING_STATUS_UNKNOWN&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,

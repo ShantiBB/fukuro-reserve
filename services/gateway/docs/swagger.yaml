@@ -1003,6 +1003,366 @@ paths:
       summary: Update room
       tags:
       - rooms
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings:
+    get:
+      description: Returns bookings with optional filters and pagination. Requires
+        JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Filter by user ID
+        example: 1
+        in: query
+        minimum: 1
+        name: userId
+        type: integer
+      - description: Filter by booking status
+        example: BOOKING_STATUS_CONFIRMED
+        in: query
+        name: status
+        type: string
+      - default: 1
+        description: Page number (starts from 1)
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BookingsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all bookings
+      tags:
+      - bookings
+    post:
+      consumes:
+      - application/json
+      description: Creates a booking with guest and room allocation details. Requires
+        JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Create booking request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create a new booking
+      tags:
+      - bookings
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}:
+    delete:
+      description: Deletes a booking by ID. Requires JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete booking
+      tags:
+      - bookings
+    get:
+      description: Returns a booking by ID. Requires JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get booking by ID
+      tags:
+      - bookings
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/cancel:
+    patch:
+      description: Cancels a booking by ID. Requires JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Cancel booking
+      tags:
+      - bookings
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/confirm:
+    patch:
+      description: Confirms a booking by ID. Requires JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        example: 1f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Confirm booking
+      tags:
+      - bookings
   /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status:
     patch:
       consumes:
@@ -1609,223 +1969,6 @@ paths:
       summary: Update user role
       tags:
       - users
-  /bookings:
-    get:
-      description: Returns bookings with optional filters and pagination. Requires
-        JWT auth.
-      parameters:
-      - description: Filter by user ID
-        example: 1
-        in: query
-        minimum: 1
-        name: userId
-        type: integer
-      - description: Filter by hotel ID
-        example: 0f8fad5b-d9cb-469f-a165-70867728950e
-        in: query
-        name: hotelId
-        type: string
-      - description: Filter by booking status
-        example: BOOKING_STATUS_CONFIRMED
-        in: query
-        name: status
-        type: string
-      - default: 1
-        description: Page number (starts from 1)
-        in: query
-        minimum: 1
-        name: page
-        type: integer
-      - default: 10
-        description: Page size
-        in: query
-        maximum: 100
-        minimum: 1
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.BookingsResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get all bookings
-      tags:
-      - bookings
-    post:
-      consumes:
-      - application/json
-      description: Creates a booking with guest and room allocation details. Requires
-        JWT auth.
-      parameters:
-      - description: Create booking request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateBookingRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/dto.BookingResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Create a new booking
-      tags:
-      - bookings
-  /bookings/{bookingId}:
-    delete:
-      description: Deletes a booking by ID. Requires JWT auth.
-      parameters:
-      - description: Booking ID
-        example: 2f8fad5b-d9cb-469f-a165-70867728950e
-        in: path
-        name: bookingId
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Delete booking
-      tags:
-      - bookings
-    get:
-      description: Returns a booking by ID. Requires JWT auth.
-      parameters:
-      - description: Booking ID
-        example: 2f8fad5b-d9cb-469f-a165-70867728950e
-        in: path
-        name: bookingId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.BookingResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Get booking by ID
-      tags:
-      - bookings
-  /bookings/{bookingId}/cancel:
-    patch:
-      description: Cancels a booking by ID. Requires JWT auth.
-      parameters:
-      - description: Booking ID
-        example: 2f8fad5b-d9cb-469f-a165-70867728950e
-        in: path
-        name: bookingId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.StatusResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Cancel booking
-      tags:
-      - bookings
-  /bookings/{bookingId}/confirm:
-    patch:
-      description: Confirms a booking by ID. Requires JWT auth.
-      parameters:
-      - description: Booking ID
-        example: 2f8fad5b-d9cb-469f-a165-70867728950e
-        in: path
-        name: bookingId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.StatusResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/responder.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Confirm booking
-      tags:
-      - bookings
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

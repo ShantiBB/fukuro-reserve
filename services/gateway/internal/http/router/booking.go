@@ -25,7 +25,7 @@ func NewBookingRoutes(pattern string, h bookingHandler) RouteRegistrar {
 }
 
 func (br bookingRoutes) Register(r *gin.RouterGroup) {
-	bookings := r.Group(br.pattern)
+	bookings := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms/:roomId/bookings")
 	bookings.Use(middleware.AuthMiddleware())
 
 	bookings.POST("", br.h.CreateBooking)

@@ -48,7 +48,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		t.Run("create booking hotel_id uuid from path", func(t *testing.T) {
 			assertValidationFields(t, env,
 				http.MethodPost,
-				"/api/v1/jp/tokyo/hotels/not-a-uuid/rooms/"+env.Data.RoomID+"/bookings",
+				"/api/v1/jp/tokyo/hotels/not-a-uuid/bookings",
 				env.Data.OwnerAccess,
 				validBody,
 				"hotel_id",
@@ -215,7 +215,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		})
 
 		t.Run("get bookings hotel_id uuid", func(t *testing.T) {
-			status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/not-a-uuid/rooms/"+env.Data.RoomID+"/bookings?page=1&limit=10", env.Data.OwnerAccess, nil, nil)
+			status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels/not-a-uuid/bookings?page=1&limit=10", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid hotel ID")
 		})
 

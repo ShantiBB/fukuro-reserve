@@ -8,9 +8,8 @@ import (
 
 func bookingsBasePath(env *fixtures.Env) string {
 	return fmt.Sprintf(
-		"/api/v1/jp/tokyo/hotels/%s/rooms/%s/bookings",
+		"/api/v1/jp/tokyo/hotels/%s/bookings",
 		env.Data.HotelID,
-		env.Data.RoomID,
 	)
 }
 
@@ -28,9 +27,8 @@ func wrongLocationRoomPath(env *fixtures.Env) string {
 
 func wrongLocationBookingsBasePath(env *fixtures.Env) string {
 	return fmt.Sprintf(
-		"/api/v1/us/osaka/hotels/%s/rooms/%s/bookings",
+		"/api/v1/us/osaka/hotels/%s/bookings",
 		env.Data.HotelID,
-		env.Data.RoomID,
 	)
 }
 

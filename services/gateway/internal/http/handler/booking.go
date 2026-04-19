@@ -21,15 +21,14 @@ import (
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         request body dto.CreateBookingRequest true "Create booking request"
 // @Success       201 {object} dto.BookingResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings [post]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
-	countryCode, citySlug, hotelID, _, _, ok := bookingScopeFromPath(c, false)
+	countryCode, citySlug, hotelID, _, ok := bookingScopeFromPath(c, false)
 	if !ok {
 		return
 	}
@@ -57,7 +56,6 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         userId query int false "Filter by user ID" minimum(1) example(1)
 // @Param         status query string false "Filter by booking status" example(BOOKING_STATUS_CONFIRMED)
 // @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
@@ -65,9 +63,9 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 // @Success       200 {object} dto.BookingsResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings [get]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings [get]
 func (h *BookingHandler) GetBookings(c *gin.Context) {
-	countryCode, citySlug, hotelID, _, _, ok := bookingScopeFromPath(c, false)
+	countryCode, citySlug, hotelID, _, ok := bookingScopeFromPath(c, false)
 	if !ok {
 		return
 	}
@@ -116,15 +114,14 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
 // @Success       200 {object} dto.BookingResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId} [get]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId} [get]
 func (h *BookingHandler) GetBooking(c *gin.Context) {
-	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
@@ -147,15 +144,14 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
 // @Success       200 {object} dto.StatusResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/confirm [patch]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
-	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
@@ -178,15 +174,14 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
 // @Success       200 {object} dto.StatusResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/cancel [patch]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
-	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
@@ -208,15 +203,14 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
 // @Param         citySlug path string true "City slug" example(tokyo)
 // @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
-// @Param         roomId path string true "Room ID" example(1f8fad5b-d9cb-469f-a165-70867728950e)
 // @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
 // @Success       204
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
 // @Failure       404 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId} [delete]
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId} [delete]
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
-	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
@@ -229,38 +223,32 @@ func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, citySlug, hotelID, roomID, bookingID string, ok bool) {
+func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, citySlug, hotelID, bookingID string, ok bool) {
 	countryCode = c.Param("countryCode")
 	if countryCode == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
-		return "", "", "", "", "", false
+		return "", "", "", "", false
 	}
 
 	citySlug = c.Param("citySlug")
 	if citySlug == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
-		return "", "", "", "", "", false
+		return "", "", "", "", false
 	}
 
 	hotelID = c.Param("hotelId")
 	if hotelID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
-		return "", "", "", "", "", false
-	}
-
-	roomID = c.Param("roomId")
-	if roomID == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrRoomIDRequired})
-		return "", "", "", "", "", false
+		return "", "", "", "", false
 	}
 
 	if requireBookingID {
 		bookingID = c.Param("bookingId")
 		if bookingID == "" {
 			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
-			return "", "", "", "", "", false
+			return "", "", "", "", false
 		}
 	}
 
-	return countryCode, citySlug, hotelID, roomID, bookingID, true
+	return countryCode, citySlug, hotelID, bookingID, true
 }

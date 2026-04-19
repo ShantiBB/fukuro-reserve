@@ -78,21 +78,32 @@ func (app *App) MustRun() {
 		WriteTimeout: time.Duration(app.Config.HTTP.WriteTimeoutSec) * time.Second,
 		IdleTimeout:  time.Duration(app.Config.HTTP.IdleTimeoutSec) * time.Second,
 	}
+	serverErr := make(chan error, 1)
 
 	go func() {
 		slog.Info("Starting HTTP server", "address", addr)
 		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			slog.Error("Failed to start HTTP server", "error", err)
+			serverErr <- err
 		}
 	}()
 
-	app.gracefulShutdown(server)
+	app.gracefulShutdown(server, serverErr)
 }
 
-func (app *App) gracefulShutdown(server *http.Server) {
+func (app *App) gracefulShutdown(server *http.Server, serverErr <-chan error) {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	<-quit
+	defer signal.Stop(quit)
+
+	select {
+	case err := <-serverErr:
+		slog.Error("Failed to start HTTP server", "error", err)
+		if closeErr := app.Clients.Close(); closeErr != nil {
+			slog.Error("Error closing gRPC connections", "error", closeErr)
+		}
+		return
+	case <-quit:
+	}
 
 	slog.Info("Shutting down HTTP server")
 

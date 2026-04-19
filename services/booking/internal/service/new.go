@@ -41,6 +41,13 @@ type BookingRoomRepository interface {
 
 type RoomLockRepository interface {
 	CreateRoomLocks(ctx context.Context, tx pgx.Tx, locks []*models.CreateRoomLock) ([]*models.RoomLockDetail, error)
+	GetUnavailableRoomIDs(
+		ctx context.Context,
+		tx pgx.Tx,
+		bookingRef models.BookingRef,
+		checkIn time.Time,
+		checkOut time.Time,
+	) ([]uuid.UUID, error)
 	UpdateRoomLocksActivityByID(
 		ctx context.Context, tx pgx.Tx, id uuid.UUID, roomLock *models.RoomLockActivity,
 	) error

@@ -113,6 +113,35 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
+	t.Run("41.4 availability excludes locked room", func(t *testing.T) {
+		var resp dto.AvailabilityResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			availabilityPath(env, checkIn, checkOut),
+			"",
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.CheckIn.IsZero() || resp.CheckOut.IsZero() {
+			t.Fatalf("availability response has zero dates: %+v", resp)
+		}
+		if findRoomByID(resp.Rooms, env.Data.RoomID) != nil {
+			t.Fatalf("locked room found in availability response")
+		}
+	})
+
+	t.Run("41.5 availability wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationAvailabilityPath(env, checkIn, checkOut),
+			"",
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "hotel not found")
+	})
+
 	t.Run("42 list bookings by user", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(

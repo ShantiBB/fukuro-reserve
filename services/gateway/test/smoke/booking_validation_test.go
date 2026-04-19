@@ -235,6 +235,83 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")
 		})
 
+		t.Run("availability check_in required", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_out="+checkOut.Format("2006-01-02"),
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "check_in is required")
+		})
+
+		t.Run("availability check_out required", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_in="+checkIn.Format("2006-01-02"),
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "check_out is required")
+		})
+
+		t.Run("availability check_in date format", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_in=bad-date&check_out="+checkOut.Format("2006-01-02"),
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "date must be in YYYY-MM-DD format")
+		})
+
+		t.Run("availability check_out after check_in", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_in="+checkIn.Format("2006-01-02")+"&check_out="+checkIn.Format("2006-01-02"),
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "check_out must be after check_in")
+		})
+
+		t.Run("availability page numeric in gateway parser", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_in="+checkIn.Format("2006-01-02")+"&check_out="+checkOut.Format("2006-01-02")+"&page=bad&limit=10",
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "page must be a positive integer")
+		})
+
+		t.Run("availability limit numeric in gateway parser", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				availabilityBasePath(env)+"?check_in="+checkIn.Format("2006-01-02")+"&check_out="+checkOut.Format("2006-01-02")+"&page=1&limit=bad",
+				"",
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "limit must be a positive integer")
+		})
+
+		t.Run("availability hotel_id uuid", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodGet,
+				"/api/v1/jp/tokyo/hotels/not-a-uuid/rooms/availability?check_in="+checkIn.Format("2006-01-02")+"&check_out="+checkOut.Format("2006-01-02")+"&page=1&limit=10",
+				"",
+				nil,
+				"hotel_id",
+			)
+		})
+
 		t.Run("get booking id uuid", func(t *testing.T) {
 			assertValidationFields(t, env, http.MethodGet, createPath+"/not-a-uuid", env.Data.OwnerAccess, nil, "id")
 		})

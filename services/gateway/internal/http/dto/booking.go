@@ -66,3 +66,9 @@ type BookingShortResponse struct {
 type BookingsResponse struct {
 	Bookings []*BookingShortResponse `json:"bookings"`
 }
+
+type AvailabilityResponse struct {
+	CheckIn  time.Time            `json:"check_in"`
+	CheckOut time.Time            `json:"check_out"`
+	Rooms    []*RoomShortResponse `json:"rooms"`
+}

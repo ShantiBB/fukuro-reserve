@@ -79,6 +79,44 @@ func (r *Repository) CreateRoomLocks(
 	return out, nil
 }
 
+func (r *Repository) GetUnavailableRoomIDs(
+	ctx context.Context,
+	tx pgx.Tx,
+	bookingRef models.BookingRef,
+	checkIn time.Time,
+	checkOut time.Time,
+) ([]uuid.UUID, error) {
+	db := r.executor(tx)
+
+	rows, err := db.Query(
+		ctx,
+		query.GetUnavailableRoomIDs,
+		bookingRef.CountryCode,
+		bookingRef.CitySlug,
+		bookingRef.HotelID,
+		checkIn,
+		checkOut,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	roomIDs := make([]uuid.UUID, 0)
+	for rows.Next() {
+		var roomID uuid.UUID
+		if err = rows.Scan(&roomID); err != nil {
+			return nil, err
+		}
+		roomIDs = append(roomIDs, roomID)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return roomIDs, nil
+}
+
 func (r *Repository) UpdateRoomLocksActivityByID(
 	ctx context.Context,
 	tx pgx.Tx,

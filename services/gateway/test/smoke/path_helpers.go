@@ -25,6 +25,13 @@ func roomBookingsBasePath(env *fixtures.Env) string {
 	)
 }
 
+func availabilityBasePath(env *fixtures.Env) string {
+	return fmt.Sprintf(
+		"/api/v1/jp/tokyo/hotels/%s/rooms/availability",
+		env.Data.HotelID,
+	)
+}
+
 func wrongLocationHotelPath(env *fixtures.Env) string {
 	return fmt.Sprintf("/api/v1/us/osaka/hotels/%s", env.Data.HotelID)
 }
@@ -49,5 +56,12 @@ func wrongLocationRoomBookingsBasePath(env *fixtures.Env) string {
 		"/api/v1/us/osaka/hotels/%s/rooms/%s/bookings",
 		env.Data.HotelID,
 		env.Data.RoomID,
+	)
+}
+
+func wrongLocationAvailabilityBasePath(env *fixtures.Env) string {
+	return fmt.Sprintf(
+		"/api/v1/us/osaka/hotels/%s/rooms/availability",
+		env.Data.HotelID,
 	)
 }

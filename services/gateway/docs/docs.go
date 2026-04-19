@@ -1767,6 +1767,97 @@ const docTemplate = `{
                 }
             }
         },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/availability": {
+            "get": {
+                "description": "Returns rooms available for the requested date range.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get available hotel rooms",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-05-10",
+                        "description": "Check-in date in YYYY-MM-DD format",
+                        "name": "check_in",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "2026-05-13",
+                        "description": "Check-out date in YYYY-MM-DD format",
+                        "name": "check_out",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.AvailabilityResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}": {
             "get": {
                 "description": "Public endpoint. Returns room details by hotel ID and room ID.",
@@ -2001,7 +2092,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "bookings"
+                    "rooms"
                 ],
                 "summary": "Get room bookings",
                 "parameters": [
@@ -2256,6 +2347,23 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.AvailabilityResponse": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.RoomShortResponse"
+                    }
+                }
+            }
+        },
         "dto.BookingResponse": {
             "type": "object",
             "properties": {

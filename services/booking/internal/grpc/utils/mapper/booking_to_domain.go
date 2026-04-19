@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
 
@@ -66,6 +68,19 @@ func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.Booki
 	}
 
 	return bookingRef, nil
+}
+
+func GetUnavailableRoomsRequestToDomain(req *bookingv1.GetUnavailableRoomsRequest) (models.BookingRef, time.Time, time.Time, error) {
+	hotelID, err := uuid.Parse(req.HotelId)
+	if err != nil {
+		return models.BookingRef{}, time.Time{}, time.Time{}, consts.ErrInvalidHotelID
+	}
+
+	return models.BookingRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelID:     hotelID,
+	}, req.CheckIn.AsTime(), req.CheckOut.AsTime(), nil
 }
 
 type bookingLocationRefGetter interface {

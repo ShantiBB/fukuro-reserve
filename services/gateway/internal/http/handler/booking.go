@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
@@ -108,7 +110,7 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // GetRoomBookings godoc
 // @Summary       Get room bookings
 // @Description   Returns bookings for a specific room. Requires JWT auth.
-// @Tags          bookings
+// @Tags          rooms
 // @Produce       json
 // @Security      Bearer
 // @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
@@ -155,6 +157,61 @@ func (h *BookingHandler) GetRoomBookings(c *gin.Context) {
 		page,
 		limit,
 	)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetAvailability godoc
+// @Summary       Get available hotel rooms
+// @Description   Returns rooms available for the requested date range.
+// @Tags          rooms
+// @Produce       json
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         check_in query string true "Check-in date in YYYY-MM-DD format" example(2026-05-10)
+// @Param         check_out query string true "Check-out date in YYYY-MM-DD format" example(2026-05-13)
+// @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
+// @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
+// @Success       200 {object} dto.AvailabilityResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/availability [get]
+func (h *BookingHandler) GetAvailability(c *gin.Context) {
+	countryCode, citySlug, hotelID, _, ok := bookingScopeFromPath(c, false)
+	if !ok {
+		return
+	}
+
+	checkIn, ok := requiredDateQuery(c, "check_in", consts.ErrCheckInRequired)
+	if !ok {
+		return
+	}
+	checkOut, ok := requiredDateQuery(c, "check_out", consts.ErrCheckOutRequired)
+	if !ok {
+		return
+	}
+	if !checkOut.After(checkIn) {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCheckOutMustBeAfterCheckIn})
+		return
+	}
+
+	page, err := request.OptionalUint64Query(c, "page")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrPageMustBePositiveInteger})
+		return
+	}
+	limit, err := request.OptionalUint64Query(c, "limit")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrLimitMustBePositiveInteger})
+		return
+	}
+
+	resp, err := h.service.GetAvailability(c.Request.Context(), countryCode, citySlug, hotelID, checkIn, checkOut, page, limit)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -309,4 +366,20 @@ func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, c
 	}
 
 	return countryCode, citySlug, hotelID, bookingID, true
+}
+
+func requiredDateQuery(c *gin.Context, key string, requiredError string) (time.Time, bool) {
+	raw := strings.TrimSpace(c.Query(key))
+	if raw == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: requiredError})
+		return time.Time{}, false
+	}
+
+	value, err := time.Parse("2006-01-02", raw)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrDateMustBeYYYYMMDD})
+		return time.Time{}, false
+	}
+
+	return value, true
 }

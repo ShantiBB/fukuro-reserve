@@ -2,12 +2,14 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	bookingv1 "github.com/ShantiBB/fukuro-reserve/services/booking/api/booking/v1"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
+	hotelv1 "github.com/ShantiBB/fukuro-reserve/services/hotel/api/hotel/v1"
 )
 
 func (s *Booking) CreateBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
@@ -93,6 +95,64 @@ func (s *Booking) getBookings(ctx context.Context, countryCode, citySlug string,
 	}
 
 	return mapper.BookingsShortResponseFromProto(resp), nil
+}
+
+func (s *Booking) GetAvailability(ctx context.Context, countryCode, citySlug, hotelID string, checkIn, checkOut time.Time, page, limit uint64) (*dto.AvailabilityResponse, error) {
+	if page == 0 {
+		page = s.pagination.DefaultPage
+	}
+	if limit == 0 {
+		limit = s.pagination.DefaultPageSize
+	}
+
+	roomsResp, err := s.clients.Room.GetRoomsByHotelID(ctx, &hotelv1.GetRoomsByHotelIDRequest{
+		HotelId:     hotelID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		Page:        page,
+		Limit:       limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	unavailableResp, err := s.clients.Booking.GetUnavailableRooms(ctx, &bookingv1.GetUnavailableRoomsRequest{
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		HotelId:     hotelID,
+		CheckIn:     timestamppb.New(checkIn),
+		CheckOut:    timestamppb.New(checkOut),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	unavailable := make(map[string]struct{}, len(unavailableResp.GetRoomIds()))
+	for _, roomID := range unavailableResp.GetRoomIds() {
+		unavailable[roomID] = struct{}{}
+	}
+
+	rooms := mapper.RoomsShortByHotelIDResponseFromProto(roomsResp)
+	if rooms == nil {
+		return &dto.AvailabilityResponse{CheckIn: checkIn, CheckOut: checkOut}, nil
+	}
+
+	availableRooms := make([]*dto.RoomShortResponse, 0, len(rooms.Rooms))
+	for _, room := range rooms.Rooms {
+		if room == nil {
+			continue
+		}
+		if _, ok := unavailable[room.Id]; ok {
+			continue
+		}
+		availableRooms = append(availableRooms, room)
+	}
+
+	return &dto.AvailabilityResponse{
+		CheckIn:  checkIn,
+		CheckOut: checkOut,
+		Rooms:    availableRooms,
+	}, nil
 }
 
 func (s *Booking) GetBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.BookingResponse, error) {

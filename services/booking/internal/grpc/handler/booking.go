@@ -69,6 +69,35 @@ func (h *Handler) GetBookings(
 	}, nil
 }
 
+func (h *Handler) GetUnavailableRooms(
+	ctx context.Context,
+	req *bookingv1.GetUnavailableRoomsRequest,
+) (*bookingv1.GetUnavailableRoomsResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	bookingRef, checkIn, checkOut, err := mapper.GetUnavailableRoomsRequestToDomain(req)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	roomIDs, err := h.svc.GetUnavailableRoomIDs(ctx, bookingRef, checkIn, checkOut)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	resp := &bookingv1.GetUnavailableRoomsResponse{
+		RoomIds: make([]string, len(roomIDs)),
+	}
+	for i, roomID := range roomIDs {
+		resp.RoomIds[i] = roomID.String()
+	}
+
+	return resp, nil
+}
+
 func (h *Handler) GetBooking(
 	ctx context.Context,
 	req *bookingv1.GetBookingRequest,

@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"time"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 )
@@ -40,6 +41,7 @@ type bookingService interface {
 	CreateBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error)
 	GetBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error)
 	GetRoomBookings(ctx context.Context, countryCode, citySlug, hotelID, roomID, status string, page, limit uint64) (*dto.BookingsResponse, error)
+	GetAvailability(ctx context.Context, countryCode, citySlug, hotelID string, checkIn, checkOut time.Time, page, limit uint64) (*dto.AvailabilityResponse, error)
 	GetBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.BookingResponse, error)
 	ConfirmBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error)
 	CancelBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error)

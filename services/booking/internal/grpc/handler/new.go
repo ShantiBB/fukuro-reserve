@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"time"
 
 	"buf.build/go/protovalidate"
 	"github.com/google/uuid"
@@ -17,6 +18,9 @@ type BookingService interface {
 	GetBookings(
 		ctx context.Context, bookingRef models.BookingRef, page uint64, limit uint64,
 	) (*models.BookingList, error)
+	GetUnavailableRoomIDs(
+		ctx context.Context, bookingRef models.BookingRef, checkIn time.Time, checkOut time.Time,
+	) ([]uuid.UUID, error)
 	GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error)
 	UpdateBookingStatus(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID, status models.BookingStatus) error
 	DeleteBookingByID(ctx context.Context, bookingRef models.BookingRef, id uuid.UUID) error

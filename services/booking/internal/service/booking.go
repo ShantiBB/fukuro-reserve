@@ -131,6 +131,21 @@ func (s *Service) GetBookings(
 	return bookingList, nil
 }
 
+func (s *Service) GetUnavailableRoomIDs(
+	ctx context.Context,
+	bookingRef models.BookingRef,
+	checkIn time.Time,
+	checkOut time.Time,
+) ([]uuid.UUID, error) {
+	roomIDs, err := s.repo.GetUnavailableRoomIDs(ctx, nil, bookingRef, checkIn, checkOut)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get unavailable room ids", "err", err)
+		return nil, err
+	}
+
+	return roomIDs, nil
+}
+
 func (s *Service) GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error) {
 	booking, err := s.repo.GetBookingByID(ctx, nil, bookingRef, bookingID)
 	if err != nil {

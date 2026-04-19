@@ -1,5 +1,16 @@
 basePath: /api/v1
 definitions:
+  dto.AvailabilityResponse:
+    properties:
+      check_in:
+        type: string
+      check_out:
+        type: string
+      rooms:
+        items:
+          $ref: '#/definitions/dto.RoomShortResponse'
+        type: array
+    type: object
   dto.BookingResponse:
     properties:
       booking_rooms:
@@ -1389,7 +1400,7 @@ paths:
       - Bearer: []
       summary: Get room bookings
       tags:
-      - bookings
+      - rooms
   /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status:
     patch:
       consumes:
@@ -1448,6 +1459,71 @@ paths:
       security:
       - Bearer: []
       summary: Update room status
+      tags:
+      - rooms
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/availability:
+    get:
+      description: Returns rooms available for the requested date range.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Check-in date in YYYY-MM-DD format
+        example: "2026-05-10"
+        in: query
+        name: check_in
+        required: true
+        type: string
+      - description: Check-out date in YYYY-MM-DD format
+        example: "2026-05-13"
+        in: query
+        name: check_out
+        required: true
+        type: string
+      - default: 1
+        description: Page number (starts from 1)
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        maximum: 100
+        minimum: 1
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.AvailabilityResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      summary: Get available hotel rooms
       tags:
       - rooms
   /{countryCode}/{citySlug}/hotels/{hotelId}/title:

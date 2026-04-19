@@ -29,7 +29,7 @@ import (
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings [post]
 func (h *BookingHandler) CreateBooking(c *gin.Context) {
-	hotelID, _, _, ok := bookingScopeFromPath(c, false)
+	countryCode, citySlug, hotelID, _, _, ok := bookingScopeFromPath(c, false)
 	if !ok {
 		return
 	}
@@ -39,7 +39,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
-	resp, err := h.service.CreateBooking(c.Request.Context(), hotelID, req)
+	resp, err := h.service.CreateBooking(c.Request.Context(), countryCode, citySlug, hotelID, req)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -67,7 +67,7 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 // @Failure       401 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings [get]
 func (h *BookingHandler) GetBookings(c *gin.Context) {
-	hotelID, _, _, ok := bookingScopeFromPath(c, false)
+	countryCode, citySlug, hotelID, _, _, ok := bookingScopeFromPath(c, false)
 	if !ok {
 		return
 	}
@@ -91,6 +91,8 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 
 	resp, err := h.service.GetBookings(
 		c.Request.Context(),
+		countryCode,
+		citySlug,
 		userID,
 		hotelID,
 		c.Query("status"),
@@ -122,12 +124,12 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId} [get]
 func (h *BookingHandler) GetBooking(c *gin.Context) {
-	_, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
 
-	resp, err := h.service.GetBooking(c.Request.Context(), bookingID)
+	resp, err := h.service.GetBooking(c.Request.Context(), countryCode, citySlug, bookingID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -153,12 +155,12 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/confirm [patch]
 func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
-	_, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
 
-	resp, err := h.service.ConfirmBooking(c.Request.Context(), bookingID)
+	resp, err := h.service.ConfirmBooking(c.Request.Context(), countryCode, citySlug, bookingID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -184,12 +186,12 @@ func (h *BookingHandler) ConfirmBooking(c *gin.Context) {
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId}/cancel [patch]
 func (h *BookingHandler) CancelBooking(c *gin.Context) {
-	_, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
 
-	resp, err := h.service.CancelBooking(c.Request.Context(), bookingID)
+	resp, err := h.service.CancelBooking(c.Request.Context(), countryCode, citySlug, bookingID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -214,12 +216,12 @@ func (h *BookingHandler) CancelBooking(c *gin.Context) {
 // @Failure       404 {object} responder.ErrorResponse
 // @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings/{bookingId} [delete]
 func (h *BookingHandler) DeleteBooking(c *gin.Context) {
-	_, _, bookingID, ok := bookingScopeFromPath(c, true)
+	countryCode, citySlug, _, _, bookingID, ok := bookingScopeFromPath(c, true)
 	if !ok {
 		return
 	}
 
-	if err := h.service.DeleteBooking(c.Request.Context(), bookingID); err != nil {
+	if err := h.service.DeleteBooking(c.Request.Context(), countryCode, citySlug, bookingID); err != nil {
 		responder.GinGRPCError(c, err)
 		return
 	}
@@ -227,38 +229,38 @@ func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (hotelID, roomID, bookingID string, ok bool) {
-	countryCode := c.Param("countryCode")
+func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, citySlug, hotelID, roomID, bookingID string, ok bool) {
+	countryCode = c.Param("countryCode")
 	if countryCode == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
-		return "", "", "", false
+		return "", "", "", "", "", false
 	}
 
-	citySlug := c.Param("citySlug")
+	citySlug = c.Param("citySlug")
 	if citySlug == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
-		return "", "", "", false
+		return "", "", "", "", "", false
 	}
 
 	hotelID = c.Param("hotelId")
 	if hotelID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
-		return "", "", "", false
+		return "", "", "", "", "", false
 	}
 
 	roomID = c.Param("roomId")
 	if roomID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrRoomIDRequired})
-		return "", "", "", false
+		return "", "", "", "", "", false
 	}
 
 	if requireBookingID {
 		bookingID = c.Param("bookingId")
 		if bookingID == "" {
 			c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrBookingIDRequired})
-			return "", "", "", false
+			return "", "", "", "", "", false
 		}
 	}
 
-	return hotelID, roomID, bookingID, true
+	return countryCode, citySlug, hotelID, roomID, bookingID, true
 }

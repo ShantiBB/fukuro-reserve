@@ -82,7 +82,8 @@ func (h *Handler) GetBooking(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	booking, err := h.svc.GetBookingById(ctx, bookingId)
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	booking, err := h.svc.GetBookingById(ctx, bookingRef, bookingId)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
@@ -106,7 +107,8 @@ func (h *Handler) ConfirmBookingStatus(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusConfirmed); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.UpdateBookingStatus(ctx, bookingRef, bookingId, models.BookingStatusConfirmed); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}
@@ -129,7 +131,8 @@ func (h *Handler) CancelBookingStatus(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.UpdateBookingStatus(ctx, bookingId, models.BookingStatusCancelled); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.UpdateBookingStatus(ctx, bookingRef, bookingId, models.BookingStatusCancelled); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}
@@ -152,7 +155,8 @@ func (h *Handler) DeleteBooking(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err = h.svc.DeleteBookingByID(ctx, bookingId); err != nil {
+	bookingRef := mapper.BookingLocationRefToDomain(req)
+	if err = h.svc.DeleteBookingByID(ctx, bookingRef, bookingId); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}

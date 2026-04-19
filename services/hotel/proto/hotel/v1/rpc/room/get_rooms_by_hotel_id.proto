@@ -14,6 +14,12 @@ message GetRoomsByHotelIDRequest {
     gte: 1
     lte: 100
   }];
+  string country_code = 4 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 5 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
 }
 
 message GetRoomsByHotelIDResponse {

@@ -100,6 +100,17 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
+	t.Run("22.2 get hotel by id wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationHotelPath(env),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "hotel not found")
+	})
+
 	t.Run("23 get hotel by slug", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
@@ -210,5 +221,16 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 			nil,
 		)
 		env.RequireError(status, http.StatusForbidden, body, "forbidden")
+	})
+
+	t.Run("27.2 delete hotel wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodDelete,
+			wrongLocationHotelPath(env),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "hotel not found")
 	})
 }

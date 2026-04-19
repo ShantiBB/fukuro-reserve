@@ -131,8 +131,8 @@ func (s *Service) GetBookings(
 	return bookingList, nil
 }
 
-func (s *Service) GetBookingById(ctx context.Context, bookingID uuid.UUID) (*models.Booking, error) {
-	booking, err := s.repo.GetBookingByID(ctx, nil, bookingID)
+func (s *Service) GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error) {
+	booking, err := s.repo.GetBookingByID(ctx, nil, bookingRef, bookingID)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to get booking by id", "err", err)
 		return nil, err
@@ -150,10 +150,11 @@ func (s *Service) GetBookingById(ctx context.Context, bookingID uuid.UUID) (*mod
 
 func (s *Service) UpdateBookingStatus(
 	ctx context.Context,
+	bookingRef models.BookingRef,
 	bookingID uuid.UUID,
 	status models.BookingStatus,
 ) error {
-	checkOut, err := s.repo.UpdateBookingStatusByID(ctx, nil, bookingID, status)
+	checkOut, err := s.repo.UpdateBookingStatusByID(ctx, nil, bookingRef, bookingID, status)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed to update booking status", "err", err)
 		return err
@@ -193,8 +194,8 @@ func (s *Service) UpdateBookingStatus(
 	return nil
 }
 
-func (s *Service) DeleteBookingByID(ctx context.Context, id uuid.UUID) error {
-	if err := s.repo.DeleteBookingByID(ctx, nil, id); err != nil {
+func (s *Service) DeleteBookingByID(ctx context.Context, bookingRef models.BookingRef, id uuid.UUID) error {
+	if err := s.repo.DeleteBookingByID(ctx, nil, bookingRef, id); err != nil {
 		slog.ErrorContext(ctx, "failed to delete booking by id", "err", err)
 		return err
 	}

@@ -10,7 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/mapper"
 )
 
-func (s *Booking) CreateBooking(ctx context.Context, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
+func (s *Booking) CreateBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error) {
 	var guestEmail *string
 	if req.GuestEmail != "" {
 		guestEmail = &req.GuestEmail
@@ -34,6 +34,8 @@ func (s *Booking) CreateBooking(ctx context.Context, hotelID string, req dto.Cre
 	resp, err := s.clients.Booking.CreateBooking(ctx, &bookingv1.CreateBookingRequest{
 		UserId:              req.UserId,
 		HotelId:             hotelID,
+		CountryCode:         countryCode,
+		CitySlug:            citySlug,
 		CheckIn:             timestamppb.New(req.CheckIn),
 		CheckOut:            timestamppb.New(req.CheckOut),
 		GuestName:           req.GuestName,
@@ -50,7 +52,7 @@ func (s *Booking) CreateBooking(ctx context.Context, hotelID string, req dto.Cre
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
-func (s *Booking) GetBookings(ctx context.Context, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
+func (s *Booking) GetBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
 	if page == 0 {
 		page = s.pagination.DefaultPage
 	}
@@ -58,7 +60,12 @@ func (s *Booking) GetBookings(ctx context.Context, userID int64, hotelID, status
 		limit = s.pagination.DefaultPageSize
 	}
 
-	req := &bookingv1.GetBookingsRequest{Page: page, Limit: limit}
+	req := &bookingv1.GetBookingsRequest{
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		Page:        page,
+		Limit:       limit,
+	}
 	if userID != 0 {
 		req.UserId = userID
 	}
@@ -77,8 +84,12 @@ func (s *Booking) GetBookings(ctx context.Context, userID int64, hotelID, status
 	return mapper.BookingsShortResponseFromProto(resp), nil
 }
 
-func (s *Booking) GetBooking(ctx context.Context, bookingID string) (*dto.BookingResponse, error) {
-	resp, err := s.clients.Booking.GetBooking(ctx, &bookingv1.GetBookingRequest{Id: bookingID})
+func (s *Booking) GetBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.BookingResponse, error) {
+	resp, err := s.clients.Booking.GetBooking(ctx, &bookingv1.GetBookingRequest{
+		Id:          bookingID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +97,12 @@ func (s *Booking) GetBooking(ctx context.Context, bookingID string) (*dto.Bookin
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
-func (s *Booking) ConfirmBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
-	resp, err := s.clients.Booking.ConfirmBookingStatus(ctx, &bookingv1.ConfirmBookingStatusRequest{Id: bookingID})
+func (s *Booking) ConfirmBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error) {
+	resp, err := s.clients.Booking.ConfirmBookingStatus(ctx, &bookingv1.ConfirmBookingStatusRequest{
+		Id:          bookingID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -95,8 +110,12 @@ func (s *Booking) ConfirmBooking(ctx context.Context, bookingID string) (*dto.St
 	return &dto.StatusResponse{Status: resp.Status.String()}, nil
 }
 
-func (s *Booking) CancelBooking(ctx context.Context, bookingID string) (*dto.StatusResponse, error) {
-	resp, err := s.clients.Booking.CancelBookingStatus(ctx, &bookingv1.CancelBookingStatusRequest{Id: bookingID})
+func (s *Booking) CancelBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error) {
+	resp, err := s.clients.Booking.CancelBookingStatus(ctx, &bookingv1.CancelBookingStatusRequest{
+		Id:          bookingID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +123,11 @@ func (s *Booking) CancelBooking(ctx context.Context, bookingID string) (*dto.Sta
 	return &dto.StatusResponse{Status: resp.Status.String()}, nil
 }
 
-func (s *Booking) DeleteBooking(ctx context.Context, bookingID string) error {
-	_, err := s.clients.Booking.DeleteBooking(ctx, &bookingv1.DeleteBookingRequest{Id: bookingID})
+func (s *Booking) DeleteBooking(ctx context.Context, countryCode, citySlug, bookingID string) error {
+	_, err := s.clients.Booking.DeleteBooking(ctx, &bookingv1.DeleteBookingRequest{
+		Id:          bookingID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+	})
 	return err
 }

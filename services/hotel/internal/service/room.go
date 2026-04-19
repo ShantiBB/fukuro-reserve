@@ -21,14 +21,15 @@ func (s *Service) CreateRoom(ctx context.Context, hotel models.HotelRef, room *m
 
 func (s *Service) CreateRoomByHotelID(
 	ctx context.Context,
+	hotelRef models.HotelRef,
 	hotelID uuid.UUID,
 	room *models.CreateRoom,
 ) (*models.Room, error) {
-	if _, err := s.repo.SelectHotelByID(ctx, hotelID); err != nil {
+	if _, err := s.repo.SelectHotelByID(ctx, hotelRef, hotelID); err != nil {
 		return nil, err
 	}
 
-	newRoom, err := s.repo.InsertRoomByHotelID(ctx, hotelID, room)
+	newRoom, err := s.repo.InsertRoomByHotelID(ctx, hotelRef, hotelID, room)
 	if err != nil {
 		return nil, err
 	}
@@ -48,16 +49,17 @@ func (s *Service) GetRooms(ctx context.Context, hotel models.HotelRef, page, lim
 
 func (s *Service) GetRoomsByHotelID(
 	ctx context.Context,
+	hotelRef models.HotelRef,
 	hotelID uuid.UUID,
 	page,
 	limit uint64,
 ) (*models.RoomList, error) {
-	if _, err := s.repo.SelectHotelByID(ctx, hotelID); err != nil {
+	if _, err := s.repo.SelectHotelByID(ctx, hotelRef, hotelID); err != nil {
 		return nil, err
 	}
 
 	offset := (page - 1) * limit
-	roomList, err := s.repo.SelectRoomsByHotelID(ctx, hotelID, limit, offset)
+	roomList, err := s.repo.SelectRoomsByHotelID(ctx, hotelRef, hotelID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -65,8 +67,8 @@ func (s *Service) GetRoomsByHotelID(
 	return roomList, nil
 }
 
-func (s *Service) GetRoomByID(ctx context.Context, roomID uuid.UUID) (*models.Room, error) {
-	room, err := s.repo.SelectRoomByID(ctx, roomID)
+func (s *Service) GetRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID) (*models.Room, error) {
+	room, err := s.repo.SelectRoomByID(ctx, hotelRef, roomID)
 	if err != nil {
 		return nil, err
 	}
@@ -74,24 +76,24 @@ func (s *Service) GetRoomByID(ctx context.Context, roomID uuid.UUID) (*models.Ro
 	return room, nil
 }
 
-func (s *Service) UpdateRoomByID(ctx context.Context, roomID uuid.UUID, room *models.UpdateRoom) error {
-	if err := s.repo.UpdateRoomByID(ctx, roomID, room); err != nil {
+func (s *Service) UpdateRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID, room *models.UpdateRoom) error {
+	if err := s.repo.UpdateRoomByID(ctx, hotelRef, roomID, room); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *Service) UpdateRoomStatusByID(ctx context.Context, roomID uuid.UUID, room models.UpdateRoomStatus) error {
-	if err := s.repo.UpdateRoomStatusByID(ctx, roomID, room); err != nil {
+func (s *Service) UpdateRoomStatusByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID, room models.UpdateRoomStatus) error {
+	if err := s.repo.UpdateRoomStatusByID(ctx, hotelRef, roomID, room); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (s *Service) DeleteRoomByID(ctx context.Context, roomID uuid.UUID) error {
-	if err := s.repo.DeleteRoomByID(ctx, roomID); err != nil {
+func (s *Service) DeleteRoomByID(ctx context.Context, hotelRef models.HotelRef, roomID uuid.UUID) error {
+	if err := s.repo.DeleteRoomByID(ctx, hotelRef, roomID); err != nil {
 		return err
 	}
 

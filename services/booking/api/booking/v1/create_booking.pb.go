@@ -35,6 +35,8 @@ type CreateBookingRequest struct {
 	Currency            string                      `protobuf:"bytes,8,opt,name=currency,proto3" json:"currency,omitempty"`
 	ExpectedTotalAmount string                      `protobuf:"bytes,9,opt,name=expected_total_amount,json=expectedTotalAmount,proto3" json:"expected_total_amount,omitempty"`
 	Rooms               []*CreateBookingRoomRequest `protobuf:"bytes,10,rep,name=rooms,proto3" json:"rooms,omitempty"`
+	CountryCode         string                      `protobuf:"bytes,11,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug            string                      `protobuf:"bytes,12,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	unknownFields       protoimpl.UnknownFields
 	sizeCache           protoimpl.SizeCache
 }
@@ -137,6 +139,20 @@ func (x *CreateBookingRequest) GetRooms() []*CreateBookingRoomRequest {
 		return x.Rooms
 	}
 	return nil
+}
+
+func (x *CreateBookingRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *CreateBookingRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
+	}
+	return ""
 }
 
 type CreateBookingRoomRequest struct {
@@ -256,7 +272,7 @@ var File_booking_v1_rpc_create_booking_proto protoreflect.FileDescriptor
 const file_booking_v1_rpc_create_booking_proto_rawDesc = "" +
 	"\n" +
 	"#booking/v1/rpc/create_booking.proto\x12\n" +
-	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1fbooking/v1/models/booking.proto\"\xb4\x05\n" +
+	"booking.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bbuf/validate/validate.proto\x1a\x1fbooking/v1/models/booking.proto\"\xa8\x06\n" +
 	"\x14CreateBookingRequest\x12 \n" +
 	"\auser_id\x18\x01 \x01(\x03B\a\xbaH\x04\"\x02 \x00R\x06userId\x12#\n" +
 	"\bhotel_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x12B\n" +
@@ -272,7 +288,10 @@ const file_booking_v1_rpc_create_booking_proto_rawDesc = "" +
 	"^[A-Z]{3}$R\bcurrency\x12U\n" +
 	"\x15expected_total_amount\x18\t \x01(\tB!\xbaH\x1er\x1c\x10\x012\x18^[0-9]+(\\.[0-9]{1,18})?$R\x13expectedTotalAmount\x12D\n" +
 	"\x05rooms\x18\n" +
-	" \x03(\v2$.booking.v1.CreateBookingRoomRequestB\b\xbaH\x05\x92\x01\x02\b\x01R\x05rooms:\\\xbaHY\x1aW\n" +
+	" \x03(\v2$.booking.v1.CreateBookingRoomRequestB\b\xbaH\x05\x92\x01\x02\b\x01R\x05rooms\x124\n" +
+	"\fcountry_code\x18\v \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\f \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug:\\\xbaHY\x1aW\n" +
 	"\x13booking.dates.order\x12 check_out must be after check_in\x1a\x1ethis.check_out > this.check_inB\x0e\n" +
 	"\f_guest_emailB\x0e\n" +
 	"\f_guest_phone\"\xd0\x01\n" +

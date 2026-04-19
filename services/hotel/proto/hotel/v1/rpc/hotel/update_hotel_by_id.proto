@@ -19,6 +19,12 @@ message UpdateHotelByIDRequest {
   UpdateHotelLocationRequest location = 4 [
     (buf.validate.field).required = true
   ];
+  string country_code = 5 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 6 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
 }
 
 message UpdateHotelByIDResponse {

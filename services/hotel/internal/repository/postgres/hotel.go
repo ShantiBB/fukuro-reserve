@@ -131,9 +131,9 @@ func (r *Repository) SelectHotelBySlug(ctx context.Context, ref models.HotelRef)
 	return &h, nil
 }
 
-func (r *Repository) SelectHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error) {
+func (r *Repository) SelectHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) (*models.Hotel, error) {
 	var h models.Hotel
-	err := r.db.QueryRow(ctx, query.GetHotelByID, id).Scan(
+	err := r.db.QueryRow(ctx, query.GetHotelByID, id, ref.CountryCode, ref.CitySlug).Scan(
 		&h.ID,
 		&h.Title,
 		&h.OwnerID,
@@ -180,7 +180,7 @@ func (r *Repository) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef,
 	return nil
 }
 
-func (r *Repository) UpdateHotelByID(ctx context.Context, id uuid.UUID, h models.UpdateHotel) error {
+func (r *Repository) UpdateHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID, h models.UpdateHotel) error {
 	row, err := r.db.Exec(
 		ctx, query.UpdateHotelByID,
 		h.Description,
@@ -188,6 +188,8 @@ func (r *Repository) UpdateHotelByID(ctx context.Context, id uuid.UUID, h models
 		h.Location.Longitude,
 		h.Location.Latitude,
 		id,
+		ref.CountryCode,
+		ref.CitySlug,
 	)
 	if err != nil {
 		var pgErr *pgconn.PgError
@@ -232,10 +234,11 @@ func (r *Repository) UpdateHotelTitleBySlug(
 
 func (r *Repository) UpdateHotelTitleByID(
 	ctx context.Context,
+	ref models.HotelRef,
 	id uuid.UUID,
 	h models.UpdateHotelTitle,
 ) error {
-	row, err := r.db.Exec(ctx, query.UpdateHotelTitleByID, h.Title, h.HotelSlug, id)
+	row, err := r.db.Exec(ctx, query.UpdateHotelTitleByID, h.Title, h.HotelSlug, id, ref.CountryCode, ref.CitySlug)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
@@ -262,8 +265,8 @@ func (r *Repository) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef)
 	return nil
 }
 
-func (r *Repository) DeleteHotelByID(ctx context.Context, id uuid.UUID) error {
-	row, err := r.db.Exec(ctx, query.DeleteHotelByID, id)
+func (r *Repository) DeleteHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) error {
+	row, err := r.db.Exec(ctx, query.DeleteHotelByID, id, ref.CountryCode, ref.CitySlug)
 	if err != nil {
 		return err
 	}

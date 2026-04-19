@@ -27,6 +27,8 @@ type GetRoomsByHotelIDRequest struct {
 	HotelId       string                 `protobuf:"bytes,1,opt,name=hotel_id,json=hotelId,proto3" json:"hotel_id,omitempty"`
 	Page          uint64                 `protobuf:"varint,2,opt,name=page,proto3" json:"page,omitempty"`
 	Limit         uint64                 `protobuf:"varint,3,opt,name=limit,proto3" json:"limit,omitempty"`
+	CountryCode   string                 `protobuf:"bytes,4,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                 `protobuf:"bytes,5,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -80,6 +82,20 @@ func (x *GetRoomsByHotelIDRequest) GetLimit() uint64 {
 		return x.Limit
 	}
 	return 0
+}
+
+func (x *GetRoomsByHotelIDRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *GetRoomsByHotelIDRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
+	}
+	return ""
 }
 
 type GetRoomsByHotelIDResponse struct {
@@ -154,11 +170,14 @@ var File_hotel_v1_rpc_room_get_rooms_by_hotel_id_proto protoreflect.FileDescript
 
 const file_hotel_v1_rpc_room_get_rooms_by_hotel_id_proto_rawDesc = "" +
 	"\n" +
-	"-hotel/v1/rpc/room/get_rooms_by_hotel_id.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1ahotel/v1/models/room.proto\"}\n" +
+	"-hotel/v1/rpc/room/get_rooms_by_hotel_id.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1ahotel/v1/models/room.proto\"\xf1\x01\n" +
 	"\x18GetRoomsByHotelIDRequest\x12#\n" +
 	"\bhotel_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x12\x1b\n" +
 	"\x04page\x18\x02 \x01(\x04B\a\xbaH\x042\x02(\x01R\x04page\x12\x1f\n" +
-	"\x05limit\x18\x03 \x01(\x04B\t\xbaH\x062\x04\x18d(\x01R\x05limit\"\x91\x01\n" +
+	"\x05limit\x18\x03 \x01(\x04B\t\xbaH\x062\x04\x18d(\x01R\x05limit\x124\n" +
+	"\fcountry_code\x18\x04 \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\x05 \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\"\x91\x01\n" +
 	"\x19GetRoomsByHotelIDResponse\x12)\n" +
 	"\x05rooms\x18\x01 \x03(\v2\x13.hotel.v1.RoomShortR\x05rooms\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x04R\n" +

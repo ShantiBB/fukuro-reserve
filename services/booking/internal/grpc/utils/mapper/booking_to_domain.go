@@ -23,6 +23,8 @@ func CreateBookingRequestToDomain(req *bookingv1.CreateBookingRequest) (*models.
 	b := &models.CreateBooking{
 		UserID:              req.UserId,
 		HotelID:             hotelID,
+		CountryCode:         req.CountryCode,
+		CitySlug:            req.CitySlug,
 		CheckIn:             req.CheckIn.AsTime(),
 		CheckOut:            req.CheckOut.AsTime(),
 		GuestName:           req.GuestName,
@@ -37,8 +39,10 @@ func CreateBookingRequestToDomain(req *bookingv1.CreateBookingRequest) (*models.
 
 func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.BookingRef, error) {
 	bookingRef := models.BookingRef{
-		UserID: req.UserId,
-		Status: BookingStatusToDomain(req.Status),
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		UserID:      req.UserId,
+		Status:      BookingStatusToDomain(req.Status),
 	}
 
 	if req.HotelId == "" {
@@ -52,6 +56,18 @@ func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.Booki
 	bookingRef.HotelID = hotelID
 
 	return bookingRef, nil
+}
+
+type bookingLocationRefGetter interface {
+	GetCountryCode() string
+	GetCitySlug() string
+}
+
+func BookingLocationRefToDomain[T bookingLocationRefGetter](req T) models.BookingRef {
+	return models.BookingRef{
+		CountryCode: req.GetCountryCode(),
+		CitySlug:    req.GetCitySlug(),
+	}
 }
 
 func GetBookingRequestToDomain(idStr string) (uuid.UUID, error) {

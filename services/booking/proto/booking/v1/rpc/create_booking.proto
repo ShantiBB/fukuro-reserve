@@ -37,6 +37,12 @@ message CreateBookingRequest {
   repeated CreateBookingRoomRequest rooms = 10 [
     (buf.validate.field).repeated.min_items = 1
   ];
+  string country_code = 11 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 12 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
   option (buf.validate.message).cel = {
     id: "booking.dates.order"
     message: "check_out must be after check_in"

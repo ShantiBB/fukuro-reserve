@@ -12,6 +12,8 @@ type CreateBooking struct {
 	CheckOut            time.Time
 	GuestEmail          *string
 	GuestPhone          *string
+	CountryCode         string
+	CitySlug            string
 	GuestName           string
 	Currency            string
 	ExpectedTotalAmount decimal.Decimal
@@ -69,9 +71,11 @@ type BookingList struct {
 }
 
 type BookingRef struct {
-	Status  BookingStatus
-	UserID  int64
-	HotelID uuid.UUID
+	CountryCode string
+	CitySlug    string
+	Status      BookingStatus
+	UserID      int64
+	HotelID     uuid.UUID
 }
 
 func (b *CreateBooking) ToRead() *Booking {

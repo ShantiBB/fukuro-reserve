@@ -39,7 +39,7 @@ const (
 			   created_at,
 			   updated_at
 		FROM hotel
-		WHERE id = $1`
+		WHERE id = $1 AND country_code = $2 AND city_slug = $3`
 
 	GetHotels = `
 		SELECT id,
@@ -75,7 +75,7 @@ const (
 		  address = $2,
 		  location = ST_SetSRID(ST_MakePoint($3, $4), 4326)::geography,
 		  updated_at = now()
-		WHERE id = $5
+		WHERE id = $5 AND country_code = $6 AND city_slug = $7
 		RETURNING id, slug;`
 
 	UpdateHotelTitleBySlug = `
@@ -93,7 +93,7 @@ const (
 		  title = $1,
 		  slug = $2,
 		  updated_at = now()
-		WHERE id = $3
+		WHERE id = $3 AND country_code = $4 AND city_slug = $5
 		RETURNING id, slug;`
 
 	DeleteHotelBySlug = `
@@ -102,7 +102,7 @@ const (
 
 	DeleteHotelByID = `
 		DELETE FROM hotel 
-		WHERE id = $1;`
+		WHERE id = $1 AND country_code = $2 AND city_slug = $3;`
 
 	UpdateHotelRating = `
 		UPDATE hotel 

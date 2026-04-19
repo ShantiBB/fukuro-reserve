@@ -65,6 +65,21 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
+	t.Run("41.1 list bookings wrong location filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationBookingsBasePath(env)+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) != nil {
+			t.Fatalf("booking from another location found in response")
+		}
+	})
+
 	t.Run("42 list bookings by user", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
@@ -132,7 +147,18 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("44.1 list bookings filtered by pending status", func(t *testing.T) {
+	t.Run("44.1 get booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+
+	t.Run("44.2 list bookings filtered by pending status", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
@@ -150,6 +176,17 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		if booking.Status != "BOOKING_STATUS_PENDING" {
 			t.Fatalf("unexpected filtered booking status: got=%q want=%q", booking.Status, "BOOKING_STATUS_PENDING")
 		}
+	})
+
+	t.Run("44.3 confirm booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID)+"/confirm",
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
 	})
 
 	t.Run("45 confirm booking", func(t *testing.T) {
@@ -255,5 +292,16 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 		assertBookingShortFields(t, booking)
 		assertBookingStatusEnum(t, booking.Status)
+	})
+
+	t.Run("49.1 delete booking wrong location not found", func(t *testing.T) {
+		status, body := env.RequestJSON(
+			http.MethodDelete,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID),
+			env.Data.OwnerAccess,
+			nil,
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
 	})
 }

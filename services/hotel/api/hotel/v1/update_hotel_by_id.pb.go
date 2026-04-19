@@ -28,6 +28,8 @@ type UpdateHotelByIDRequest struct {
 	Description   *string                     `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`
 	Address       string                      `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 	Location      *UpdateHotelLocationRequest `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
+	CountryCode   string                      `protobuf:"bytes,5,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                      `protobuf:"bytes,6,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,6 +92,20 @@ func (x *UpdateHotelByIDRequest) GetLocation() *UpdateHotelLocationRequest {
 	return nil
 }
 
+func (x *UpdateHotelByIDRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *UpdateHotelByIDRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
+	}
+	return ""
+}
+
 type UpdateHotelByIDResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Hotel         *UpdateHotel           `protobuf:"bytes,1,opt,name=hotel,proto3" json:"hotel,omitempty"`
@@ -138,12 +154,15 @@ var File_hotel_v1_rpc_hotel_update_hotel_by_id_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_rpc_hotel_update_hotel_by_id_proto_rawDesc = "" +
 	"\n" +
-	"+hotel/v1/rpc/hotel/update_hotel_by_id.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bhotel/v1/models/hotel.proto\x1a%hotel/v1/rpc/hotel/update_hotel.proto\"\xd5\x01\n" +
+	"+hotel/v1/rpc/hotel/update_hotel_by_id.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1bhotel/v1/models/hotel.proto\x1a%hotel/v1/rpc/hotel/update_hotel.proto\"\xc9\x02\n" +
 	"\x16UpdateHotelByIDRequest\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12%\n" +
 	"\vdescription\x18\x02 \x01(\tH\x00R\vdescription\x88\x01\x01\x12 \n" +
 	"\aaddress\x18\x03 \x01(\tB\x06\xbaH\x03\xc8\x01\x01R\aaddress\x12H\n" +
-	"\blocation\x18\x04 \x01(\v2$.hotel.v1.UpdateHotelLocationRequestB\x06\xbaH\x03\xc8\x01\x01R\blocationB\x0e\n" +
+	"\blocation\x18\x04 \x01(\v2$.hotel.v1.UpdateHotelLocationRequestB\x06\xbaH\x03\xc8\x01\x01R\blocation\x124\n" +
+	"\fcountry_code\x18\x05 \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\x06 \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlugB\x0e\n" +
 	"\f_description\"F\n" +
 	"\x17UpdateHotelByIDResponse\x12+\n" +
 	"\x05hotel\x18\x01 \x01(\v2\x15.hotel.v1.UpdateHotelR\x05hotelB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"

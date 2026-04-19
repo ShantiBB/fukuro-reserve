@@ -62,7 +62,8 @@ func (h *Handler) GetHotelByID(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	hotel, err := h.svc.GetHotelByID(ctx, hotelID)
+	ref := mapper.GetLocationRefRequestToDomain(req)
+	hotel, err := h.svc.GetHotelByID(ctx, ref, hotelID)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
@@ -124,7 +125,8 @@ func (h *Handler) UpdateHotelByID(
 	}
 
 	hotel := mapper.UpdateHotelByIDRequestToDomain(req)
-	if err := h.svc.UpdateHotelByID(ctx, hotelID, hotel); err != nil {
+	ref := mapper.GetLocationRefRequestToDomain(req)
+	if err := h.svc.UpdateHotelByID(ctx, ref, hotelID, hotel); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}
@@ -170,7 +172,8 @@ func (h *Handler) UpdateHotelTitleByID(
 	}
 
 	hotel := mapper.UpdateHotelTitleByIDRequestToDomain(req)
-	updated, err := h.svc.UpdateHotelTitleByID(ctx, hotelID, hotel)
+	ref := mapper.GetLocationRefRequestToDomain(req)
+	updated, err := h.svc.UpdateHotelTitleByID(ctx, ref, hotelID, hotel)
 	if err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
@@ -213,7 +216,8 @@ func (h *Handler) DeleteHotelByID(
 		return nil, helper.HandleDomainErr(err)
 	}
 
-	if err := h.svc.DeleteHotelByID(ctx, hotelID); err != nil {
+	ref := mapper.GetLocationRefRequestToDomain(req)
+	if err := h.svc.DeleteHotelByID(ctx, ref, hotelID); err != nil {
 		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
 		return nil, helper.HandleDomainErr(err)
 	}

@@ -25,6 +25,8 @@ const (
 type CancelBookingStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CountryCode   string                 `protobuf:"bytes,2,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                 `protobuf:"bytes,3,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -62,6 +64,20 @@ func (*CancelBookingStatusRequest) Descriptor() ([]byte, []int) {
 func (x *CancelBookingStatusRequest) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *CancelBookingStatusRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *CancelBookingStatusRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
 	}
 	return ""
 }
@@ -115,9 +131,12 @@ var File_booking_v1_rpc_cancel_booking_status_proto protoreflect.FileDescriptor
 const file_booking_v1_rpc_cancel_booking_status_proto_rawDesc = "" +
 	"\n" +
 	"*booking/v1/rpc/cancel_booking_status.proto\x12\n" +
-	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\"6\n" +
+	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\"\xaa\x01\n" +
 	"\x1aCancelBookingStatusRequest\x12\x18\n" +
-	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"P\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x124\n" +
+	"\fcountry_code\x18\x02 \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\x03 \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\"P\n" +
 	"\x1bCancelBookingStatusResponse\x121\n" +
 	"\x06status\x18\x01 \x01(\x0e2\x19.booking.v1.BookingStatusR\x06statusB\x1aZ\x18api/booking/v1;bookingv1b\x06proto3"
 

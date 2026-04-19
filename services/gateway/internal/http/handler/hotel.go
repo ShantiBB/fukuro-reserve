@@ -152,7 +152,7 @@ func (h *HotelHandler) GetHotelByID(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.GetHotelByID(c.Request.Context(), hotelID)
+	resp, err := h.service.GetHotelByID(c.Request.Context(), countryCode, citySlug, hotelID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -244,6 +244,8 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 
 	resp, err := h.service.UpdateHotelByID(
 		c.Request.Context(),
+		countryCode,
+		citySlug,
 		hotelID,
 		req,
 	)
@@ -298,6 +300,8 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 
 	resp, err := h.service.UpdateHotelTitleByID(
 		c.Request.Context(),
+		countryCode,
+		citySlug,
 		hotelID,
 		req,
 	)
@@ -341,7 +345,7 @@ func (h *HotelHandler) DeleteHotel(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.DeleteHotelByID(c.Request.Context(), hotelID); err != nil {
+	if err := h.service.DeleteHotelByID(c.Request.Context(), countryCode, citySlug, hotelID); err != nil {
 		responder.GinGRPCError(c, err)
 		return
 	}

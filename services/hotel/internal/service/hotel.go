@@ -45,8 +45,8 @@ func (s *Service) GetHotelBySlug(ctx context.Context, ref models.HotelRef) (*mod
 	return h, nil
 }
 
-func (s *Service) GetHotelByID(ctx context.Context, id uuid.UUID) (*models.Hotel, error) {
-	h, err := s.repo.SelectHotelByID(ctx, id)
+func (s *Service) GetHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) (*models.Hotel, error) {
+	h, err := s.repo.SelectHotelByID(ctx, ref, id)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +62,8 @@ func (s *Service) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h 
 	return nil
 }
 
-func (s *Service) UpdateHotelByID(ctx context.Context, id uuid.UUID, h models.UpdateHotel) error {
-	if err := s.repo.UpdateHotelByID(ctx, id, h); err != nil {
+func (s *Service) UpdateHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID, h models.UpdateHotel) error {
+	if err := s.repo.UpdateHotelByID(ctx, ref, id, h); err != nil {
 		return err
 	}
 
@@ -85,11 +85,12 @@ func (s *Service) UpdateHotelTitleBySlug(
 
 func (s *Service) UpdateHotelTitleByID(
 	ctx context.Context,
+	ref models.HotelRef,
 	id uuid.UUID,
 	h models.UpdateHotelTitle,
 ) (models.UpdateHotelTitle, error) {
 	h.HotelSlug = slug.Make(h.Title)
-	if err := s.repo.UpdateHotelTitleByID(ctx, id, h); err != nil {
+	if err := s.repo.UpdateHotelTitleByID(ctx, ref, id, h); err != nil {
 		return models.UpdateHotelTitle{}, err
 	}
 
@@ -104,8 +105,8 @@ func (s *Service) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) er
 	return nil
 }
 
-func (s *Service) DeleteHotelByID(ctx context.Context, id uuid.UUID) error {
-	if err := s.repo.DeleteHotelByID(ctx, id); err != nil {
+func (s *Service) DeleteHotelByID(ctx context.Context, ref models.HotelRef, id uuid.UUID) error {
+	if err := s.repo.DeleteHotelByID(ctx, ref, id); err != nil {
 		return err
 	}
 

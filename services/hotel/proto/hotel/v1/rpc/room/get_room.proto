@@ -8,6 +8,12 @@ import "buf/validate/validate.proto";
 import "hotel/v1/models/room.proto";
 
 message GetRoomRequest {
+  string country_code = 1 [
+    (buf.validate.field).string.pattern = "^[a-z]{2}$"
+  ];
+  string city_slug = 2 [
+    (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
+  ];
   string id = 4 [
     (buf.validate.field).string.uuid = true
   ];

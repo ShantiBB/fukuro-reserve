@@ -24,6 +24,8 @@ const (
 
 type DeleteRoomRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	CountryCode   string                 `protobuf:"bytes,1,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	CitySlug      string                 `protobuf:"bytes,2,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
 	Id            string                 `protobuf:"bytes,4,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -57,6 +59,20 @@ func (x *DeleteRoomRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use DeleteRoomRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoomRequest) Descriptor() ([]byte, []int) {
 	return file_hotel_v1_rpc_room_delete_room_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *DeleteRoomRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *DeleteRoomRequest) GetCitySlug() string {
+	if x != nil {
+		return x.CitySlug
+	}
+	return ""
 }
 
 func (x *DeleteRoomRequest) GetId() string {
@@ -114,8 +130,11 @@ var File_hotel_v1_rpc_room_delete_room_proto protoreflect.FileDescriptor
 
 const file_hotel_v1_rpc_room_delete_room_proto_rawDesc = "" +
 	"\n" +
-	"#hotel/v1/rpc/room/delete_room.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\"-\n" +
-	"\x11DeleteRoomRequest\x12\x18\n" +
+	"#hotel/v1/rpc/room/delete_room.proto\x12\bhotel.v1\x1a\x1bbuf/validate/validate.proto\"\xa1\x01\n" +
+	"\x11DeleteRoomRequest\x124\n" +
+	"\fcountry_code\x18\x01 \x01(\tB\x11\xbaH\x0er\f2\n" +
+	"^[a-z]{2}$R\vcountryCode\x12<\n" +
+	"\tcity_slug\x18\x02 \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\x12\x18\n" +
 	"\x02id\x18\x04 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\".\n" +
 	"\x12DeleteRoomResponse\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessageB\x16Z\x14api/hotel/v1;hotelv1b\x06proto3"

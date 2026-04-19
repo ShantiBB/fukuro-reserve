@@ -52,7 +52,7 @@ func (h *HotelHandler) CreateRoom(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.CreateRoomByHotelID(c.Request.Context(), hotelID, req)
+	resp, err := h.service.CreateRoomByHotelID(c.Request.Context(), countryCode, citySlug, hotelID, req)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -161,7 +161,7 @@ func (h *HotelHandler) GetRoomsByHotelID(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.GetRoomsByHotelID(c.Request.Context(), hotelID, page, limit)
+	resp, err := h.service.GetRoomsByHotelID(c.Request.Context(), countryCode, citySlug, hotelID, page, limit)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -208,7 +208,7 @@ func (h *HotelHandler) GetRoomByHotelSlug(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.GetRoom(c.Request.Context(), roomID)
+	resp, err := h.service.GetRoom(c.Request.Context(), countryCode, citySlug, roomID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -255,7 +255,7 @@ func (h *HotelHandler) GetRoomByHotelID(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.GetRoom(c.Request.Context(), roomID)
+	resp, err := h.service.GetRoom(c.Request.Context(), countryCode, citySlug, roomID)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -312,7 +312,7 @@ func (h *HotelHandler) UpdateRoom(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.UpdateRoom(c.Request.Context(), roomID, req)
+	resp, err := h.service.UpdateRoom(c.Request.Context(), countryCode, citySlug, roomID, req)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -369,7 +369,7 @@ func (h *HotelHandler) UpdateRoomStatus(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.service.UpdateRoomStatus(c.Request.Context(), roomID, req)
+	resp, err := h.service.UpdateRoomStatus(c.Request.Context(), countryCode, citySlug, roomID, req)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -417,7 +417,7 @@ func (h *HotelHandler) DeleteRoom(c *gin.Context) {
 		return
 	}
 
-	if err := h.service.DeleteRoom(c.Request.Context(), roomID); err != nil {
+	if err := h.service.DeleteRoom(c.Request.Context(), countryCode, citySlug, roomID); err != nil {
 		responder.GinGRPCError(c, err)
 		return
 	}

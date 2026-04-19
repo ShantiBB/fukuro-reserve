@@ -219,6 +219,17 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 			env.RequireError(status, http.StatusBadRequest, body, "invalid hotel ID")
 		})
 
+		t.Run("get room bookings room_id uuid", func(t *testing.T) {
+			status, body := env.RequestJSON(
+				http.MethodGet,
+				"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/not-a-uuid/bookings?page=1&limit=10",
+				env.Data.OwnerAccess,
+				nil,
+				nil,
+			)
+			env.RequireError(status, http.StatusBadRequest, body, "invalid booking room ID")
+		})
+
 		t.Run("get bookings limit lte 100", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=101", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")

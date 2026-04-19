@@ -46,14 +46,24 @@ func GetBookingsRequestToDomain(req *bookingv1.GetBookingsRequest) (models.Booki
 	}
 
 	if req.HotelId == "" {
-		return bookingRef, nil
+		if req.RoomId == "" {
+			return bookingRef, nil
+		}
+	} else {
+		hotelID, err := uuid.Parse(req.HotelId)
+		if err != nil {
+			return models.BookingRef{}, consts.ErrInvalidHotelID
+		}
+		bookingRef.HotelID = hotelID
 	}
 
-	hotelID, err := uuid.Parse(req.HotelId)
-	if err != nil {
-		return models.BookingRef{}, consts.ErrInvalidHotelID
+	if req.RoomId != "" {
+		roomID, err := uuid.Parse(req.RoomId)
+		if err != nil {
+			return models.BookingRef{}, consts.ErrInvalidBookingRoomID
+		}
+		bookingRef.RoomID = roomID
 	}
-	bookingRef.HotelID = hotelID
 
 	return bookingRef, nil
 }

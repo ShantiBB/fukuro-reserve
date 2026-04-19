@@ -39,8 +39,16 @@ const (
 			  AND ($3::booking_status IS NULL OR status = $3)
 			  AND country_code = $4
 			  AND city_slug = $5
+			  AND (
+			    $6::uuid IS NULL
+			    OR EXISTS (
+			      SELECT 1
+			      FROM booking_room br
+			      WHERE br.booking_id = booking.id AND br.room_id = $6
+			    )
+			  )
 			ORDER BY created_at DESC
-			LIMIT $6 OFFSET $7;`
+			LIMIT $7 OFFSET $8;`
 
 	GetBookingByID = `
 		SELECT
@@ -86,5 +94,13 @@ const (
 		  AND ($2::uuid IS NULL OR hotel_id = $2)
 		  AND ($3::booking_status IS NULL OR status = $3)
 		  AND country_code = $4
-		  AND city_slug = $5;`
+		  AND city_slug = $5
+		  AND (
+		    $6::uuid IS NULL
+		    OR EXISTS (
+		      SELECT 1
+		      FROM booking_room br
+		      WHERE br.booking_id = booking.id AND br.room_id = $6
+		    )
+		  );`
 )

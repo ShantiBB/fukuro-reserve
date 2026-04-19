@@ -9,6 +9,7 @@ import (
 type bookingHandler interface {
 	CreateBooking(*gin.Context)
 	GetBookings(*gin.Context)
+	GetRoomBookings(*gin.Context)
 	GetBooking(*gin.Context)
 	ConfirmBooking(*gin.Context)
 	CancelBooking(*gin.Context)
@@ -34,4 +35,8 @@ func (br bookingRoutes) Register(r *gin.RouterGroup) {
 	bookings.PATCH("/:bookingId/confirm", br.h.ConfirmBooking)
 	bookings.PATCH("/:bookingId/cancel", br.h.CancelBooking)
 	bookings.DELETE("/:bookingId", br.h.DeleteBooking)
+
+	roomBookings := r.Group("/:countryCode/:citySlug/hotels/:hotelId/rooms/:roomId/bookings")
+	roomBookings.Use(middleware.AuthMiddleware())
+	roomBookings.GET("", br.h.GetRoomBookings)
 }

@@ -17,6 +17,14 @@ func bookingsByIDPath(env *fixtures.Env, bookingID string) string {
 	return bookingsBasePath(env) + "/" + bookingID
 }
 
+func roomBookingsBasePath(env *fixtures.Env) string {
+	return fmt.Sprintf(
+		"/api/v1/jp/tokyo/hotels/%s/rooms/%s/bookings",
+		env.Data.HotelID,
+		env.Data.RoomID,
+	)
+}
+
 func wrongLocationHotelPath(env *fixtures.Env) string {
 	return fmt.Sprintf("/api/v1/us/osaka/hotels/%s", env.Data.HotelID)
 }
@@ -34,4 +42,12 @@ func wrongLocationBookingsBasePath(env *fixtures.Env) string {
 
 func wrongLocationBookingsByIDPath(env *fixtures.Env, bookingID string) string {
 	return wrongLocationBookingsBasePath(env) + "/" + bookingID
+}
+
+func wrongLocationRoomBookingsBasePath(env *fixtures.Env) string {
+	return fmt.Sprintf(
+		"/api/v1/us/osaka/hotels/%s/rooms/%s/bookings",
+		env.Data.HotelID,
+		env.Data.RoomID,
+	)
 }

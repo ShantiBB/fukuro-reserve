@@ -28,6 +28,9 @@ message GetBookingsRequest {
   string city_slug = 7 [
     (buf.validate.field).string.pattern = "^[a-z0-9]+(-[a-z0-9]+)*$"
   ];
+  string room_id = 8 [
+    (buf.validate.field).string.uuid = true
+  ];
 }
 
 message GetBookingsResponse {

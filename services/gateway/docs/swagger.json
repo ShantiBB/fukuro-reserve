@@ -1982,6 +1982,101 @@
                 }
             }
         },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/bookings": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns bookings for a specific room. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Get room bookings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "1f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "BOOKING_STATUS_CONFIRMED",
+                        "description": "Filter by booking status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number (starts from 1)",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 10,
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.BookingsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status": {
             "patch": {
                 "security": [

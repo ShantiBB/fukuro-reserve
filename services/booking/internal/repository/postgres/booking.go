@@ -73,6 +73,11 @@ func (r *Repository) GetBookingsByHotelInfo(
 		statusFilter = bookingRef.Status
 	}
 
+	var roomID any
+	if bookingRef.RoomID != uuid.Nil {
+		roomID = bookingRef.RoomID
+	}
+
 	rows, err := db.Query(
 		ctx,
 		query.GetBookingsByHotelInfo,
@@ -81,6 +86,7 @@ func (r *Repository) GetBookingsByHotelInfo(
 		statusFilter,
 		bookingRef.CountryCode,
 		bookingRef.CitySlug,
+		roomID,
 		limit,
 		offset,
 	)
@@ -134,6 +140,7 @@ func (r *Repository) GetBookingsByHotelInfo(
 		statusFilter,
 		bookingRef.CountryCode,
 		bookingRef.CitySlug,
+		roomID,
 	).Scan(&bookingList.TotalCount); err != nil {
 		return nil, err
 	}

@@ -31,6 +31,7 @@ type GetBookingsRequest struct {
 	Limit         uint64                 `protobuf:"varint,5,opt,name=limit,proto3" json:"limit,omitempty"`
 	CountryCode   string                 `protobuf:"bytes,6,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
 	CitySlug      string                 `protobuf:"bytes,7,opt,name=city_slug,json=citySlug,proto3" json:"city_slug,omitempty"`
+	RoomId        string                 `protobuf:"bytes,8,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -114,6 +115,13 @@ func (x *GetBookingsRequest) GetCitySlug() string {
 	return ""
 }
 
+func (x *GetBookingsRequest) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
 type GetBookingsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Bookings      []*BookingShort        `protobuf:"bytes,1,rep,name=bookings,proto3" json:"bookings,omitempty"`
@@ -187,7 +195,7 @@ var File_booking_v1_rpc_get_bookings_proto protoreflect.FileDescriptor
 const file_booking_v1_rpc_get_bookings_proto_rawDesc = "" +
 	"\n" +
 	"!booking/v1/rpc/get_bookings.proto\x12\n" +
-	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\x1a\x1fbooking/v1/models/booking.proto\"\xc0\x02\n" +
+	"booking.v1\x1a\x1bbuf/validate/validate.proto\x1a%booking/v1/enums/booking_status.proto\x1a\x1fbooking/v1/models/booking.proto\"\xe3\x02\n" +
 	"\x12GetBookingsRequest\x12 \n" +
 	"\auser_id\x18\x01 \x01(\x03B\a\xbaH\x04\"\x02 \x00R\x06userId\x12#\n" +
 	"\bhotel_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\ahotelId\x121\n" +
@@ -196,7 +204,8 @@ const file_booking_v1_rpc_get_bookings_proto_rawDesc = "" +
 	"\x05limit\x18\x05 \x01(\x04B\t\xbaH\x062\x04\x18d(\x01R\x05limit\x124\n" +
 	"\fcountry_code\x18\x06 \x01(\tB\x11\xbaH\x0er\f2\n" +
 	"^[a-z]{2}$R\vcountryCode\x12<\n" +
-	"\tcity_slug\x18\a \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\"\x96\x01\n" +
+	"\tcity_slug\x18\a \x01(\tB\x1f\xbaH\x1cr\x1a2\x18^[a-z0-9]+(-[a-z0-9]+)*$R\bcitySlug\x12!\n" +
+	"\aroom_id\x18\b \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06roomId\"\x96\x01\n" +
 	"\x13GetBookingsResponse\x124\n" +
 	"\bbookings\x18\x01 \x03(\v2\x18.booking.v1.BookingShortR\bbookings\x12\x1f\n" +
 	"\vtotal_count\x18\x02 \x01(\x04R\n" +

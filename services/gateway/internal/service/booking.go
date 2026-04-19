@@ -53,6 +53,14 @@ func (s *Booking) CreateBooking(ctx context.Context, countryCode, citySlug, hote
 }
 
 func (s *Booking) GetBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
+	return s.getBookings(ctx, countryCode, citySlug, userID, hotelID, "", status, page, limit)
+}
+
+func (s *Booking) GetRoomBookings(ctx context.Context, countryCode, citySlug, hotelID, roomID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
+	return s.getBookings(ctx, countryCode, citySlug, 0, hotelID, roomID, status, page, limit)
+}
+
+func (s *Booking) getBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, roomID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
 	if page == 0 {
 		page = s.pagination.DefaultPage
 	}
@@ -71,6 +79,9 @@ func (s *Booking) GetBookings(ctx context.Context, countryCode, citySlug string,
 	}
 	if hotelID != "" {
 		req.HotelId = hotelID
+	}
+	if roomID != "" {
+		req.RoomId = roomID
 	}
 	if status != "" {
 		req.Status = bookingv1.BookingStatus(bookingv1.BookingStatus_value[status])

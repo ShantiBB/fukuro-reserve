@@ -76,6 +76,7 @@ type BookingRef struct {
 	Status      BookingStatus
 	UserID      int64
 	HotelID     uuid.UUID
+	RoomID      uuid.UUID
 }
 
 func (b *CreateBooking) ToRead() *Booking {

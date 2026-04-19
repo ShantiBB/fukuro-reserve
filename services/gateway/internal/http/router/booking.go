@@ -33,7 +33,7 @@ func (br bookingRoutes) Register(r *gin.RouterGroup) {
 	r.GET("/:countryCode/:citySlug/hotels/:hotelId/rooms/availability", br.h.GetAvailability)
 	r.POST("/:countryCode/:citySlug/hotels/:hotelId/bookings/quote", br.h.QuoteBooking)
 
-	myBookings := r.Group("/:countryCode/:citySlug/users/me/bookings")
+	myBookings := r.Group("/users/me/bookings")
 	myBookings.Use(middleware.AuthMiddleware())
 	myBookings.GET("", br.h.GetMyBookings)
 

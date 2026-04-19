@@ -37,8 +37,8 @@ const (
 			WHERE ($1::bigint IS NULL OR user_id = $1)
 			  AND ($2::uuid IS NULL OR hotel_id = $2)
 			  AND ($3::booking_status IS NULL OR status = $3)
-			  AND country_code = $4
-			  AND city_slug = $5
+			  AND ($4::text = '' OR country_code = $4)
+			  AND ($5::text = '' OR city_slug = $5)
 			  AND (
 			    $6::uuid IS NULL
 			    OR EXISTS (
@@ -96,8 +96,8 @@ const (
 		WHERE ($1::bigint IS NULL OR user_id = $1)
 		  AND ($2::uuid IS NULL OR hotel_id = $2)
 		  AND ($3::booking_status IS NULL OR status = $3)
-		  AND country_code = $4
-		  AND city_slug = $5
+		  AND ($4::text = '' OR country_code = $4)
+		  AND ($5::text = '' OR city_slug = $5)
 		  AND (
 		    $6::uuid IS NULL
 		    OR EXISTS (

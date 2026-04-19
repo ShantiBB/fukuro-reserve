@@ -14,11 +14,7 @@ func bookingsBasePath(env *fixtures.Env) string {
 }
 
 func myBookingsBasePath() string {
-	return "/api/v1/jp/tokyo/users/me/bookings"
-}
-
-func wrongLocationMyBookingsBasePath() string {
-	return "/api/v1/us/osaka/users/me/bookings"
+	return "/api/v1/users/me/bookings"
 }
 
 func bookingsByIDPath(env *fixtures.Env, bookingID string) string {

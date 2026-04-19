@@ -239,11 +239,26 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("43.2 list my bookings wrong location filtered out", func(t *testing.T) {
+	t.Run("43.2 list my bookings by location query", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			wrongLocationMyBookingsBasePath()+"?page=1&limit=10",
+			myBookingsBasePath()+"?countryCode=jp&citySlug=tokyo&page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) == nil {
+			t.Fatalf("booking not found in my bookings location-filtered response")
+		}
+	})
+
+	t.Run("43.3 list my bookings by wrong location query filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			myBookingsBasePath()+"?countryCode=us&citySlug=osaka&page=1&limit=10",
 			env.Data.OwnerAccess,
 			nil,
 			&resp,

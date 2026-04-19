@@ -144,29 +144,27 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 
 // GetMyBookings godoc
 // @Summary       Get my bookings
-// @Description   Returns bookings for the current user in the selected location. Requires JWT auth.
-// @Tags          bookings
+// @Description   Returns bookings for the current user. Requires JWT auth.
+// @Tags          users
 // @Produce       json
 // @Security      Bearer
-// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
-// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         countryCode query string false "Filter by country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug query string false "Filter by city slug" example(tokyo)
 // @Param         status query string false "Filter by booking status" example(BOOKING_STATUS_CONFIRMED)
 // @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
 // @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
 // @Success       200 {object} dto.BookingsResponse
 // @Failure       400 {object} responder.ErrorResponse
 // @Failure       401 {object} responder.ErrorResponse
-// @Router        /{countryCode}/{citySlug}/users/me/bookings [get]
+// @Router        /users/me/bookings [get]
 func (h *BookingHandler) GetMyBookings(c *gin.Context) {
-	countryCode, citySlug, ok := bookingLocationFromPath(c)
-	if !ok {
-		return
-	}
-
 	userID, ok := userIDFromContext(c)
 	if !ok {
 		return
 	}
+
+	countryCode := strings.TrimSpace(c.Query("countryCode"))
+	citySlug := strings.TrimSpace(c.Query("citySlug"))
 
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	httpmiddleware "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
 )
@@ -129,6 +130,61 @@ func (h *BookingHandler) GetBookings(c *gin.Context) {
 		citySlug,
 		userID,
 		hotelID,
+		c.Query("status"),
+		page,
+		limit,
+	)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetMyBookings godoc
+// @Summary       Get my bookings
+// @Description   Returns bookings for the current user in the selected location. Requires JWT auth.
+// @Tags          bookings
+// @Produce       json
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         status query string false "Filter by booking status" example(BOOKING_STATUS_CONFIRMED)
+// @Param         page query int false "Page number (starts from 1)" default(1) minimum(1)
+// @Param         limit query int false "Page size" default(10) minimum(1) maximum(100)
+// @Success       200 {object} dto.BookingsResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/users/me/bookings [get]
+func (h *BookingHandler) GetMyBookings(c *gin.Context) {
+	countryCode, citySlug, ok := bookingLocationFromPath(c)
+	if !ok {
+		return
+	}
+
+	userID, ok := userIDFromContext(c)
+	if !ok {
+		return
+	}
+
+	page, err := request.OptionalUint64Query(c, "page")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrPageMustBePositiveInteger})
+		return
+	}
+	limit, err := request.OptionalUint64Query(c, "limit")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrLimitMustBePositiveInteger})
+		return
+	}
+
+	resp, err := h.service.GetBookings(
+		c.Request.Context(),
+		countryCode,
+		citySlug,
+		userID,
+		"",
 		c.Query("status"),
 		page,
 		limit,
@@ -373,15 +429,8 @@ func (h *BookingHandler) DeleteBooking(c *gin.Context) {
 }
 
 func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, citySlug, hotelID, bookingID string, ok bool) {
-	countryCode = c.Param("countryCode")
-	if countryCode == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
-		return "", "", "", "", false
-	}
-
-	citySlug = c.Param("citySlug")
-	if citySlug == "" {
-		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+	countryCode, citySlug, ok = bookingLocationFromPath(c)
+	if !ok {
 		return "", "", "", "", false
 	}
 
@@ -400,6 +449,38 @@ func bookingScopeFromPath(c *gin.Context, requireBookingID bool) (countryCode, c
 	}
 
 	return countryCode, citySlug, hotelID, bookingID, true
+}
+
+func bookingLocationFromPath(c *gin.Context) (countryCode, citySlug string, ok bool) {
+	countryCode = c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return "", "", false
+	}
+
+	citySlug = c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return "", "", false
+	}
+
+	return countryCode, citySlug, true
+}
+
+func userIDFromContext(c *gin.Context) (int64, bool) {
+	rawUserID, ok := c.Get(string(httpmiddleware.UserIDKey))
+	if !ok {
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidJWTUserIDClaim})
+		return 0, false
+	}
+
+	userID, ok := rawUserID.(int64)
+	if !ok || userID <= 0 {
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidJWTUserIDClaim})
+		return 0, false
+	}
+
+	return userID, true
 }
 
 func requiredDateQuery(c *gin.Context, key string, requiredError string) (time.Time, bool) {

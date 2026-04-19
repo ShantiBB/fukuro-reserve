@@ -10,6 +10,7 @@ type bookingHandler interface {
 	CreateBooking(*gin.Context)
 	QuoteBooking(*gin.Context)
 	GetBookings(*gin.Context)
+	GetMyBookings(*gin.Context)
 	GetRoomBookings(*gin.Context)
 	GetAvailability(*gin.Context)
 	GetBooking(*gin.Context)
@@ -30,6 +31,10 @@ func NewBookingRoutes(pattern string, h bookingHandler) RouteRegistrar {
 func (br bookingRoutes) Register(r *gin.RouterGroup) {
 	r.GET("/:countryCode/:citySlug/hotels/:hotelId/rooms/availability", br.h.GetAvailability)
 	r.POST("/:countryCode/:citySlug/hotels/:hotelId/bookings/quote", br.h.QuoteBooking)
+
+	myBookings := r.Group("/:countryCode/:citySlug/users/me/bookings")
+	myBookings.Use(middleware.AuthMiddleware())
+	myBookings.GET("", br.h.GetMyBookings)
 
 	bookings := r.Group("/:countryCode/:citySlug/hotels/:hotelId/bookings")
 	bookings.Use(middleware.AuthMiddleware())

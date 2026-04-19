@@ -219,6 +219,41 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
+	t.Run("43.1 list my bookings", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			myBookingsBasePath()+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		booking := findBookingByIDInResponse(&resp, env.Data.BookingID)
+		if booking == nil {
+			t.Fatalf("booking not found in my bookings response")
+		}
+		assertBookingShortFields(t, booking)
+		if booking.UserId != env.Data.OwnerID {
+			t.Fatalf("unexpected my booking user_id: got=%d want=%d", booking.UserId, env.Data.OwnerID)
+		}
+	})
+
+	t.Run("43.2 list my bookings wrong location filtered out", func(t *testing.T) {
+		var resp dto.BookingsResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			wrongLocationMyBookingsBasePath()+"?page=1&limit=10",
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if findBookingByIDInResponse(&resp, env.Data.BookingID) != nil {
+			t.Fatalf("my booking from another location found in response")
+		}
+	})
+
 	t.Run("44 get booking", func(t *testing.T) {
 		var resp dto.BookingResponse
 		status, body := env.RequestJSON(

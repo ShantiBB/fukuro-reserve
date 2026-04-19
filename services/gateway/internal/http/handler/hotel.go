@@ -17,14 +17,38 @@ import (
 // @Accept json
 // @Produce json
 // @Security Bearer
-// @Param request body dto.CreateHotelRequest true "Create hotel request"
+// @Param countryCode path string true "Country code"
+// @Param citySlug path string true "City slug"
+// @Param request body dto.CreateHotelBody true "Create hotel request"
 // @Success 201 {object} dto.HotelResponse
-// @Router /hotels [post]
+// @Router /{countryCode}/{citySlug}/hotels [post]
 func (h *HotelHandler) CreateHotel(c *gin.Context) {
-	var req dto.CreateHotelRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
+	var body dto.CreateHotelBody
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
+	}
+
+	req := dto.CreateHotelRequest{
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		Title:       body.Title,
+		Description: body.Description,
+		Address:     body.Address,
+		OwnerId:     body.OwnerId,
+		Location:    body.Location,
 	}
 
 	resp, err := h.service.CreateHotel(c.Request.Context(), req)
@@ -41,13 +65,13 @@ func (h *HotelHandler) CreateHotel(c *gin.Context) {
 // @Tags hotels
 // @Produce json
 // @Security Bearer
-// @Param country_code query string true "Country code"
-// @Param city_slug query string true "City slug"
+// @Param countryCode path string true "Country code"
+// @Param citySlug path string true "City slug"
 // @Param sort_by query string false "Sort field"
 // @Param page query int false "Page number"
 // @Param limit query int false "Limit"
 // @Success 200 {object} dto.HotelsResponse
-// @Router /hotels [get]
+// @Router /{countryCode}/{citySlug}/hotels [get]
 func (h *HotelHandler) GetHotels(c *gin.Context) {
 	page, err := request.OptionalUint64Query(c, "page")
 	if err != nil {
@@ -60,12 +84,12 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 		return
 	}
 
-	countryCode := request.FirstNonEmptyQuery(c, "countryCode", "country_code")
+	countryCode := c.Param("countryCode")
 	if countryCode == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
 		return
 	}
-	citySlug := request.FirstNonEmptyQuery(c, "citySlug", "city_slug")
+	citySlug := c.Param("citySlug")
 	if citySlug == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
 		return
@@ -92,15 +116,29 @@ func (h *HotelHandler) GetHotels(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
-// GetHotel godoc
+// GetHotelByID GetHotel godoc
 // @Summary Get hotel by ID
 // @Tags hotels
 // @Produce json
 // @Security Bearer
+// @Param countryCode path string true "Country code"
+// @Param citySlug path string true "City slug"
 // @Param hotelId path string true "Hotel ID"
 // @Success 200 {object} dto.HotelResponse
-// @Router /hotels/{hotelId} [get]
-func (h *HotelHandler) GetHotel(c *gin.Context) {
+// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [get]
+func (h *HotelHandler) GetHotelByID(c *gin.Context) {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
 	hotelID := c.Param("hotelId")
 	if hotelID == "" {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
@@ -108,6 +146,44 @@ func (h *HotelHandler) GetHotel(c *gin.Context) {
 	}
 
 	resp, err := h.service.GetHotelByID(c.Request.Context(), hotelID)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
+// GetHotelBySlug godoc
+// @Summary Get hotel by slug
+// @Tags hotels
+// @Produce json
+// @Security Bearer
+// @Param countryCode path string true "Country code"
+// @Param citySlug path string true "City slug"
+// @Param hotelSlug path string true "Hotel slug"
+// @Success 200 {object} dto.HotelResponse
+// @Router /{countryCode}/{citySlug}/hotels/slug/{hotelSlug} [get]
+func (h *HotelHandler) GetHotelBySlug(c *gin.Context) {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
+	hotelSlug := c.Param("hotelSlug")
+	if hotelSlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrRoomHotelSlugReq})
+		return
+	}
+
+	resp, err := h.service.GetHotelBySlug(c.Request.Context(), countryCode, citySlug, hotelSlug)
 	if err != nil {
 		responder.GinGRPCError(c, err)
 		return
@@ -124,22 +200,38 @@ func (h *HotelHandler) GetHotel(c *gin.Context) {
 // @Security Bearer
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
+// @Param hotelId path string true "Hotel ID"
 // @Param request body dto.UpdateHotelRequest true "Update hotel request"
 // @Success 200 {object} dto.HotelResponse
-// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [put]
+// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [put]
 func (h *HotelHandler) UpdateHotel(c *gin.Context) {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
+	hotelID := c.Param("hotelId")
+	if hotelID == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
+		return
+	}
+
 	var req dto.UpdateHotelRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 
-	resp, err := h.service.UpdateHotel(
+	resp, err := h.service.UpdateHotelByID(
 		c.Request.Context(),
-		c.Param("countryCode"),
-		c.Param("citySlug"),
-		c.Param("hotelSlug"),
+		hotelID,
 		req,
 	)
 	if err != nil {
@@ -158,22 +250,38 @@ func (h *HotelHandler) UpdateHotel(c *gin.Context) {
 // @Security Bearer
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
+// @Param hotelId path string true "Hotel ID"
 // @Param request body dto.UpdateHotelTitleRequest true "Update hotel title request"
 // @Success 200 {object} dto.HotelResponse
-// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug}/title [patch]
+// @Router /{countryCode}/{citySlug}/hotels/{hotelId}/title [patch]
 func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
+	hotelID := c.Param("hotelId")
+	if hotelID == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
+		return
+	}
+
 	var req dto.UpdateHotelTitleRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
 		return
 	}
 
-	resp, err := h.service.UpdateHotelTitle(
+	resp, err := h.service.UpdateHotelTitleByID(
 		c.Request.Context(),
-		c.Param("countryCode"),
-		c.Param("citySlug"),
-		c.Param("hotelSlug"),
+		hotelID,
 		req,
 	)
 	if err != nil {
@@ -190,16 +298,29 @@ func (h *HotelHandler) UpdateHotelTitle(c *gin.Context) {
 // @Security Bearer
 // @Param countryCode path string true "Country code"
 // @Param citySlug path string true "City slug"
-// @Param hotelSlug path string true "Hotel slug"
+// @Param hotelId path string true "Hotel ID"
 // @Success 204
-// @Router /hotels/{countryCode}/{citySlug}/{hotelSlug} [delete]
+// @Router /{countryCode}/{citySlug}/hotels/{hotelId} [delete]
 func (h *HotelHandler) DeleteHotel(c *gin.Context) {
-	if err := h.service.DeleteHotel(
-		c.Request.Context(),
-		c.Param("countryCode"),
-		c.Param("citySlug"),
-		c.Param("hotelSlug"),
-	); err != nil {
+	countryCode := c.Param("countryCode")
+	if countryCode == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCountryCodeRequired})
+		return
+	}
+
+	citySlug := c.Param("citySlug")
+	if citySlug == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrCitySlugRequired})
+		return
+	}
+
+	hotelID := c.Param("hotelId")
+	if hotelID == "" {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrHotelIDRequired})
+		return
+	}
+
+	if err := h.service.DeleteHotelByID(c.Request.Context(), hotelID); err != nil {
 		responder.GinGRPCError(c, err)
 		return
 	}

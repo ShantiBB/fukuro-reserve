@@ -74,7 +74,20 @@ func (s *Hotel) GetHotelByID(ctx context.Context, hotelID string) (*dto.HotelRes
 	return mapper.HotelDetailByIDResponseFromProto(resp), nil
 }
 
-func (s *Hotel) UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error) {
+func (s *Hotel) GetHotelBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string) (*dto.HotelResponse, error) {
+	resp, err := s.clients.Hotel.GetHotel(ctx, &hotelv1.GetHotelRequest{
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		HotelSlug:   hotelSlug,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.HotelDetailResponseFromProto(resp), nil
+}
+
+func (s *Hotel) UpdateHotelByID(ctx context.Context, hotelID string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error) {
 	var description *string
 	if req.Description != "" {
 		description = &req.Description
@@ -88,10 +101,8 @@ func (s *Hotel) UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlu
 		}
 	}
 
-	resp, err := s.clients.Hotel.UpdateHotel(ctx, &hotelv1.UpdateHotelRequest{
-		CountryCode: countryCode,
-		CitySlug:    citySlug,
-		HotelSlug:   hotelSlug,
+	resp, err := s.clients.Hotel.UpdateHotelByID(ctx, &hotelv1.UpdateHotelByIDRequest{
+		Id:          hotelID,
 		Description: description,
 		Address:     req.Address,
 		Location:    location,
@@ -103,12 +114,10 @@ func (s *Hotel) UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlu
 	return mapper.UpdateHotelResponseFromProto(resp.Hotel), nil
 }
 
-func (s *Hotel) UpdateHotelTitle(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelTitleRequest) (*dto.HotelResponse, error) {
-	resp, err := s.clients.Hotel.UpdateHotelTitle(ctx, &hotelv1.UpdateHotelTitleRequest{
-		CountryCode: countryCode,
-		CitySlug:    citySlug,
-		HotelSlug:   hotelSlug,
-		Title:       req.Title,
+func (s *Hotel) UpdateHotelTitleByID(ctx context.Context, hotelID string, req dto.UpdateHotelTitleRequest) (*dto.HotelResponse, error) {
+	resp, err := s.clients.Hotel.UpdateHotelTitleByID(ctx, &hotelv1.UpdateHotelTitleByIDRequest{
+		Id:    hotelID,
+		Title: req.Title,
 	})
 	if err != nil {
 		return nil, err
@@ -117,23 +126,17 @@ func (s *Hotel) UpdateHotelTitle(ctx context.Context, countryCode, citySlug, hot
 	return mapper.UpdateHotelTitleResponseFromProto(resp.Hotel), nil
 }
 
-func (s *Hotel) DeleteHotel(ctx context.Context, countryCode, citySlug, hotelSlug string) error {
-	_, err := s.clients.Hotel.DeleteHotel(ctx, &hotelv1.DeleteHotelRequest{
-		CountryCode: countryCode,
-		CitySlug:    citySlug,
-		HotelSlug:   hotelSlug,
+func (s *Hotel) DeleteHotelByID(ctx context.Context, hotelID string) error {
+	_, err := s.clients.Hotel.DeleteHotelByID(ctx, &hotelv1.DeleteHotelByIDRequest{
+		Id: hotelID,
 	})
 	return err
 }
 
-func (s *Hotel) CreateRoom(ctx context.Context, req dto.CreateRoomRequest) (*dto.RoomResponse, error) {
+func (s *Hotel) CreateRoomByHotelID(ctx context.Context, hotelID string, req dto.CreateRoomRequest) (*dto.RoomResponse, error) {
 	var description *string
 	if req.Description != "" {
 		description = &req.Description
-	}
-
-	if req.CountryCode == "" || req.CitySlug == "" || req.HotelSlug == "" {
-		return nil, status.Error(codes.InvalidArgument, "country_code, city_slug, and hotel_slug are required")
 	}
 
 	var price float32
@@ -145,18 +148,16 @@ func (s *Hotel) CreateRoom(ctx context.Context, req dto.CreateRoomRequest) (*dto
 		price = float32(p)
 	}
 
-	resp, err := s.clients.Room.CreateRoom(ctx, &hotelv1.CreateRoomRequest{
-		CountryCode: req.CountryCode,
-		CitySlug:    req.CitySlug,
-		HotelSlug:   req.HotelSlug,
+	resp, err := s.clients.Room.CreateRoomByHotelID(ctx, &hotelv1.CreateRoomByHotelIDRequest{
+		HotelId:     hotelID,
 		Title:       req.Title,
 		Description: description,
 		RoomNumber:  req.RoomNumber,
 		Type:        hotelv1.RoomType(hotelv1.RoomType_value[req.Type]),
 		Price:       price,
-		Capacity:    req.Capacity,
-		AreaSqm:     req.AreaSqm,
-		Floor:       req.Floor,
+		Capacity:    int32(req.Capacity),
+		AreaSqm:     float64(req.AreaSqm),
+		Floor:       int32(req.Floor),
 		Amenities:   req.Amenities,
 		Images:      req.Images,
 	})
@@ -187,6 +188,26 @@ func (s *Hotel) GetRooms(ctx context.Context, countryCode, citySlug, hotelSlug s
 	}
 
 	return mapper.RoomsShortResponseFromProto(resp), nil
+}
+
+func (s *Hotel) GetRoomsByHotelID(ctx context.Context, hotelID string, page, limit uint64) (*dto.RoomsResponse, error) {
+	if page == 0 {
+		page = s.pagination.DefaultPage
+	}
+	if limit == 0 {
+		limit = s.pagination.DefaultPageSize
+	}
+
+	resp, err := s.clients.Room.GetRoomsByHotelID(ctx, &hotelv1.GetRoomsByHotelIDRequest{
+		HotelId: hotelID,
+		Page:    page,
+		Limit:   limit,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.RoomsShortByHotelIDResponseFromProto(resp), nil
 }
 
 func (s *Hotel) GetRoom(ctx context.Context, roomID string) (*dto.RoomResponse, error) {

@@ -9,14 +9,19 @@ import "hotel/v1/rpc/room/create_room.proto";
 import "hotel/v1/rpc/hotel/get_hotels.proto";
 import "hotel/v1/rpc/hotel/get_hotel_by_id.proto";
 import "hotel/v1/rpc/room/get_rooms.proto";
+import "hotel/v1/rpc/room/get_rooms_by_hotel_id.proto";
 import "hotel/v1/rpc/hotel/get_hotel.proto";
 import "hotel/v1/rpc/room/get_room.proto";
 import "hotel/v1/rpc/hotel/update_hotel.proto";
+import "hotel/v1/rpc/hotel/update_hotel_by_id.proto";
 import "hotel/v1/rpc/room/update_room.proto";
 import "hotel/v1/rpc/room/update_room_status.proto";
 import "hotel/v1/rpc/hotel/delete_hotel.proto";
+import "hotel/v1/rpc/hotel/delete_hotel_by_id.proto";
 import "hotel/v1/rpc/room/delete_room.proto";
 import "hotel/v1/rpc/hotel/update_hotel_title.proto";
+import "hotel/v1/rpc/hotel/update_hotel_title_by_id.proto";
+import "hotel/v1/rpc/room/create_room_by_hotel_id.proto";
 
 
 service HotelService {
@@ -24,14 +29,19 @@ service HotelService {
   rpc GetHotels(GetHotelsRequest) returns (GetHotelsResponse);
   rpc GetHotelByID(GetHotelByIDRequest) returns (GetHotelByIDResponse);
   rpc GetHotel(GetHotelRequest) returns (GetHotelResponse);
+  rpc UpdateHotelByID(UpdateHotelByIDRequest) returns (UpdateHotelByIDResponse);
   rpc UpdateHotel(UpdateHotelRequest) returns (UpdateHotelResponse);
+  rpc UpdateHotelTitleByID(UpdateHotelTitleByIDRequest) returns (UpdateHotelTitleByIDResponse);
   rpc UpdateHotelTitle(UpdateHotelTitleRequest) returns (UpdateHotelTitleResponse);
+  rpc DeleteHotelByID(DeleteHotelByIDRequest) returns (DeleteHotelByIDResponse);
   rpc DeleteHotel(DeleteHotelRequest) returns (DeleteHotelResponse);
 }
 
 service RoomService {
   rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+  rpc CreateRoomByHotelID(CreateRoomByHotelIDRequest) returns (CreateRoomByHotelIDResponse);
   rpc GetRooms(GetRoomsRequest) returns (GetRoomsResponse);
+  rpc GetRoomsByHotelID(GetRoomsByHotelIDRequest) returns (GetRoomsByHotelIDResponse);
   rpc GetRoom(GetRoomRequest) returns (GetRoomResponse);
   rpc UpdateRoom(UpdateRoomRequest) returns (UpdateRoomResponse);
   rpc UpdateRoomStatus(UpdateRoomStatusRequest) returns (UpdateRoomStatusResponse);

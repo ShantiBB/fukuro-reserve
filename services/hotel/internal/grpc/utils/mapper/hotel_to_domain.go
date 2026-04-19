@@ -62,7 +62,21 @@ func UpdateHotelRequestToDomain(req *hotelv1.UpdateHotelRequest) models.UpdateHo
 	}
 }
 
+func UpdateHotelByIDRequestToDomain(req *hotelv1.UpdateHotelByIDRequest) models.UpdateHotel {
+	return models.UpdateHotel{
+		Description: req.Description,
+		Address:     req.Address,
+		Location:    locationRequestToDomain(req.Location),
+	}
+}
+
 func UpdateHotelTitleRequestToDomain(req *hotelv1.UpdateHotelTitleRequest) models.UpdateHotelTitle {
+	return models.UpdateHotelTitle{
+		Title: req.Title,
+	}
+}
+
+func UpdateHotelTitleByIDRequestToDomain(req *hotelv1.UpdateHotelTitleByIDRequest) models.UpdateHotelTitle {
 	return models.UpdateHotelTitle{
 		Title: req.Title,
 	}

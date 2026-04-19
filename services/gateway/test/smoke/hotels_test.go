@@ -15,11 +15,9 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodPost,
-			"/api/v1/hotels",
+			"/api/v1/jp/tokyo/hotels",
 			env.Data.OwnerAccess,
-			dto.CreateHotelRequest{
-				CountryCode: "jp",
-				CitySlug:    "tokyo",
+			dto.CreateHotelBody{
 				Title:       env.Data.HotelTitle,
 				OwnerId:     1,
 				Description: "http client smoke hotel",
@@ -35,15 +33,15 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 
 	t.Run("21 list hotels", func(t *testing.T) {
 		var resp dto.HotelsResponse
-		status, body := env.RequestJSON(http.MethodGet, "/api/v1/hotels?country_code=jp&city_slug=tokyo&sort_by=title&page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
+		status, body := env.RequestJSON(http.MethodGet, "/api/v1/jp/tokyo/hotels?sort_by=title&page=1&limit=10", env.Data.OwnerAccess, nil, &resp)
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
-	t.Run("22 get hotel by slug", func(t *testing.T) {
+	t.Run("22 get hotel by id", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/hotels/"+env.Data.HotelID,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
 			env.Data.OwnerAccess,
 			nil,
 			&resp,
@@ -51,11 +49,23 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
-	t.Run("23 update hotel", func(t *testing.T) {
+	t.Run("23 get hotel by slug", func(t *testing.T) {
+		var resp dto.HotelResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug,
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("24 update hotel", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodPut,
-			"/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
 			env.Data.OwnerAccess,
 			dto.UpdateHotelRequest{
 				Description: "updated by http client",
@@ -67,11 +77,11 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireStatus(status, http.StatusOK, body)
 	})
 
-	t.Run("24 rename hotel", func(t *testing.T) {
+	t.Run("25 rename hotel", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodPatch,
-			"/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug+"/title",
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/title",
 			env.Data.OwnerAccess,
 			dto.UpdateHotelTitleRequest{Title: env.Data.HotelTitleRenamed},
 			&resp,
@@ -82,11 +92,23 @@ func runHotelsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("25 get renamed hotel", func(t *testing.T) {
+	t.Run("26 get renamed hotel by id", func(t *testing.T) {
 		var resp dto.HotelResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,
-			"/api/v1/hotels/"+env.Data.HotelID,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
+			env.Data.OwnerAccess,
+			nil,
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+	})
+
+	t.Run("27 get renamed hotel by slug", func(t *testing.T) {
+		var resp dto.HotelResponse
+		status, body := env.RequestJSON(
+			http.MethodGet,
+			"/api/v1/jp/tokyo/hotels/slug/"+env.Data.HotelSlug,
 			env.Data.OwnerAccess,
 			nil,
 			&resp,

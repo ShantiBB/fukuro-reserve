@@ -22,12 +22,14 @@ type authService interface {
 type hotelService interface {
 	CreateHotel(ctx context.Context, req dto.CreateHotelRequest) (*dto.HotelResponse, error)
 	GetHotels(ctx context.Context, countryCode, citySlug, sortBy string, page, limit uint64) (*dto.HotelsResponse, error)
+	GetHotelBySlug(ctx context.Context, countryCode, citySlug, hotelSlug string) (*dto.HotelResponse, error)
 	GetHotelByID(ctx context.Context, hotelID string) (*dto.HotelResponse, error)
-	UpdateHotel(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error)
-	UpdateHotelTitle(ctx context.Context, countryCode, citySlug, hotelSlug string, req dto.UpdateHotelTitleRequest) (*dto.HotelResponse, error)
-	DeleteHotel(ctx context.Context, countryCode, citySlug, hotelSlug string) error
-	CreateRoom(ctx context.Context, req dto.CreateRoomRequest) (*dto.RoomResponse, error)
+	UpdateHotelByID(ctx context.Context, hotelID string, req dto.UpdateHotelRequest) (*dto.HotelResponse, error)
+	UpdateHotelTitleByID(ctx context.Context, hotelID string, req dto.UpdateHotelTitleRequest) (*dto.HotelResponse, error)
+	DeleteHotelByID(ctx context.Context, hotelID string) error
+	CreateRoomByHotelID(ctx context.Context, hotelID string, req dto.CreateRoomRequest) (*dto.RoomResponse, error)
 	GetRooms(ctx context.Context, countryCode, citySlug, hotelSlug string, page, limit uint64) (*dto.RoomsResponse, error)
+	GetRoomsByHotelID(ctx context.Context, hotelID string, page, limit uint64) (*dto.RoomsResponse, error)
 	GetRoom(ctx context.Context, roomID string) (*dto.RoomResponse, error)
 	UpdateRoom(ctx context.Context, roomID string, req dto.UpdateRoomRequest) (*dto.RoomResponse, error)
 	UpdateRoomStatus(ctx context.Context, roomID string, req dto.UpdateRoomStatusRequest) (*dto.StatusResponse, error)

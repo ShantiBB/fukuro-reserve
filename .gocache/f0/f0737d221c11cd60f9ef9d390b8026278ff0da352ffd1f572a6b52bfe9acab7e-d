@@ -1,7 +1,0 @@
-./http.go
-./response_auth.go
-./response_booking.go
-./response_common.go
-./response_room.go
-./validation_hotel.go
-./validation_room.go

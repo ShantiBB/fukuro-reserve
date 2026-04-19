@@ -49,6 +49,19 @@ func RoomsShortResponseFromProto(resp *hotelv1.GetRoomsResponse) *dto.RoomsRespo
 	return &dto.RoomsResponse{Rooms: rooms}
 }
 
+func RoomsShortByHotelIDResponseFromProto(resp *hotelv1.GetRoomsByHotelIDResponse) *dto.RoomsResponse {
+	if resp == nil {
+		return nil
+	}
+
+	rooms := make([]*dto.RoomShortResponse, len(resp.Rooms))
+	for i, room := range resp.Rooms {
+		rooms[i] = roomShortResponseFromProto(room)
+	}
+
+	return &dto.RoomsResponse{Rooms: rooms}
+}
+
 func UpdateRoomResponseFromProto(room *hotelv1.UpdateRoom) *dto.RoomResponse {
 	if room == nil {
 		return nil

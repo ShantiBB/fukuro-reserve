@@ -122,13 +122,9 @@ definitions:
       room_id:
         type: string
     type: object
-  dto.CreateHotelRequest:
+  dto.CreateHotelBody:
     properties:
       address:
-        type: string
-      city_slug:
-        type: string
-      country_code:
         type: string
       description:
         type: string
@@ -149,16 +145,10 @@ definitions:
         type: number
       capacity:
         type: integer
-      city_slug:
-        type: string
-      country_code:
-        type: string
       description:
         type: string
       floor:
         type: integer
-      hotel_slug:
-        type: string
       images:
         items:
           type: string
@@ -454,6 +444,533 @@ info:
   title: Swagger Gateway API
   version: "1.0"
 paths:
+  /{countryCode}/{citySlug}/hotels:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Sort field
+        in: query
+        name: sort_by
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelsResponse'
+      security:
+      - Bearer: []
+      summary: Get hotels
+      tags:
+      - hotels
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Create hotel request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateHotelBody'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Create a new hotel
+      tags:
+      - hotels
+  /{countryCode}/{citySlug}/hotels/{hotelId}:
+    delete:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - Bearer: []
+      summary: Delete hotel
+      tags:
+      - hotels
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Get hotel by ID
+      tags:
+      - hotels
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Update hotel request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateHotelRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Update hotel
+      tags:
+      - hotels
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomsResponse'
+      security:
+      - Bearer: []
+      summary: Get rooms by hotel ID
+      tags:
+      - rooms
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Create room request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
+      summary: Create a new room
+      tags:
+      - rooms
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}:
+    delete:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+      security:
+      - Bearer: []
+      summary: Delete room
+      tags:
+      - rooms
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
+      summary: Get room by hotel ID and room ID
+      tags:
+      - rooms
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Update room request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
+      summary: Update room
+      tags:
+      - rooms
+  /{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      - description: Update room status request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateRoomStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.StatusResponse'
+      security:
+      - Bearer: []
+      summary: Update room status
+      tags:
+      - rooms
+  /{countryCode}/{citySlug}/hotels/{hotelId}/title:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Update hotel title request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateHotelTitleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Update hotel title
+      tags:
+      - hotels
+  /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotelSlug
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.HotelResponse'
+      security:
+      - Bearer: []
+      summary: Get hotel by slug
+      tags:
+      - hotels
+  /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotelSlug
+        required: true
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomsResponse'
+      security:
+      - Bearer: []
+      summary: Get rooms by hotel slug
+      tags:
+      - rooms
+  /{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms/{roomId}:
+    get:
+      parameters:
+      - description: Country code
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel slug
+        in: path
+        name: hotelSlug
+        required: true
+        type: string
+      - description: Room ID
+        in: path
+        name: roomId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.RoomResponse'
+      security:
+      - Bearer: []
+      summary: Get room by hotel slug and room ID
+      tags:
+      - rooms
   /auth/login:
     post:
       consumes:
@@ -820,337 +1337,6 @@ paths:
       summary: Confirm booking
       tags:
       - bookings
-  /hotels:
-    get:
-      parameters:
-      - description: Country code
-        in: query
-        name: country_code
-        required: true
-        type: string
-      - description: City slug
-        in: query
-        name: city_slug
-        required: true
-        type: string
-      - description: Sort field
-        in: query
-        name: sort_by
-        type: string
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Limit
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.HotelsResponse'
-      security:
-      - Bearer: []
-      summary: Get hotels
-      tags:
-      - hotels
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Create hotel request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateHotelRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
-      summary: Create a new hotel
-      tags:
-      - hotels
-  /hotels/{countryCode}/{citySlug}/{hotelSlug}:
-    delete:
-      parameters:
-      - description: Country code
-        in: path
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: path
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: path
-        name: hotelSlug
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-      security:
-      - Bearer: []
-      summary: Delete hotel
-      tags:
-      - hotels
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: Country code
-        in: path
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: path
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: path
-        name: hotelSlug
-        required: true
-        type: string
-      - description: Update hotel request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateHotelRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
-      summary: Update hotel
-      tags:
-      - hotels
-  /hotels/{countryCode}/{citySlug}/{hotelSlug}/rooms:
-    get:
-      parameters:
-      - description: Country code
-        in: path
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: path
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: path
-        name: hotelSlug
-        required: true
-        type: string
-      - description: Page number
-        in: query
-        name: page
-        type: integer
-      - description: Page size
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RoomsResponse'
-      security:
-      - Bearer: []
-      summary: Get rooms
-      tags:
-      - rooms
-  /hotels/{countryCode}/{citySlug}/{hotelSlug}/title:
-    patch:
-      consumes:
-      - application/json
-      parameters:
-      - description: Country code
-        in: path
-        name: countryCode
-        required: true
-        type: string
-      - description: City slug
-        in: path
-        name: citySlug
-        required: true
-        type: string
-      - description: Hotel slug
-        in: path
-        name: hotelSlug
-        required: true
-        type: string
-      - description: Update hotel title request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateHotelTitleRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
-      summary: Update hotel title
-      tags:
-      - hotels
-  /hotels/{hotelId}:
-    get:
-      parameters:
-      - description: Hotel ID
-        in: path
-        name: hotelId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.HotelResponse'
-      security:
-      - Bearer: []
-      summary: Get hotel by ID
-      tags:
-      - hotels
-  /rooms:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Create room request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.CreateRoomRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/dto.RoomResponse'
-      security:
-      - Bearer: []
-      summary: Create a new room
-      tags:
-      - rooms
-  /rooms/{roomId}:
-    delete:
-      parameters:
-      - description: Room ID
-        in: path
-        name: roomId
-        required: true
-        type: string
-      responses:
-        "204":
-          description: No Content
-      security:
-      - Bearer: []
-      summary: Delete room
-      tags:
-      - rooms
-    get:
-      parameters:
-      - description: Room ID
-        in: path
-        name: roomId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RoomResponse'
-      security:
-      - Bearer: []
-      summary: Get room by ID
-      tags:
-      - rooms
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: Room ID
-        in: path
-        name: roomId
-        required: true
-        type: string
-      - description: Update room request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateRoomRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.RoomResponse'
-      security:
-      - Bearer: []
-      summary: Update room
-      tags:
-      - rooms
-  /rooms/{roomId}/status:
-    patch:
-      consumes:
-      - application/json
-      parameters:
-      - description: Room ID
-        in: path
-        name: roomId
-        required: true
-        type: string
-      - description: Update room status request
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateRoomStatusRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dto.StatusResponse'
-      security:
-      - Bearer: []
-      summary: Update room status
-      tags:
-      - rooms
 securityDefinitions:
   Bearer:
     description: Type "Bearer" followed by a space and JWT token.

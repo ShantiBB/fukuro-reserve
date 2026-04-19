@@ -5,12 +5,9 @@ import "time"
 type CreateRoomRequest struct {
 	RoomNumber  string   `json:"room_number"`
 	Type        string   `json:"type"`
-	HotelSlug   string   `json:"hotel_slug"`
 	Title       string   `json:"title"`
 	Description string   `json:"description,omitempty"`
 	Price       string   `json:"price"`
-	CountryCode string   `json:"country_code"`
-	CitySlug    string   `json:"city_slug"`
 	Amenities   []string `json:"amenities"`
 	Images      []string `json:"images"`
 	Floor       int64    `json:"floor"`

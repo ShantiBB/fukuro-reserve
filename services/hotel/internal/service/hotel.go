@@ -62,6 +62,14 @@ func (s *Service) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef, h 
 	return nil
 }
 
+func (s *Service) UpdateHotelByID(ctx context.Context, id uuid.UUID, h models.UpdateHotel) error {
+	if err := s.repo.UpdateHotelByID(ctx, id, h); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *Service) UpdateHotelTitleBySlug(
 	ctx context.Context,
 	ref models.HotelRef,
@@ -75,8 +83,29 @@ func (s *Service) UpdateHotelTitleBySlug(
 	return h, nil
 }
 
+func (s *Service) UpdateHotelTitleByID(
+	ctx context.Context,
+	id uuid.UUID,
+	h models.UpdateHotelTitle,
+) (models.UpdateHotelTitle, error) {
+	h.HotelSlug = slug.Make(h.Title)
+	if err := s.repo.UpdateHotelTitleByID(ctx, id, h); err != nil {
+		return models.UpdateHotelTitle{}, err
+	}
+
+	return h, nil
+}
+
 func (s *Service) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error {
 	if err := s.repo.DeleteHotelBySlug(ctx, ref); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Service) DeleteHotelByID(ctx context.Context, id uuid.UUID) error {
+	if err := s.repo.DeleteHotelByID(ctx, id); err != nil {
 		return err
 	}
 

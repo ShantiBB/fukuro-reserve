@@ -25,7 +25,7 @@ func runCleanupSmoke(t *testing.T, env *fixtures.Env) {
 	t.Run("91 delete room", func(t *testing.T) {
 		status, body := env.RequestJSON(
 			http.MethodDelete,
-			"/api/v1/rooms/"+env.Data.RoomID,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID+"/rooms/"+env.Data.RoomID,
 			env.Data.OwnerAccess,
 			nil,
 			nil,
@@ -36,7 +36,7 @@ func runCleanupSmoke(t *testing.T, env *fixtures.Env) {
 	t.Run("92 delete hotel", func(t *testing.T) {
 		status, body := env.RequestJSON(
 			http.MethodDelete,
-			"/api/v1/hotels/jp/tokyo/"+env.Data.HotelSlug,
+			"/api/v1/jp/tokyo/hotels/"+env.Data.HotelID,
 			env.Data.OwnerAccess,
 			nil,
 			nil,

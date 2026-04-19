@@ -9,8 +9,8 @@ import (
 type hotelHandler interface {
 	CreateHotel(*gin.Context)
 	GetHotels(*gin.Context)
-	GetRooms(*gin.Context)
-	GetHotel(*gin.Context)
+	GetHotelBySlug(*gin.Context)
+	GetHotelByID(*gin.Context)
 	UpdateHotel(*gin.Context)
 	UpdateHotelTitle(*gin.Context)
 	DeleteHotel(*gin.Context)
@@ -26,14 +26,14 @@ func NewHotelRoutes(pattern string, h hotelHandler) RouteRegistrar {
 }
 
 func (hr hotelRoutes) Register(r *gin.RouterGroup) {
-	hotels := r.Group(hr.pattern)
-	hotels.Use(middleware.AuthMiddleware())
+	locationHotels := r.Group("/:countryCode/:citySlug/hotels")
+	locationHotels.Use(middleware.AuthMiddleware())
 
-	hotels.POST("", hr.h.CreateHotel)
-	hotels.GET("", hr.h.GetHotels)
-	hotels.GET("/:countryCode/:citySlug/:hotelSlug/rooms", hr.h.GetRooms)
-	hotels.GET("/:hotelId", hr.h.GetHotel)
-	hotels.PUT("/:countryCode/:citySlug/:hotelSlug", hr.h.UpdateHotel)
-	hotels.PATCH("/:countryCode/:citySlug/:hotelSlug/title", hr.h.UpdateHotelTitle)
-	hotels.DELETE("/:countryCode/:citySlug/:hotelSlug", hr.h.DeleteHotel)
+	locationHotels.POST("", hr.h.CreateHotel)
+	locationHotels.GET("", hr.h.GetHotels)
+	locationHotels.GET("/slug/:hotelSlug", hr.h.GetHotelBySlug)
+	locationHotels.GET("/:hotelId", hr.h.GetHotelByID)
+	locationHotels.PUT("/:hotelId", hr.h.UpdateHotel)
+	locationHotels.PATCH("/:hotelId/title", hr.h.UpdateHotelTitle)
+	locationHotels.DELETE("/:hotelId", hr.h.DeleteHotel)
 }

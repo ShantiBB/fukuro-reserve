@@ -607,7 +607,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/hotels": {
+        "/{countryCode}/{citySlug}/hotels": {
             "get": {
                 "security": [
                     {
@@ -625,15 +625,15 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Country code",
-                        "name": "country_code",
-                        "in": "query",
+                        "name": "countryCode",
+                        "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "City slug",
-                        "name": "city_slug",
-                        "in": "query",
+                        "name": "citySlug",
+                        "in": "path",
                         "required": true
                     },
                     {
@@ -682,12 +682,26 @@ const docTemplate = `{
                 "summary": "Create a new hotel",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "Create hotel request",
                         "name": "request",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateHotelRequest"
+                            "$ref": "#/definitions/dto.CreateHotelBody"
                         }
                     }
                 ],
@@ -701,7 +715,212 @@ const docTemplate = `{
                 }
             }
         },
-        "/hotels/{countryCode}/{citySlug}/{hotelSlug}": {
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get rooms by hotel slug",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page size",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomsResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/slug/{hotelSlug}/rooms/{roomId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rooms"
+                ],
+                "summary": "Get room by hotel slug and room ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel slug",
+                        "name": "hotelSlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Room ID",
+                        "name": "roomId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.RoomResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Get hotel by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
+                        }
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -735,8 +954,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
                         "in": "path",
                         "required": true
                     },
@@ -786,8 +1005,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
                         "in": "path",
                         "required": true
                     }
@@ -799,7 +1018,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/hotels/{countryCode}/{citySlug}/{hotelSlug}/rooms": {
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms": {
             "get": {
                 "security": [
                     {
@@ -812,7 +1031,7 @@ const docTemplate = `{
                 "tags": [
                     "rooms"
                 ],
-                "summary": "Get rooms",
+                "summary": "Get rooms by hotel ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -830,8 +1049,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
                         "in": "path",
                         "required": true
                     },
@@ -856,101 +1075,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/hotels/{countryCode}/{citySlug}/{hotelSlug}/title": {
-            "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "hotels"
-                ],
-                "summary": "Update hotel title",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Country code",
-                        "name": "countryCode",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "City slug",
-                        "name": "citySlug",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Hotel slug",
-                        "name": "hotelSlug",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update hotel title request",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateHotelTitleRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.HotelResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/hotels/{hotelId}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "hotels"
-                ],
-                "summary": "Get hotel by ID",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Hotel ID",
-                        "name": "hotelId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dto.HotelResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/rooms": {
+            },
             "post": {
                 "security": [
                     {
@@ -968,6 +1093,27 @@ const docTemplate = `{
                 ],
                 "summary": "Create a new room",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Create room request",
                         "name": "request",
@@ -988,7 +1134,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rooms/{roomId}": {
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}": {
             "get": {
                 "security": [
                     {
@@ -1001,8 +1147,29 @@ const docTemplate = `{
                 "tags": [
                     "rooms"
                 ],
-                "summary": "Get room by ID",
+                "summary": "Get room by hotel ID and room ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Room ID",
@@ -1037,6 +1204,27 @@ const docTemplate = `{
                 ],
                 "summary": "Update room",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Room ID",
@@ -1076,6 +1264,27 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Room ID",
                         "name": "roomId",
                         "in": "path",
@@ -1089,7 +1298,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/rooms/{roomId}/status": {
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/rooms/{roomId}/status": {
             "patch": {
                 "security": [
                     {
@@ -1107,6 +1316,27 @@ const docTemplate = `{
                 ],
                 "summary": "Update room status",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Room ID",
@@ -1129,6 +1359,65 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dto.StatusResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/title": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hotels"
+                ],
+                "summary": "Update hotel title",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Country code",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update hotel title request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UpdateHotelTitleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.HotelResponse"
                         }
                     }
                 }
@@ -1322,16 +1611,10 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.CreateHotelRequest": {
+        "dto.CreateHotelBody": {
             "type": "object",
             "properties": {
                 "address": {
-                    "type": "string"
-                },
-                "city_slug": {
-                    "type": "string"
-                },
-                "country_code": {
                     "type": "string"
                 },
                 "description": {
@@ -1363,20 +1646,11 @@ const docTemplate = `{
                 "capacity": {
                     "type": "integer"
                 },
-                "city_slug": {
-                    "type": "string"
-                },
-                "country_code": {
-                    "type": "string"
-                },
                 "description": {
                     "type": "string"
                 },
                 "floor": {
                     "type": "integer"
-                },
-                "hotel_slug": {
-                    "type": "string"
                 },
                 "images": {
                     "type": "array",

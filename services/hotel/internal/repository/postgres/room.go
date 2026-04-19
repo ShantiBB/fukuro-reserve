@@ -51,6 +51,42 @@ func (r *Repository) InsertRoom(
 	return newRoom, nil
 }
 
+func (r *Repository) InsertRoomByHotelID(
+	ctx context.Context,
+	hotelID uuid.UUID,
+	room *models.CreateRoom,
+) (*models.Room, error) {
+	newRoom := room.ToRead()
+	err := r.db.QueryRow(
+		ctx, query.InsertRoomByHotelIDQuery,
+		hotelID,
+		room.Title,
+		room.Description,
+		room.RoomNumber,
+		room.Type,
+		room.Price,
+		room.Capacity,
+		room.AreaSqm,
+		room.Floor,
+		room.Amenities,
+		room.Images,
+	).Scan(
+		&newRoom.ID,
+		&newRoom.Status,
+		&newRoom.CreatedAt,
+		&newRoom.UpdatedAt,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return nil, consts.ErrUniqueRoomField
+		}
+		return nil, err
+	}
+
+	return newRoom, nil
+}
+
 func (r *Repository) SelectRooms(
 	ctx context.Context,
 	hotelRef models.HotelRef,
@@ -74,6 +110,59 @@ func (r *Repository) SelectRooms(
 	var room models.RoomShort
 	var totalCount, idx uint64
 	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(
+			&room.ID,
+			&room.Title,
+			&room.RoomNumber,
+			&room.Type,
+			&room.Status,
+			&room.Price,
+			&room.Capacity,
+			&room.AreaSqm,
+			&room.Amenities,
+			&room.Images,
+			&totalCount,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		values[idx] = room
+		idx++
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	values = values[:idx]
+
+	roomList := &models.RoomList{
+		Rooms:      make([]*models.RoomShort, len(values)),
+		TotalCount: totalCount,
+	}
+	for i := range values {
+		roomList.Rooms[i] = &values[i]
+	}
+
+	return roomList, nil
+}
+
+func (r *Repository) SelectRoomsByHotelID(
+	ctx context.Context,
+	hotelID uuid.UUID,
+	limit uint64,
+	offset uint64,
+) (*models.RoomList, error) {
+	rows, err := r.db.Query(ctx, query.SelectRoomsByHotelID, hotelID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	values := make([]models.RoomShort, limit)
+	var room models.RoomShort
+	var totalCount, idx uint64
 	for rows.Next() {
 		err = rows.Scan(
 			&room.ID,

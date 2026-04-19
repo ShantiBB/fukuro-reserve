@@ -1,5 +1,0 @@
-./auth.go
-./booking.go
-./gin.go
-./hotel.go
-./room.go

@@ -30,6 +30,31 @@ func (h *Handler) CreateRoom(
 	}, nil
 }
 
+func (h *Handler) CreateRoomByHotelID(
+	ctx context.Context,
+	req *hotelv1.CreateRoomByHotelIDRequest,
+) (*hotelv1.CreateRoomByHotelIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := helper.ParseHotelID(req.HotelId)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	room := mapper.CreateRoomByHotelIDRequestToDomain(req)
+	created, err := h.svc.CreateRoomByHotelID(ctx, hotelID, room)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.CreateRoomByHotelIDResponse{
+		Room: mapper.RoomResponseToProto(created),
+	}, nil
+}
+
 func (h *Handler) GetRooms(
 	ctx context.Context,
 	req *hotelv1.GetRoomsRequest,
@@ -46,6 +71,33 @@ func (h *Handler) GetRooms(
 	}
 
 	return &hotelv1.GetRoomsResponse{
+		Rooms:      mapper.RoomsResponseToProto(roomList.Rooms),
+		TotalCount: roomList.TotalCount,
+		Page:       req.Page,
+		Limit:      req.Limit,
+	}, nil
+}
+
+func (h *Handler) GetRoomsByHotelID(
+	ctx context.Context,
+	req *hotelv1.GetRoomsByHotelIDRequest,
+) (*hotelv1.GetRoomsByHotelIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := helper.ParseHotelID(req.HotelId)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	roomList, err := h.svc.GetRoomsByHotelID(ctx, hotelID, req.Page, req.Limit)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.GetRoomsByHotelIDResponse{
 		Rooms:      mapper.RoomsResponseToProto(roomList.Rooms),
 		TotalCount: roomList.TotalCount,
 		Page:       req.Page,

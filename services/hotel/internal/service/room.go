@@ -19,9 +19,45 @@ func (s *Service) CreateRoom(ctx context.Context, hotel models.HotelRef, room *m
 	return newRoom, nil
 }
 
+func (s *Service) CreateRoomByHotelID(
+	ctx context.Context,
+	hotelID uuid.UUID,
+	room *models.CreateRoom,
+) (*models.Room, error) {
+	if _, err := s.repo.SelectHotelByID(ctx, hotelID); err != nil {
+		return nil, err
+	}
+
+	newRoom, err := s.repo.InsertRoomByHotelID(ctx, hotelID, room)
+	if err != nil {
+		return nil, err
+	}
+
+	return newRoom, nil
+}
+
 func (s *Service) GetRooms(ctx context.Context, hotel models.HotelRef, page, limit uint64) (*models.RoomList, error) {
 	offset := (page - 1) * limit
 	roomList, err := s.repo.SelectRooms(ctx, hotel, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	return roomList, nil
+}
+
+func (s *Service) GetRoomsByHotelID(
+	ctx context.Context,
+	hotelID uuid.UUID,
+	page,
+	limit uint64,
+) (*models.RoomList, error) {
+	if _, err := s.repo.SelectHotelByID(ctx, hotelID); err != nil {
+		return nil, err
+	}
+
+	offset := (page - 1) * limit
+	roomList, err := s.repo.SelectRoomsByHotelID(ctx, hotelID, limit, offset)
 	if err != nil {
 		return nil, err
 	}

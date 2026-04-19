@@ -110,6 +110,30 @@ func (h *Handler) UpdateHotel(
 	}, nil
 }
 
+func (h *Handler) UpdateHotelByID(
+	ctx context.Context,
+	req *hotelv1.UpdateHotelByIDRequest,
+) (*hotelv1.UpdateHotelByIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := helper.ParseHotelID(req.Id)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	hotel := mapper.UpdateHotelByIDRequestToDomain(req)
+	if err := h.svc.UpdateHotelByID(ctx, hotelID, hotel); err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.UpdateHotelByIDResponse{
+		Hotel: mapper.UpdateHotelResponseToProto(hotel),
+	}, nil
+}
+
 func (h *Handler) UpdateHotelTitle(
 	ctx context.Context,
 	req *hotelv1.UpdateHotelTitleRequest,
@@ -132,6 +156,31 @@ func (h *Handler) UpdateHotelTitle(
 	}, nil
 }
 
+func (h *Handler) UpdateHotelTitleByID(
+	ctx context.Context,
+	req *hotelv1.UpdateHotelTitleByIDRequest,
+) (*hotelv1.UpdateHotelTitleByIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := helper.ParseHotelID(req.Id)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	hotel := mapper.UpdateHotelTitleByIDRequestToDomain(req)
+	updated, err := h.svc.UpdateHotelTitleByID(ctx, hotelID, hotel)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.UpdateHotelTitleByIDResponse{
+		Hotel: mapper.UpdateHotelTitleResponseToProto(updated),
+	}, nil
+}
+
 func (h *Handler) DeleteHotel(
 	ctx context.Context,
 	req *hotelv1.DeleteHotelRequest,
@@ -147,6 +196,29 @@ func (h *Handler) DeleteHotel(
 	}
 
 	return &hotelv1.DeleteHotelResponse{
+		Message: "success",
+	}, nil
+}
+
+func (h *Handler) DeleteHotelByID(
+	ctx context.Context,
+	req *hotelv1.DeleteHotelByIDRequest,
+) (*hotelv1.DeleteHotelByIDResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	hotelID, err := helper.ParseHotelID(req.Id)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	if err := h.svc.DeleteHotelByID(ctx, hotelID); err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &hotelv1.DeleteHotelByIDResponse{
 		Message: "success",
 	}, nil
 }

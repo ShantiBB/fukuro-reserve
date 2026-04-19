@@ -180,6 +180,29 @@ func (r *Repository) UpdateHotelBySlug(ctx context.Context, ref models.HotelRef,
 	return nil
 }
 
+func (r *Repository) UpdateHotelByID(ctx context.Context, id uuid.UUID, h models.UpdateHotel) error {
+	row, err := r.db.Exec(
+		ctx, query.UpdateHotelByID,
+		h.Description,
+		h.Address,
+		h.Location.Longitude,
+		h.Location.Latitude,
+		id,
+	)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return consts.ErrUniqueHotelField
+		}
+		return err
+	}
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
+	}
+
+	return nil
+}
+
 func (r *Repository) UpdateHotelTitleBySlug(
 	ctx context.Context,
 	ref models.HotelRef,
@@ -207,8 +230,40 @@ func (r *Repository) UpdateHotelTitleBySlug(
 	return nil
 }
 
+func (r *Repository) UpdateHotelTitleByID(
+	ctx context.Context,
+	id uuid.UUID,
+	h models.UpdateHotelTitle,
+) error {
+	row, err := r.db.Exec(ctx, query.UpdateHotelTitleByID, h.Title, h.HotelSlug, id)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return consts.ErrUniqueHotelField
+		}
+		return err
+	}
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
+	}
+
+	return nil
+}
+
 func (r *Repository) DeleteHotelBySlug(ctx context.Context, ref models.HotelRef) error {
 	row, err := r.db.Exec(ctx, query.DeleteHotelBySlug, ref.CountryCode, ref.CitySlug, ref.HotelSlug)
+	if err != nil {
+		return err
+	}
+	if row.RowsAffected() == 0 {
+		return consts.ErrHotelNotFound
+	}
+
+	return nil
+}
+
+func (r *Repository) DeleteHotelByID(ctx context.Context, id uuid.UUID) error {
+	row, err := r.db.Exec(ctx, query.DeleteHotelByID, id)
 	if err != nil {
 		return err
 	}

@@ -20,6 +20,23 @@ const (
 		WHERE h.country_code = $1 AND h.city_slug = $2 AND h.slug = $3
 		RETURNING id, status, created_at, updated_at;`
 
+	InsertRoomByHotelIDQuery = `
+		INSERT INTO room (
+			hotel_id,
+			title,
+			description,
+			room_number,
+			type,
+			price,
+			capacity,
+			area_sqm,
+			floor,
+			amenities,
+			images
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		RETURNING id, status, created_at, updated_at;`
+
 	SelectRooms = `
 		SELECT r.id,
 			   r.title,
@@ -37,6 +54,23 @@ const (
 		WHERE h.country_code = $1 AND h.city_slug = $2 AND h.slug = $3
 		ORDER BY r.room_number
 		LIMIT $4 OFFSET $5;`
+
+	SelectRoomsByHotelID = `
+		SELECT r.id,
+			   r.title,
+			   r.room_number,
+			   r.type,
+			   r.status,
+			   r.price,
+			   r.capacity,
+			   r.area_sqm,
+			   r.amenities,
+			   r.images,
+			   COUNT(*) OVER() as total_count
+		FROM room r
+		WHERE r.hotel_id = $1
+		ORDER BY r.room_number
+		LIMIT $2 OFFSET $3;`
 
 	SelectRoomByID = `
 		SELECT title,

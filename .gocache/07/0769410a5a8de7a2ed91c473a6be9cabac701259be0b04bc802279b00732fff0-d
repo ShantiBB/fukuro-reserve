@@ -1,9 +1,0 @@
-./auth_test.go
-./auth_validation_test.go
-./booking_validation_test.go
-./bookings_test.go
-./cleanup_test.go
-./hotels_test.go
-./rooms_test.go
-./setup_test.go
-./smoke_test.go

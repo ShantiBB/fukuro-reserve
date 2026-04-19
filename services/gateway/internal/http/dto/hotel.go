@@ -7,14 +7,22 @@ type LocationDTO struct {
 	Longitude float32 `json:"longitude"`
 }
 
-type CreateHotelRequest struct {
+type CreateHotelBody struct {
 	Location    *LocationDTO `json:"location,omitempty"`
-	CountryCode string       `json:"country_code"`
-	CitySlug    string       `json:"city_slug"`
 	Title       string       `json:"title"`
 	Description string       `json:"description,omitempty"`
 	Address     string       `json:"address"`
 	OwnerId     int64        `json:"owner_id"`
+}
+
+type CreateHotelRequest struct {
+	Location    *LocationDTO
+	CountryCode string
+	CitySlug    string
+	Title       string
+	Description string
+	Address     string
+	OwnerId     int64
 }
 
 type UpdateHotelRequest struct {

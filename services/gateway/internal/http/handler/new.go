@@ -44,6 +44,7 @@ type bookingService interface {
 	GetRoomBookings(ctx context.Context, countryCode, citySlug, hotelID, roomID, status string, page, limit uint64) (*dto.BookingsResponse, error)
 	GetAvailability(ctx context.Context, countryCode, citySlug, hotelID string, checkIn, checkOut time.Time, page, limit uint64) (*dto.AvailabilityResponse, error)
 	GetBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.BookingResponse, error)
+	UpdateBookingGuestInfo(ctx context.Context, countryCode, citySlug, hotelID, bookingID string, req dto.UpdateBookingGuestInfoRequest) (*dto.BookingResponse, error)
 	ConfirmBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error)
 	CancelBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error)
 	DeleteBooking(ctx context.Context, countryCode, citySlug, bookingID string) error

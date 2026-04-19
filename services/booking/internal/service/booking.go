@@ -205,6 +205,30 @@ func (s *Service) GetBookingById(ctx context.Context, bookingRef models.BookingR
 	return booking, nil
 }
 
+func (s *Service) UpdateBookingGuestInfo(
+	ctx context.Context,
+	bookingRef models.BookingRef,
+	bookingID uuid.UUID,
+	booking *models.UpdateBooking,
+) (*models.Booking, error) {
+	if booking == nil {
+		return nil, consts.ErrNilObject
+	}
+
+	if err := s.repo.UpdateBookingGuestInfoByID(ctx, nil, bookingRef, bookingID, booking); err != nil {
+		slog.ErrorContext(ctx, "failed to update booking guest info", "err", err)
+		return nil, err
+	}
+
+	updated, err := s.GetBookingById(ctx, bookingRef, bookingID)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to get updated booking by id", "err", err)
+		return nil, err
+	}
+
+	return updated, nil
+}
+
 func (s *Service) UpdateBookingStatus(
 	ctx context.Context,
 	bookingRef models.BookingRef,

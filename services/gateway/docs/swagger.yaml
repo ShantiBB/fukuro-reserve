@@ -422,6 +422,18 @@ definitions:
         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh.token
         type: string
     type: object
+  dto.UpdateBookingGuestInfoRequest:
+    properties:
+      guest_email:
+        example: ivan.petrov@example.com
+        type: string
+      guest_name:
+        example: Ivan Petrov
+        type: string
+      guest_phone:
+        example: "+79991234567"
+        type: string
+    type: object
   dto.UpdateHotelRequest:
     properties:
       address:
@@ -1124,6 +1136,66 @@ paths:
       security:
       - Bearer: []
       summary: Confirm booking
+      tags:
+      - bookings
+  /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/guest-info:
+    patch:
+      consumes:
+      - application/json
+      description: Updates guest contact fields for a booking. Requires JWT auth.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Booking ID
+        example: 2f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: bookingId
+        required: true
+        type: string
+      - description: Update booking guest info request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBookingGuestInfoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.BookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update booking guest info
       tags:
       - bookings
   /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/quote:

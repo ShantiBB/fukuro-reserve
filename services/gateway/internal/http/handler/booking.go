@@ -340,6 +340,44 @@ func (h *BookingHandler) GetBooking(c *gin.Context) {
 	c.JSON(http.StatusOK, resp)
 }
 
+// UpdateBookingGuestInfo godoc
+// @Summary       Update booking guest info
+// @Description   Updates guest contact fields for a booking. Requires JWT auth.
+// @Tags          bookings
+// @Accept        json
+// @Produce       json
+// @Security      Bearer
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         bookingId path string true "Booking ID" example(2f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         request body dto.UpdateBookingGuestInfoRequest true "Update booking guest info request"
+// @Success       200 {object} dto.BookingResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}/guest-info [patch]
+func (h *BookingHandler) UpdateBookingGuestInfo(c *gin.Context) {
+	countryCode, citySlug, hotelID, bookingID, ok := bookingScopeFromPath(c, true)
+	if !ok {
+		return
+	}
+
+	var req dto.UpdateBookingGuestInfoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
+		return
+	}
+
+	resp, err := h.service.UpdateBookingGuestInfo(c.Request.Context(), countryCode, citySlug, hotelID, bookingID, req)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
 // ConfirmBooking godoc
 // @Summary       Confirm booking
 // @Description   Confirms a booking by ID. Requires JWT auth.

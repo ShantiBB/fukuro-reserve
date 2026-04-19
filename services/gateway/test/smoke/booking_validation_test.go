@@ -51,6 +51,7 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 				},
 			},
 		}
+		validationBookingID := uuid.NewString()
 
 		t.Run("create booking user_id gt 0", func(t *testing.T) {
 			body := cloneMap(validBody)
@@ -402,6 +403,71 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 
 		t.Run("get booking id uuid", func(t *testing.T) {
 			assertValidationFields(t, env, http.MethodGet, createPath+"/not-a-uuid", env.Data.OwnerAccess, nil, "id")
+		})
+
+		t.Run("update booking guest info booking_id uuid", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				createPath+"/not-a-uuid/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{"guest_name": "Updated Guest"},
+				"id",
+			)
+		})
+
+		t.Run("update booking guest info hotel_id uuid from path", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				"/api/v1/jp/tokyo/hotels/not-a-uuid/bookings/"+validationBookingID+"/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{"guest_name": "Updated Guest"},
+				"hotel_id",
+			)
+		})
+
+		t.Run("update booking guest info has fields", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				bookingsByIDPath(env, validationBookingID)+"/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{},
+			)
+		})
+
+		t.Run("update booking guest_name min len", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				bookingsByIDPath(env, validationBookingID)+"/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{"guest_name": ""},
+				"guest_name",
+			)
+		})
+
+		t.Run("update booking guest_email format", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				bookingsByIDPath(env, validationBookingID)+"/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{"guest_email": "invalid-email"},
+				"guest_email",
+			)
+		})
+
+		t.Run("update booking guest_phone min len", func(t *testing.T) {
+			assertValidationFields(t,
+				env,
+				http.MethodPatch,
+				bookingsByIDPath(env, validationBookingID)+"/guest-info",
+				env.Data.OwnerAccess,
+				map[string]any{"guest_phone": "1234"},
+				"guest_phone",
+			)
 		})
 
 		t.Run("confirm booking id uuid", func(t *testing.T) {

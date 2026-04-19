@@ -186,6 +186,7 @@ func (r *Repository) GetBookingByID(
 func (r *Repository) UpdateBookingGuestInfoByID(
 	ctx context.Context,
 	tx pgx.Tx,
+	bookingRef models.BookingRef,
 	id uuid.UUID,
 	b *models.UpdateBooking,
 ) error {
@@ -195,6 +196,9 @@ func (r *Repository) UpdateBookingGuestInfoByID(
 		ctx,
 		query.UpdateBookingGuestInfoByID,
 		id,
+		bookingRef.CountryCode,
+		bookingRef.CitySlug,
+		bookingRef.HotelID,
 		b.GuestName,
 		b.GuestEmail,
 		b.GuestPhone,

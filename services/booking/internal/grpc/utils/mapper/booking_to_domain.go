@@ -83,6 +83,31 @@ func GetUnavailableRoomsRequestToDomain(req *bookingv1.GetUnavailableRoomsReques
 	}, req.CheckIn.AsTime(), req.CheckOut.AsTime(), nil
 }
 
+func UpdateBookingGuestInfoRequestToDomain(req *bookingv1.UpdateBookingGuestInfoRequest) (models.BookingRef, uuid.UUID, *models.UpdateBooking, error) {
+	bookingID, err := uuid.Parse(req.Id)
+	if err != nil {
+		return models.BookingRef{}, uuid.UUID{}, nil, consts.ErrInvalidBookingID
+	}
+
+	hotelID, err := uuid.Parse(req.HotelId)
+	if err != nil {
+		return models.BookingRef{}, uuid.UUID{}, nil, consts.ErrInvalidHotelID
+	}
+
+	bookingRef := models.BookingRef{
+		CountryCode: req.CountryCode,
+		CitySlug:    req.CitySlug,
+		HotelID:     hotelID,
+	}
+	booking := &models.UpdateBooking{
+		GuestName:  req.GuestName,
+		GuestEmail: req.GuestEmail,
+		GuestPhone: req.GuestPhone,
+	}
+
+	return bookingRef, bookingID, booking, nil
+}
+
 type bookingLocationRefGetter interface {
 	GetCountryCode() string
 	GetCitySlug() string

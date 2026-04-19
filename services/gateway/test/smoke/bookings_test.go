@@ -274,7 +274,51 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		}
 	})
 
-	t.Run("44.1 get booking wrong location not found", func(t *testing.T) {
+	t.Run("44.1 update booking guest info", func(t *testing.T) {
+		newGuestName := "HTTP Booker Updated"
+		newGuestEmail := "updated-" + env.Data.OwnerEmail
+		newGuestPhone := "+79990000077"
+
+		var resp dto.BookingResponse
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			bookingsByIDPath(env, env.Data.BookingID)+"/guest-info",
+			env.Data.OwnerAccess,
+			dto.UpdateBookingGuestInfoRequest{
+				GuestName:  stringPtr(newGuestName),
+				GuestEmail: stringPtr(newGuestEmail),
+				GuestPhone: stringPtr(newGuestPhone),
+			},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		assertBookingResponseFields(t, &resp, env)
+		if resp.GuestName != newGuestName {
+			t.Fatalf("unexpected guest_name after update: got=%q want=%q", resp.GuestName, newGuestName)
+		}
+		if resp.GuestEmail != newGuestEmail {
+			t.Fatalf("unexpected guest_email after update: got=%q want=%q", resp.GuestEmail, newGuestEmail)
+		}
+		if resp.GuestPhone != newGuestPhone {
+			t.Fatalf("unexpected guest_phone after update: got=%q want=%q", resp.GuestPhone, newGuestPhone)
+		}
+	})
+
+	t.Run("44.2 update booking guest info wrong location not found", func(t *testing.T) {
+		newGuestName := "Wrong Location Booker"
+		status, body := env.RequestJSON(
+			http.MethodPatch,
+			wrongLocationBookingsByIDPath(env, env.Data.BookingID)+"/guest-info",
+			env.Data.OwnerAccess,
+			dto.UpdateBookingGuestInfoRequest{
+				GuestName: stringPtr(newGuestName),
+			},
+			nil,
+		)
+		env.RequireError(status, http.StatusNotFound, body, "booking not found")
+	})
+
+	t.Run("44.3 get booking wrong location not found", func(t *testing.T) {
 		status, body := env.RequestJSON(
 			http.MethodGet,
 			wrongLocationBookingsByIDPath(env, env.Data.BookingID),
@@ -285,7 +329,7 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 		env.RequireError(status, http.StatusNotFound, body, "booking not found")
 	})
 
-	t.Run("44.2 list bookings filtered by pending status", func(t *testing.T) {
+	t.Run("44.4 list bookings filtered by pending status", func(t *testing.T) {
 		var resp dto.BookingsResponse
 		status, body := env.RequestJSON(
 			http.MethodGet,

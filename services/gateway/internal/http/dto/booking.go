@@ -28,6 +28,12 @@ type QuoteBookingRequest struct {
 	Rooms    []*CreateBookingRoomRequest `json:"rooms"`
 }
 
+type UpdateBookingGuestInfoRequest struct {
+	GuestName  *string `json:"guest_name,omitempty" example:"Ivan Petrov"`
+	GuestEmail *string `json:"guest_email,omitempty" example:"ivan.petrov@example.com"`
+	GuestPhone *string `json:"guest_phone,omitempty" example:"+79991234567"`
+}
+
 type BookingRoomResponse struct {
 	Id            string `json:"id"`
 	RoomId        string `json:"room_id"`

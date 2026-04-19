@@ -145,6 +145,30 @@ func (h *Handler) GetBooking(
 	}, nil
 }
 
+func (h *Handler) UpdateBookingGuestInfo(
+	ctx context.Context,
+	req *bookingv1.UpdateBookingGuestInfoRequest,
+) (*bookingv1.UpdateBookingGuestInfoResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	bookingRef, bookingID, booking, err := mapper.UpdateBookingGuestInfoRequestToDomain(req)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	updated, err := h.svc.UpdateBookingGuestInfo(ctx, bookingRef, bookingID, booking)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return &bookingv1.UpdateBookingGuestInfoResponse{
+		Booking: mapper.BookingToProto(updated),
+	}, nil
+}
+
 func (h *Handler) ConfirmBookingStatus(
 	ctx context.Context,
 	req *bookingv1.ConfirmBookingStatusRequest,

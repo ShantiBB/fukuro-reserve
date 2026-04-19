@@ -29,6 +29,9 @@ type BookingService interface {
 		rooms []*models.CreateBookingRoom,
 	) (*models.BookingQuote, error)
 	GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error)
+	UpdateBookingGuestInfo(
+		ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID, booking *models.UpdateBooking,
+	) (*models.Booking, error)
 	UpdateBookingStatus(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID, status models.BookingStatus) error
 	DeleteBookingByID(ctx context.Context, bookingRef models.BookingRef, id uuid.UUID) error
 }

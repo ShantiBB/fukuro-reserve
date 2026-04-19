@@ -48,3 +48,7 @@ func assertDecimalString(t *testing.T, got string, want string) {
 		t.Fatalf("unexpected decimal: got=%s want=%s", got, want)
 	}
 }
+
+func stringPtr(value string) *string {
+	return &value
+}

@@ -20,7 +20,9 @@ type BookingRepository interface {
 		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, limit uint64, offset uint64,
 	) (*models.BookingList, error)
 	GetBookingByID(ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID) (*models.Booking, error)
-	UpdateBookingGuestInfoByID(ctx context.Context, tx pgx.Tx, id uuid.UUID, b *models.UpdateBooking) error
+	UpdateBookingGuestInfoByID(
+		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID, b *models.UpdateBooking,
+	) error
 	UpdateBookingStatusByID(
 		ctx context.Context, tx pgx.Tx, bookingRef models.BookingRef, id uuid.UUID, status models.BookingStatus,
 	) (time.Time, error)

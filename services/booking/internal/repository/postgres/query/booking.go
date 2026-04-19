@@ -72,10 +72,13 @@ const (
 	UpdateBookingGuestInfoByID = `
 		UPDATE booking
 		SET
-			guest_name = $2,
-			guest_email = $3,
-			guest_phone = $4
-		WHERE id = $1`
+			guest_name = COALESCE($5, guest_name),
+			guest_email = COALESCE($6, guest_email),
+			guest_phone = COALESCE($7, guest_phone)
+		WHERE id = $1
+		  AND country_code = $2
+		  AND city_slug = $3
+		  AND hotel_id = $4;`
 
 	UpdateBookingStatusByID = `
 		UPDATE booking

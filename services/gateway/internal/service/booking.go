@@ -195,6 +195,23 @@ func (s *Booking) GetBooking(ctx context.Context, countryCode, citySlug, booking
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
+func (s *Booking) UpdateBookingGuestInfo(ctx context.Context, countryCode, citySlug, hotelID, bookingID string, req dto.UpdateBookingGuestInfoRequest) (*dto.BookingResponse, error) {
+	resp, err := s.clients.Booking.UpdateBookingGuestInfo(ctx, &bookingv1.UpdateBookingGuestInfoRequest{
+		Id:          bookingID,
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		HotelId:     hotelID,
+		GuestName:   req.GuestName,
+		GuestEmail:  req.GuestEmail,
+		GuestPhone:  req.GuestPhone,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.BookingResponseFromProto(resp.Booking), nil
+}
+
 func (s *Booking) ConfirmBooking(ctx context.Context, countryCode, citySlug, bookingID string) (*dto.StatusResponse, error) {
 	resp, err := s.clients.Booking.ConfirmBookingStatus(ctx, &bookingv1.ConfirmBookingStatusRequest{
 		Id:          bookingID,

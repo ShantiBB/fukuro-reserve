@@ -1312,6 +1312,70 @@
                 }
             }
         },
+        "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/quote": {
+            "post": {
+                "description": "Calculates booking price for requested rooms and dates without creating a booking.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "bookings"
+                ],
+                "summary": "Quote booking price",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "jp",
+                        "description": "Country code (ISO 3166-1 alpha-2)",
+                        "name": "countryCode",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "tokyo",
+                        "description": "City slug",
+                        "name": "citySlug",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "0f8fad5b-d9cb-469f-a165-70867728950e",
+                        "description": "Hotel ID",
+                        "name": "hotelId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Quote booking request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.QuoteBookingRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.QuoteBookingResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/{countryCode}/{citySlug}/hotels/{hotelId}/bookings/{bookingId}": {
             "get": {
                 "security": [
@@ -2745,6 +2809,75 @@
                 "password": {
                     "type": "string",
                     "example": "Passw0rd!123"
+                }
+            }
+        },
+        "dto.QuoteBookingRequest": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string",
+                    "example": "2026-05-10T14:00:00Z"
+                },
+                "check_out": {
+                    "type": "string",
+                    "example": "2026-05-13T11:00:00Z"
+                },
+                "currency": {
+                    "type": "string",
+                    "example": "RUB"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.CreateBookingRoomRequest"
+                    }
+                }
+            }
+        },
+        "dto.QuoteBookingResponse": {
+            "type": "object",
+            "properties": {
+                "check_in": {
+                    "type": "string"
+                },
+                "check_out": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "nights": {
+                    "type": "integer"
+                },
+                "rooms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.QuoteBookingRoomResponse"
+                    }
+                },
+                "total_amount": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.QuoteBookingRoomResponse": {
+            "type": "object",
+            "properties": {
+                "adults": {
+                    "type": "integer"
+                },
+                "children": {
+                    "type": "integer"
+                },
+                "price_per_night": {
+                    "type": "string"
+                },
+                "room_id": {
+                    "type": "string"
+                },
+                "total_amount": {
+                    "type": "string"
                 }
             }
         },

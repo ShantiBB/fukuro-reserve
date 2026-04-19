@@ -61,6 +61,30 @@ func BookingsShortResponseFromProto(resp *bookingv1.GetBookingsResponse) *dto.Bo
 	return &dto.BookingsResponse{Bookings: bookings}
 }
 
+func QuoteBookingResponseFromProto(resp *bookingv1.QuoteBookingResponse) *dto.QuoteBookingResponse {
+	if resp == nil {
+		return nil
+	}
+
+	out := &dto.QuoteBookingResponse{
+		Currency:    resp.Currency,
+		TotalAmount: resp.TotalAmount,
+		Nights:      resp.Nights,
+		Rooms:       make([]*dto.QuoteBookingRoomResponse, len(resp.Rooms)),
+	}
+	if resp.CheckIn != nil {
+		out.CheckIn = resp.CheckIn.AsTime()
+	}
+	if resp.CheckOut != nil {
+		out.CheckOut = resp.CheckOut.AsTime()
+	}
+	for i, room := range resp.Rooms {
+		out.Rooms[i] = quoteBookingRoomResponseFromProto(room)
+	}
+
+	return out
+}
+
 func bookingShortResponseFromProto(booking *bookingv1.BookingShort) *dto.BookingShortResponse {
 	if booking == nil {
 		return nil
@@ -109,6 +133,20 @@ func bookingRoomResponseFromProto(room *bookingv1.BookingRoom) *dto.BookingRoomR
 		Adults:        room.Adults,
 		Children:      room.Children,
 		PricePerNight: room.PricePerNight,
+	}
+}
+
+func quoteBookingRoomResponseFromProto(room *bookingv1.QuoteBookingRoom) *dto.QuoteBookingRoomResponse {
+	if room == nil {
+		return nil
+	}
+
+	return &dto.QuoteBookingRoomResponse{
+		RoomId:        room.RoomId,
+		Adults:        room.Adults,
+		Children:      room.Children,
+		PricePerNight: room.PricePerNight,
+		TotalAmount:   room.TotalAmount,
 	}
 }
 

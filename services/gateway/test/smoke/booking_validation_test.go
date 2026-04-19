@@ -38,6 +38,19 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 				},
 			},
 		}
+		validQuoteBody := map[string]any{
+			"check_in":  checkIn.Format(time.RFC3339),
+			"check_out": checkOut.Format(time.RFC3339),
+			"currency":  "USD",
+			"rooms": []map[string]any{
+				{
+					"room_id":         env.Data.RoomID,
+					"adults":          2,
+					"children":        1,
+					"price_per_night": "150.00",
+				},
+			},
+		}
 
 		t.Run("create booking user_id gt 0", func(t *testing.T) {
 			body := cloneMap(validBody)
@@ -233,6 +246,66 @@ func runBookingValidationSmoke(t *testing.T, env *fixtures.Env) {
 		t.Run("get bookings limit lte 100", func(t *testing.T) {
 			status, body := env.RequestJSON(http.MethodGet, createPath+"?page=1&limit=101", env.Data.OwnerAccess, nil, nil)
 			env.RequireError(status, http.StatusBadRequest, body, "invalid pagination")
+		})
+
+		t.Run("quote booking hotel_id uuid from path", func(t *testing.T) {
+			assertValidationFields(t, env,
+				http.MethodPost,
+				"/api/v1/jp/tokyo/hotels/not-a-uuid/bookings/quote",
+				"",
+				validQuoteBody,
+				"hotel_id",
+			)
+		})
+
+		t.Run("quote booking check_in gt_now", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["check_in"] = time.Now().UTC().Add(-48 * time.Hour).Format(time.RFC3339)
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body, "check_in")
+		})
+
+		t.Run("quote booking check_out after check_in cel", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["check_out"] = checkIn.Add(-time.Hour).Format(time.RFC3339)
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body)
+		})
+
+		t.Run("quote booking currency pattern", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["currency"] = "usd"
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body, "currency")
+		})
+
+		t.Run("quote booking rooms min_items", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["rooms"] = []map[string]any{}
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body, "rooms")
+		})
+
+		t.Run("quote booking room_id uuid", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["rooms"] = []map[string]any{
+				{
+					"room_id":         "not-a-uuid",
+					"adults":          2,
+					"children":        1,
+					"price_per_night": "150.00",
+				},
+			}
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body, "room_id")
+		})
+
+		t.Run("quote booking price_per_night pattern", func(t *testing.T) {
+			body := cloneMap(validQuoteBody)
+			body["rooms"] = []map[string]any{
+				{
+					"room_id":         env.Data.RoomID,
+					"adults":          2,
+					"children":        1,
+					"price_per_night": "150,00",
+				},
+			}
+			assertValidationFields(t, env, http.MethodPost, quoteBookingPath(env), "", body, "price_per_night")
 		})
 
 		t.Run("availability check_in required", func(t *testing.T) {

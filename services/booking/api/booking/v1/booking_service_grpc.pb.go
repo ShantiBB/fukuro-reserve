@@ -26,6 +26,7 @@ const (
 	BookingService_CancelBookingStatus_FullMethodName  = "/booking.v1.BookingService/CancelBookingStatus"
 	BookingService_DeleteBooking_FullMethodName        = "/booking.v1.BookingService/DeleteBooking"
 	BookingService_GetUnavailableRooms_FullMethodName  = "/booking.v1.BookingService/GetUnavailableRooms"
+	BookingService_QuoteBooking_FullMethodName         = "/booking.v1.BookingService/QuoteBooking"
 )
 
 // BookingServiceClient is the client API for BookingService service.
@@ -39,6 +40,7 @@ type BookingServiceClient interface {
 	CancelBookingStatus(ctx context.Context, in *CancelBookingStatusRequest, opts ...grpc.CallOption) (*CancelBookingStatusResponse, error)
 	DeleteBooking(ctx context.Context, in *DeleteBookingRequest, opts ...grpc.CallOption) (*DeleteBookingResponse, error)
 	GetUnavailableRooms(ctx context.Context, in *GetUnavailableRoomsRequest, opts ...grpc.CallOption) (*GetUnavailableRoomsResponse, error)
+	QuoteBooking(ctx context.Context, in *QuoteBookingRequest, opts ...grpc.CallOption) (*QuoteBookingResponse, error)
 }
 
 type bookingServiceClient struct {
@@ -119,6 +121,16 @@ func (c *bookingServiceClient) GetUnavailableRooms(ctx context.Context, in *GetU
 	return out, nil
 }
 
+func (c *bookingServiceClient) QuoteBooking(ctx context.Context, in *QuoteBookingRequest, opts ...grpc.CallOption) (*QuoteBookingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QuoteBookingResponse)
+	err := c.cc.Invoke(ctx, BookingService_QuoteBooking_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BookingServiceServer is the server API for BookingService service.
 // All implementations must embed UnimplementedBookingServiceServer
 // for forward compatibility.
@@ -130,6 +142,7 @@ type BookingServiceServer interface {
 	CancelBookingStatus(context.Context, *CancelBookingStatusRequest) (*CancelBookingStatusResponse, error)
 	DeleteBooking(context.Context, *DeleteBookingRequest) (*DeleteBookingResponse, error)
 	GetUnavailableRooms(context.Context, *GetUnavailableRoomsRequest) (*GetUnavailableRoomsResponse, error)
+	QuoteBooking(context.Context, *QuoteBookingRequest) (*QuoteBookingResponse, error)
 	mustEmbedUnimplementedBookingServiceServer()
 }
 
@@ -160,6 +173,9 @@ func (UnimplementedBookingServiceServer) DeleteBooking(context.Context, *DeleteB
 }
 func (UnimplementedBookingServiceServer) GetUnavailableRooms(context.Context, *GetUnavailableRoomsRequest) (*GetUnavailableRoomsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetUnavailableRooms not implemented")
+}
+func (UnimplementedBookingServiceServer) QuoteBooking(context.Context, *QuoteBookingRequest) (*QuoteBookingResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method QuoteBooking not implemented")
 }
 func (UnimplementedBookingServiceServer) mustEmbedUnimplementedBookingServiceServer() {}
 func (UnimplementedBookingServiceServer) testEmbeddedByValue()                        {}
@@ -308,6 +324,24 @@ func _BookingService_GetUnavailableRooms_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookingService_QuoteBooking_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QuoteBookingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookingServiceServer).QuoteBooking(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookingService_QuoteBooking_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookingServiceServer).QuoteBooking(ctx, req.(*QuoteBookingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BookingService_ServiceDesc is the grpc.ServiceDesc for BookingService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -342,6 +376,10 @@ var BookingService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUnavailableRooms",
 			Handler:    _BookingService_GetUnavailableRooms_Handler,
+		},
+		{
+			MethodName: "QuoteBooking",
+			Handler:    _BookingService_QuoteBooking_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

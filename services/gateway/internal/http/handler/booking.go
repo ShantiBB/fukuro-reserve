@@ -49,6 +49,40 @@ func (h *BookingHandler) CreateBooking(c *gin.Context) {
 	c.JSON(http.StatusCreated, resp)
 }
 
+// QuoteBooking godoc
+// @Summary       Quote booking price
+// @Description   Calculates booking price for requested rooms and dates without creating a booking.
+// @Tags          bookings
+// @Accept        json
+// @Produce       json
+// @Param         countryCode path string true "Country code (ISO 3166-1 alpha-2)" example(jp)
+// @Param         citySlug path string true "City slug" example(tokyo)
+// @Param         hotelId path string true "Hotel ID" example(0f8fad5b-d9cb-469f-a165-70867728950e)
+// @Param         request body dto.QuoteBookingRequest true "Quote booking request"
+// @Success       200 {object} dto.QuoteBookingResponse
+// @Failure       400 {object} responder.ErrorResponse
+// @Router        /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/quote [post]
+func (h *BookingHandler) QuoteBooking(c *gin.Context) {
+	countryCode, citySlug, hotelID, _, ok := bookingScopeFromPath(c, false)
+	if !ok {
+		return
+	}
+
+	var req dto.QuoteBookingRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, &responder.ErrorResponse{Error: consts.ErrInvalidRequestBody})
+		return
+	}
+
+	resp, err := h.service.QuoteBooking(c.Request.Context(), countryCode, citySlug, hotelID, req)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
+
 // GetBookings godoc
 // @Summary       Get all bookings
 // @Description   Returns bookings with optional filters and pagination. Requires JWT auth.

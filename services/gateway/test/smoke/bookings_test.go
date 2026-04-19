@@ -16,6 +16,36 @@ func runBookingsSmoke(t *testing.T, env *fixtures.Env) {
 	checkOut := checkIn.Add(48 * time.Hour)
 	basePath := bookingsBasePath(env)
 
+	t.Run("39 quote booking", func(t *testing.T) {
+		var resp dto.QuoteBookingResponse
+		status, body := env.RequestJSON(
+			http.MethodPost,
+			quoteBookingPath(env),
+			"",
+			dto.QuoteBookingRequest{
+				CheckIn:  checkIn,
+				CheckOut: checkOut,
+				Currency: "USD",
+				Rooms: []*dto.CreateBookingRoomRequest{
+					{RoomId: env.Data.RoomID, Adults: 2, Children: 1, PricePerNight: "175.00"},
+				},
+			},
+			&resp,
+		)
+		env.RequireStatus(status, http.StatusOK, body)
+		if resp.Nights != 2 {
+			t.Fatalf("unexpected quote nights: got=%d want=%d", resp.Nights, 2)
+		}
+		assertDecimalString(t, resp.TotalAmount, "350")
+		if len(resp.Rooms) != 1 {
+			t.Fatalf("unexpected quote rooms count: got=%d want=%d", len(resp.Rooms), 1)
+		}
+		if resp.Rooms[0].RoomId != env.Data.RoomID {
+			t.Fatalf("unexpected quote room id: got=%q want=%q", resp.Rooms[0].RoomId, env.Data.RoomID)
+		}
+		assertDecimalString(t, resp.Rooms[0].TotalAmount, "350")
+	})
+
 	t.Run("40 create booking", func(t *testing.T) {
 		var resp dto.BookingResponse
 		status, body := env.RequestJSON(

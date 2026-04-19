@@ -10,6 +10,7 @@ import (
 	"github.com/ShantiBB/fukuro-reserve/services/booking/internal/utils/consts"
 
 	"github.com/google/uuid"
+	"github.com/shopspring/decimal"
 )
 
 func (s *Service) BookingCreate(
@@ -144,6 +145,47 @@ func (s *Service) GetUnavailableRoomIDs(
 	}
 
 	return roomIDs, nil
+}
+
+func (s *Service) QuoteBooking(
+	ctx context.Context,
+	checkIn time.Time,
+	checkOut time.Time,
+	currency string,
+	rooms []*models.CreateBookingRoom,
+) (*models.BookingQuote, error) {
+	total, err := helper.CalculateTotalAmount(checkIn, checkOut, rooms, decimal.Zero)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to calculate booking quote", "err", err)
+		return nil, err
+	}
+
+	nights, err := helper.Nights(checkIn, checkOut)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed to calculate booking nights", "err", err)
+		return nil, err
+	}
+	nightsDec := decimal.NewFromInt(int64(nights))
+
+	quoteRooms := make([]*models.BookingQuoteRoom, len(rooms))
+	for i, room := range rooms {
+		quoteRooms[i] = &models.BookingQuoteRoom{
+			RoomID:        room.RoomID,
+			Adults:        room.Adults,
+			Children:      room.Children,
+			PricePerNight: room.PricePerNight,
+			TotalAmount:   room.PricePerNight.Mul(nightsDec),
+		}
+	}
+
+	return &models.BookingQuote{
+		CheckIn:     checkIn,
+		CheckOut:    checkOut,
+		Currency:    currency,
+		TotalAmount: total,
+		Rooms:       quoteRooms,
+		Nights:      uint32(nights),
+	}, nil
 }
 
 func (s *Service) GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error) {

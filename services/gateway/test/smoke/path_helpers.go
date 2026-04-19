@@ -17,6 +17,10 @@ func bookingsByIDPath(env *fixtures.Env, bookingID string) string {
 	return bookingsBasePath(env) + "/" + bookingID
 }
 
+func quoteBookingPath(env *fixtures.Env) string {
+	return bookingsBasePath(env) + "/quote"
+}
+
 func roomBookingsBasePath(env *fixtures.Env) string {
 	return fmt.Sprintf(
 		"/api/v1/jp/tokyo/hotels/%s/rooms/%s/bookings",

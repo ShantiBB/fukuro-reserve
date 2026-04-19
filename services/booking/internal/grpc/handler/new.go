@@ -21,6 +21,13 @@ type BookingService interface {
 	GetUnavailableRoomIDs(
 		ctx context.Context, bookingRef models.BookingRef, checkIn time.Time, checkOut time.Time,
 	) ([]uuid.UUID, error)
+	QuoteBooking(
+		ctx context.Context,
+		checkIn time.Time,
+		checkOut time.Time,
+		currency string,
+		rooms []*models.CreateBookingRoom,
+	) (*models.BookingQuote, error)
 	GetBookingById(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID) (*models.Booking, error)
 	UpdateBookingStatus(ctx context.Context, bookingRef models.BookingRef, bookingID uuid.UUID, status models.BookingStatus) error
 	DeleteBookingByID(ctx context.Context, bookingRef models.BookingRef, id uuid.UUID) error

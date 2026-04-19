@@ -39,6 +39,7 @@ type hotelService interface {
 
 type bookingService interface {
 	CreateBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.CreateBookingRequest) (*dto.BookingResponse, error)
+	QuoteBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.QuoteBookingRequest) (*dto.QuoteBookingResponse, error)
 	GetBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error)
 	GetRoomBookings(ctx context.Context, countryCode, citySlug, hotelID, roomID, status string, page, limit uint64) (*dto.BookingsResponse, error)
 	GetAvailability(ctx context.Context, countryCode, citySlug, hotelID string, checkIn, checkOut time.Time, page, limit uint64) (*dto.AvailabilityResponse, error)

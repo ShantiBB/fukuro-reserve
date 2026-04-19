@@ -21,6 +21,13 @@ type CreateBookingRequest struct {
 	UserId              int64                       `json:"user_id" example:"1"`
 }
 
+type QuoteBookingRequest struct {
+	CheckIn  time.Time                   `json:"check_in" example:"2026-05-10T14:00:00Z"`
+	CheckOut time.Time                   `json:"check_out" example:"2026-05-13T11:00:00Z"`
+	Currency string                      `json:"currency" example:"RUB"`
+	Rooms    []*CreateBookingRoomRequest `json:"rooms"`
+}
+
 type BookingRoomResponse struct {
 	Id            string `json:"id"`
 	RoomId        string `json:"room_id"`
@@ -65,6 +72,23 @@ type BookingShortResponse struct {
 
 type BookingsResponse struct {
 	Bookings []*BookingShortResponse `json:"bookings"`
+}
+
+type QuoteBookingRoomResponse struct {
+	RoomId        string `json:"room_id"`
+	PricePerNight string `json:"price_per_night"`
+	TotalAmount   string `json:"total_amount"`
+	Adults        uint32 `json:"adults"`
+	Children      uint32 `json:"children"`
+}
+
+type QuoteBookingResponse struct {
+	CheckIn     time.Time                   `json:"check_in"`
+	CheckOut    time.Time                   `json:"check_out"`
+	Currency    string                      `json:"currency"`
+	TotalAmount string                      `json:"total_amount"`
+	Rooms       []*QuoteBookingRoomResponse `json:"rooms"`
+	Nights      uint32                      `json:"nights"`
 }
 
 type AvailabilityResponse struct {

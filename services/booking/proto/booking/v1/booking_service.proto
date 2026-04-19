@@ -12,6 +12,7 @@ import "booking/v1/rpc/confirm_booking_status.proto";
 import "booking/v1/rpc/cancel_booking_status.proto";
 import "booking/v1/rpc/delete_booking.proto";
 import "booking/v1/rpc/get_unavailable_rooms.proto";
+import "booking/v1/rpc/quote_booking.proto";
 
 service BookingService {
   rpc CreateBooking(CreateBookingRequest) returns (CreateBookingResponse);
@@ -21,4 +22,5 @@ service BookingService {
   rpc CancelBookingStatus(CancelBookingStatusRequest) returns (CancelBookingStatusResponse);
   rpc DeleteBooking(DeleteBookingRequest) returns (DeleteBookingResponse);
   rpc GetUnavailableRooms(GetUnavailableRoomsRequest) returns (GetUnavailableRoomsResponse);
+  rpc QuoteBooking(QuoteBookingRequest) returns (QuoteBookingResponse);
 }

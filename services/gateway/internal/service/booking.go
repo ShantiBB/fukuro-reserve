@@ -54,6 +54,33 @@ func (s *Booking) CreateBooking(ctx context.Context, countryCode, citySlug, hote
 	return mapper.BookingResponseFromProto(resp.Booking), nil
 }
 
+func (s *Booking) QuoteBooking(ctx context.Context, countryCode, citySlug, hotelID string, req dto.QuoteBookingRequest) (*dto.QuoteBookingResponse, error) {
+	rooms := make([]*bookingv1.CreateBookingRoomRequest, len(req.Rooms))
+	for i, room := range req.Rooms {
+		rooms[i] = &bookingv1.CreateBookingRoomRequest{
+			RoomId:        room.RoomId,
+			Adults:        room.Adults,
+			Children:      room.Children,
+			PricePerNight: room.PricePerNight,
+		}
+	}
+
+	resp, err := s.clients.Booking.QuoteBooking(ctx, &bookingv1.QuoteBookingRequest{
+		CountryCode: countryCode,
+		CitySlug:    citySlug,
+		HotelId:     hotelID,
+		CheckIn:     timestamppb.New(req.CheckIn),
+		CheckOut:    timestamppb.New(req.CheckOut),
+		Currency:    req.Currency,
+		Rooms:       rooms,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapper.QuoteBookingResponseFromProto(resp), nil
+}
+
 func (s *Booking) GetBookings(ctx context.Context, countryCode, citySlug string, userID int64, hotelID, status string, page, limit uint64) (*dto.BookingsResponse, error) {
 	return s.getBookings(ctx, countryCode, citySlug, userID, hotelID, "", status, page, limit)
 }

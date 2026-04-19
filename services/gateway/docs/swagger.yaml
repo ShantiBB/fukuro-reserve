@@ -278,6 +278,52 @@ definitions:
         example: Passw0rd!123
         type: string
     type: object
+  dto.QuoteBookingRequest:
+    properties:
+      check_in:
+        example: "2026-05-10T14:00:00Z"
+        type: string
+      check_out:
+        example: "2026-05-13T11:00:00Z"
+        type: string
+      currency:
+        example: RUB
+        type: string
+      rooms:
+        items:
+          $ref: '#/definitions/dto.CreateBookingRoomRequest'
+        type: array
+    type: object
+  dto.QuoteBookingResponse:
+    properties:
+      check_in:
+        type: string
+      check_out:
+        type: string
+      currency:
+        type: string
+      nights:
+        type: integer
+      rooms:
+        items:
+          $ref: '#/definitions/dto.QuoteBookingRoomResponse'
+        type: array
+      total_amount:
+        type: string
+    type: object
+  dto.QuoteBookingRoomResponse:
+    properties:
+      adults:
+        type: integer
+      children:
+        type: integer
+      price_per_night:
+        type: string
+      room_id:
+        type: string
+      total_amount:
+        type: string
+    type: object
   dto.RefreshTokenRequest:
     properties:
       refresh_token:
@@ -1078,6 +1124,51 @@ paths:
       security:
       - Bearer: []
       summary: Confirm booking
+      tags:
+      - bookings
+  /{countryCode}/{citySlug}/hotels/{hotelId}/bookings/quote:
+    post:
+      consumes:
+      - application/json
+      description: Calculates booking price for requested rooms and dates without
+        creating a booking.
+      parameters:
+      - description: Country code (ISO 3166-1 alpha-2)
+        example: jp
+        in: path
+        name: countryCode
+        required: true
+        type: string
+      - description: City slug
+        example: tokyo
+        in: path
+        name: citySlug
+        required: true
+        type: string
+      - description: Hotel ID
+        example: 0f8fad5b-d9cb-469f-a165-70867728950e
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Quote booking request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dto.QuoteBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.QuoteBookingResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      summary: Quote booking price
       tags:
       - bookings
   /{countryCode}/{citySlug}/hotels/{hotelId}/rooms:

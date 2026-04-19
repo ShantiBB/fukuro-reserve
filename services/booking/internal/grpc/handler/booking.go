@@ -98,6 +98,28 @@ func (h *Handler) GetUnavailableRooms(
 	return resp, nil
 }
 
+func (h *Handler) QuoteBooking(
+	ctx context.Context,
+	req *bookingv1.QuoteBookingRequest,
+) (*bookingv1.QuoteBookingResponse, error) {
+	if err := h.validator.Validate(req); err != nil {
+		return nil, helper.HandleValidationErr(err)
+	}
+
+	rooms, err := mapper.CreateBookingRoomsToDomain(req.Rooms)
+	if err != nil {
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	quote, err := h.svc.QuoteBooking(ctx, req.CheckIn.AsTime(), req.CheckOut.AsTime(), req.Currency, rooms)
+	if err != nil {
+		slog.ErrorContext(ctx, "failed", slog.String("error", err.Error()))
+		return nil, helper.HandleDomainErr(err)
+	}
+
+	return mapper.BookingQuoteToProto(quote), nil
+}
+
 func (h *Handler) GetBooking(
 	ctx context.Context,
 	req *bookingv1.GetBookingRequest,

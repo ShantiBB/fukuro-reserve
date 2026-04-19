@@ -70,6 +70,23 @@ type BookingList struct {
 	TotalCount uint64
 }
 
+type BookingQuoteRoom struct {
+	PricePerNight decimal.Decimal
+	TotalAmount   decimal.Decimal
+	RoomID        uuid.UUID
+	Adults        uint32
+	Children      uint32
+}
+
+type BookingQuote struct {
+	CheckIn     time.Time
+	CheckOut    time.Time
+	Currency    string
+	TotalAmount decimal.Decimal
+	Rooms       []*BookingQuoteRoom
+	Nights      uint32
+}
+
 type BookingRef struct {
 	CountryCode string
 	CitySlug    string

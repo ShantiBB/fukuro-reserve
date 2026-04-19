@@ -1,7 +1,10 @@
 package smoke
 
 import (
+	"testing"
 	"time"
+
+	"github.com/shopspring/decimal"
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/test/smoke/fixtures"
@@ -28,4 +31,20 @@ func wrongLocationAvailabilityPath(env *fixtures.Env, checkIn, checkOut time.Tim
 		"?check_in=" + checkIn.Format("2006-01-02") +
 		"&check_out=" + checkOut.Format("2006-01-02") +
 		"&page=1&limit=10"
+}
+
+func assertDecimalString(t *testing.T, got string, want string) {
+	t.Helper()
+
+	gotDec, err := decimal.NewFromString(got)
+	if err != nil {
+		t.Fatalf("parse decimal %q: %v", got, err)
+	}
+	wantDec, err := decimal.NewFromString(want)
+	if err != nil {
+		t.Fatalf("parse decimal %q: %v", want, err)
+	}
+	if !gotDec.Equal(wantDec) {
+		t.Fatalf("unexpected decimal: got=%s want=%s", got, want)
+	}
 }

@@ -2,7 +2,7 @@
 env: local
 
 # gin mode: debug, test, release
-gin_mode: release
+gin_mode: test
 
 # log level: debug, info, warn, error
 log_level: debug

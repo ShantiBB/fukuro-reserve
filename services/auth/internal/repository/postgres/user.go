@@ -78,7 +78,7 @@ func (r *Repository) SelectUserByID(ctx context.Context, id int64) (*models.User
 func (r *Repository) SelectUserCredentialsByEmail(ctx context.Context, email string) (*models.UserCredentials, error) {
 	u := &models.UserCredentials{Email: email}
 	err := r.db.QueryRow(ctx, SelectUserCredentialsByEmail, email).Scan(
-		&u.ID, &u.Role, &u.Password,
+		&u.ID, &u.Role, &u.Password, &u.IsActive,
 	)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

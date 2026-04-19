@@ -10,6 +10,7 @@ type authHandler interface {
 	Register(*gin.Context)
 	Login(*gin.Context)
 	RefreshToken(*gin.Context)
+	GetMe(*gin.Context)
 	GetUsers(*gin.Context)
 	CreateUser(*gin.Context)
 	GetUser(*gin.Context)
@@ -36,6 +37,7 @@ func (ar authRoutes) Register(r *gin.RouterGroup) {
 
 	users := auth.Group("")
 	users.Use(middleware.AuthMiddleware())
+	users.GET("/users/me", ar.h.GetMe)
 	users.GET("/users", ar.h.GetUsers)
 	users.POST("/users", ar.h.CreateUser)
 	users.GET("/users/:id", ar.h.GetUser)

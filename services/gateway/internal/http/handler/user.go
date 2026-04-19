@@ -7,10 +7,49 @@ import (
 
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/consts"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/dto"
+	httpmiddleware "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/middleware"
 	httpauth "github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/auth"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/request"
 	"github.com/ShantiBB/fukuro-reserve/services/gateway/internal/http/utils/responder"
 )
+
+// GetMe godoc
+// @Summary       Get current user
+// @Description   Returns current user profile by access token. Requires JWT auth.
+// @Tags          users
+// @Produce       json
+// @Security      Bearer
+// @Success       200 {object} dto.UserResponse
+// @Failure       401 {object} responder.ErrorResponse
+// @Failure       403 {object} responder.ErrorResponse
+// @Failure       404 {object} responder.ErrorResponse
+// @Router        /auth/users/me [get]
+func (h *AuthHandler) GetMe(c *gin.Context) {
+	ctx, err := httpauth.OutgoingContextWithAuthorization(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	rawUserID, ok := c.Get(string(httpmiddleware.UserIDKey))
+	if !ok {
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidJWTUserIDClaim})
+		return
+	}
+	userID, ok := rawUserID.(int64)
+	if !ok || userID <= 0 {
+		c.JSON(http.StatusUnauthorized, &responder.ErrorResponse{Error: consts.ErrInvalidJWTUserIDClaim})
+		return
+	}
+
+	resp, err := h.service.GetUser(ctx, userID)
+	if err != nil {
+		responder.GinGRPCError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, resp)
+}
 
 // GetUsers godoc
 // @Summary       Get all users

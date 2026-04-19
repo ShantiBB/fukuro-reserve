@@ -48,6 +48,7 @@ type UserCredentials struct {
 	Role     UserRole
 	Password string
 	ID       int64
+	IsActive bool
 }
 
 func (u CreateUser) ToUserRead() *User {

@@ -11,8 +11,8 @@ import (
 
 type Claims struct {
 	jwt.RegisteredClaims
-	Role models.UserRole
-	Sub  int64
+	Role models.UserRole `json:"role"`
+	Sub  int64           `json:"sub"`
 }
 
 type Token struct {

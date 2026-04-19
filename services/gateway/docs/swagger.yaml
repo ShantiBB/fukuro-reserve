@@ -457,7 +457,7 @@ definitions:
   dto.UpdateUserRoleRequest:
     properties:
       role:
-        example: ROLE_ADMIN
+        example: USER_ROLE_USER, USER_ROLE_MODERATOR, USER_ROLE_ADMIN
         type: string
     type: object
   dto.UpdateUserRoleResponse:
@@ -1971,6 +1971,33 @@ paths:
       security:
       - Bearer: []
       summary: Update user role
+      tags:
+      - users
+  /auth/users/me:
+    get:
+      description: Returns current user profile by access token. Requires JWT auth.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.UserResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responder.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get current user
       tags:
       - users
 securityDefinitions:

@@ -270,6 +270,49 @@ const docTemplate = `{
                 }
             }
         },
+        "/auth/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Returns current user profile by access token. Requires JWT auth.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get current user",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/responder.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/users/{id}": {
             "get": {
                 "security": [
@@ -2838,7 +2881,7 @@ const docTemplate = `{
             "properties": {
                 "role": {
                     "type": "string",
-                    "example": "ROLE_ADMIN"
+                    "example": "USER_ROLE_USER, USER_ROLE_MODERATOR, USER_ROLE_ADMIN"
                 }
             }
         },

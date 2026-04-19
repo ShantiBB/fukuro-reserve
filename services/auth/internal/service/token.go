@@ -30,6 +30,9 @@ func (s *Service) LoginByEmail(ctx context.Context, user *models.CreateUser) (*j
 		}
 		return nil, err
 	}
+	if !userCred.IsActive {
+		return nil, consts.ErrForbidden
+	}
 
 	if !helper.VerifyPassword(user.Password, userCred.Password) {
 		return nil, consts.ErrInvalidCredentials
@@ -45,6 +48,13 @@ func (s *Service) RefreshToken(token *jwt.Token) (*jwt.Token, error) {
 			return nil, consts.ErrInvalidToken
 		}
 		return nil, err
+	}
+	user, err := s.repo.SelectUserByID(context.Background(), claims.Sub)
+	if err != nil {
+		return nil, err
+	}
+	if !user.IsActive {
+		return nil, consts.ErrForbidden
 	}
 
 	access, err := jwt.GenerateAccessToken(claims.Sub, claims.Role, s.tokenCreds)
